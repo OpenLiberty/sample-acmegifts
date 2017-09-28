@@ -4,7 +4,7 @@
   are made available under the terms of the Eclipse Public License v1.0
   which accompanies this distribution, and is available at
   http://www.eclipse.org/legal/epl-v10.html
- 
+
   Contributors:
   IBM Corporation - initial API and implementation
 -->
@@ -34,7 +34,7 @@
         <version.keytool.plugin>1.5</version.keytool.plugin>
         <version.exec.plugin>1.5.0</version.exec.plugin>
         <version.jar.plugin>3.0.2</version.jar.plugin>
-        
+
         <!-- Database. -->
         <version.mongodb>2.14.3</version.mongodb>
 
@@ -58,30 +58,30 @@
         <version.apache.cxf>3.1.1</version.apache.cxf>
         <version.spring.context>4.3.9.RELEASE</version.spring.context>
         <version.mockito>1.9.5</version.mockito>
-        
+
         <!-- Optional Microservice Configuration -->
         <user.hostname>localhost</user.hostname>
         <user.http.port>5050</user.http.port>
         <user.https.port>5051</user.https.port>
         <user.mongo.hostname>localhost</user.mongo.hostname>
         <user.mongo.port>5052</user.mongo.port>
-        
+
         <group.hostname>localhost</group.hostname>
         <group.http.port>5053</group.http.port>
         <group.https.port>5054</group.https.port>
         <group.mongo.hostname>localhost</group.mongo.hostname>
         <group.mongo.port>5055</group.mongo.port>
-        
+
         <occasion.hostname>localhost</occasion.hostname>
         <occasion.http.port>5056</occasion.http.port>
         <occasion.https.port>5057</occasion.https.port>
         <occasion.mongo.hostname>localhost</occasion.mongo.hostname>
         <occasion.mongo.port>5058</occasion.mongo.port>
-        
+
         <notification.hostname>localhost</notification.hostname>
         <notification.http.port>5059</notification.http.port>
         <notification.https.port>5060</notification.https.port>
-        
+
         <notification_1_1.hostname>localhost</notification_1_1.hostname>
         <notification_1_1.http.port>5061</notification_1_1.http.port>
         <notification_1_1.https.port>5062</notification_1_1.https.port>
@@ -93,14 +93,14 @@
         <auth.http.port>5065</auth.http.port>
         <auth.https.port>5066</auth.https.port>
         <auth.hostname>localhost</auth.hostname>
-        
+
         <!-- Optional path to Mongo install bin directory (for use when auto starting and stopping the databases) -->
         <mongo.path></mongo.path>
-        
+
         <!-- JSON Web Token used for microservice authorization -->
         <jwt.shared.key>secret</jwt.shared.key>
         <jwt.issuer>http://wasdev.net</jwt.issuer>
-        
+
         <!-- Optional Twitter configuration -->
         <!-- IMPORTANT. -->
         <!-- Replace the CHANGE_ME values with valid twitter generated keys/secrets/tokens. -->
@@ -108,35 +108,35 @@
         <!-- The user access key/secret are only required for tweeting. -->
         <!-- These values can be obtained from a valid twitter account application to be used on behalf of the Gifts application. -->
         <!-- Steps for setting up and obtaining the needed values: -->
-        <!-- a. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a 
+        <!-- a. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a
                 valid twitter account. This account will be used on behalf of the Acme Gifts application.
                 NOTE: Be sure to fill in the 'Callback URL' section when creating the application. The entry can be a dummy URL.
                 If the application exists already, go to the 'Settings' tab and make sure something was
                 specified in the 'Callback URL' section. -->
         <!-- b. Under the Details tab, modify the access level to 'Read, write, and direct messages'. -->
         <!-- c. Under the 'Key and Access Tokens' tab, generate access token/secret. -->
-        <!-- d. Replace CHANGE_ME with the consumer key/secret and the access 
+        <!-- d. Replace CHANGE_ME with the consumer key/secret and the access
             token/secret generated values. -->
         <twitter.app.consumer.key>CHANGE_ME</twitter.app.consumer.key>
         <twitter.app.consumer.secret>CHANGE_ME</twitter.app.consumer.secret>
         <twitter.user.access.token>CHANGE_ME</twitter.user.access.token>
         <twitter.user.access.secret>CHANGE_ME</twitter.user.access.secret>
-        
+
     </properties>
 
     <repositories>
-      <!-- This repository contains the open-liberty preview -->
-      <repository>
-        <id>openliberty-repo</id>
-        <name>openliberty-repo</name>
-        <url>http://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/wasliberty-open-liberty/</url>
-      </repository>
-      <!-- This repository contains microprofile pre-release specifications -->
-      <repository>
-        <id>eclipse-repo</id>
-        <name>eclipse-repo</name>
-        <url>https://repo.eclipse.org/content/groups/releases/</url>
-      </repository>
+        <!-- This repository contains the open-liberty preview -->
+        <repository>
+            <id>openliberty-repo</id>
+            <name>openliberty-repo</name>
+            <url>http://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/wasliberty-open-liberty/</url>
+        </repository>
+        <!-- This repository contains microprofile pre-release specifications -->
+        <repository>
+            <id>eclipse-repo</id>
+            <name>eclipse-repo</name>
+            <url>https://repo.eclipse.org/content/groups/releases/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -159,19 +159,19 @@
 
             <!-- Pre-release microprofile specifications -->
             <dependency>
-              <groupId>org.eclipse.microprofile.jwt</groupId>
-              <artifactId>microprofile-jwt-auth-api</artifactId>
-              <version>${version.microprofile.api.jwt}</version>
-              <scope>provided</scope>
+                <groupId>org.eclipse.microprofile.jwt</groupId>
+                <artifactId>microprofile-jwt-auth-api</artifactId>
+                <version>${version.microprofile.api.jwt}</version>
+                <scope>provided</scope>
             </dependency>
 
             <!-- Liberty helpers -->
-	          <dependency>
-    	 	      <groupId>com.ibm.websphere.appserver.api</groupId>
-     		      <artifactId>com.ibm.websphere.appserver.api.jwt</artifactId>
-     		      <version>${version.com.ibm.websphere.appserver.api.jwt}</version>
-     	      </dependency>
-            
+            <dependency>
+                <groupId>com.ibm.websphere.appserver.api</groupId>
+                <artifactId>com.ibm.websphere.appserver.api.jwt</artifactId>
+                <version>${version.com.ibm.websphere.appserver.api.jwt}</version>
+            </dependency>
+
             <!-- Database. -->
             <dependency>
                 <groupId>org.mongodb</groupId>
@@ -179,7 +179,7 @@
                 <version>${version.mongodb}</version>
                 <scope>provided</scope>
             </dependency>
-            
+
             <!-- Test -->
             <dependency>
                 <groupId>org.glassfish</groupId>
@@ -193,31 +193,31 @@
                 <version>${version.junit}</version>
                 <scope>test</scope>
             </dependency>
-           <dependency>
-			    <groupId>org.mockito</groupId>
-			    <artifactId>mockito-all</artifactId>
-			    <version>${version.mockito}</version>
-			    <scope>test</scope>
-			</dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-all</artifactId>
+                <version>${version.mockito}</version>
+                <scope>test</scope>
+            </dependency>
             <dependency>
                 <groupId>org.apache.cxf</groupId>
                 <artifactId>cxf-rt-rs-client</artifactId>
                 <version>${version.apache.cxf}</version>
                 <scope>test</scope>
             </dependency>
-        <!-- The following is necessary to read CXF client configuration -->
-        <dependency>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
-          <version>${version.spring.context}</version>
-          <scope>test</scope>
-        </dependency>
-        
+            <!-- The following is necessary to read CXF client configuration -->
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-context</artifactId>
+                <version>${version.spring.context}</version>
+                <scope>test</scope>
+            </dependency>
+
             <dependency>
                 <groupId>org.eclipse.microprofile.config</groupId>
                 <artifactId>microprofile-config-api</artifactId>
                 <version>${version.microprofile.config}</version>
-            </dependency>      
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -291,23 +291,23 @@
                     <version>${version.exec.plugin}</version>
                 </plugin>
                 <plugin>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>keytool-maven-plugin</artifactId>
-                  <version>${version.keytool.plugin}</version>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>keytool-maven-plugin</artifactId>
+                    <version>${version.keytool.plugin}</version>
                 </plugin>
-                
+
                 <!-- Liberty server operations and management. -->
                 <plugin>
                     <groupId>net.wasdev.wlp.maven.plugins</groupId>
                     <artifactId>liberty-maven-plugin</artifactId>
                     <version>${version.liberty.plugin}</version>
                     <configuration>
-                      <assemblyArtifact>
-                        <groupId>io.openliberty</groupId>
-                        <artifactId>openliberty-runtime</artifactId>
-                        <version>${version.liberty}</version>
-                        <type>zip</type>
-                      </assemblyArtifact>
+                        <assemblyArtifact>
+                            <groupId>io.openliberty</groupId>
+                            <artifactId>openliberty-runtime</artifactId>
+                            <version>${version.liberty}</version>
+                            <type>zip</type>
+                        </assemblyArtifact>
                     </configuration>
                 </plugin>
 
@@ -323,12 +323,27 @@
                     <version>${version.failsafe.plugin}</version>
                 </plugin>
                 <plugin>
-			        <groupId>org.apache.maven.plugins</groupId>
-			        <artifactId>maven-jar-plugin</artifactId>
-			        <version>${version.jar.plugin}</version>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>${version.jar.plugin}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <!-- Standardize the code style -->
+            <plugin>
+                <groupId>com.coveo</groupId>
+                <artifactId>fmt-maven-plugin</artifactId>
+                <version>2.0.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>format</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
     <modules>
         <module>shared-keystore</module>
