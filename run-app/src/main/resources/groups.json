@@ -1,0 +1,12 @@
+[
+    {
+        "id": "group1",
+        "name": "Co-workers",
+        "members": ["user1","user2","user3"]
+    },
+    {
+        "id": "group2",
+        "name": "Friends",
+        "members": ["user1","user4","user5"]
+    }
+]

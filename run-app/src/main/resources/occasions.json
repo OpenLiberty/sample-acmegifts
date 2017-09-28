@@ -1,0 +1,74 @@
+[
+    {
+        "id": "occasion1",
+        "date": "year-month-day",
+        "groupId": "group1",
+        "name": "John's Birthday",
+        "organizerId": "user2",
+        "recipientId": "user1",
+        "contributions" : [
+                      {
+                        "userId": "user2",
+                        "amount": 50
+                      },
+                      {
+                        "userId": "user3",
+                        "amount": 100
+                      }
+                    ]
+    },
+    {
+        "id": "occasion2",
+        "date": "year-month-day",
+        "groupId": "group2",
+        "name": "John's Birthday",
+        "organizerId": "user4",
+        "recipientId": "user1",
+        "contributions" : [
+                      {
+                        "userId": "user4",
+                        "amount": 80
+                      },
+                      {
+                        "userId": "user5",
+                        "amount": 60
+                      }
+                    ]
+    },
+    {
+        "id": "occasion3",
+        "date": "year-month-day",
+        "groupId": "group1",
+        "name": "Stacy's Retirement Party",
+        "organizerId": "user1",
+        "recipientId": "user3",
+        "contributions" : [
+                      {
+                        "userId": "user1",
+                        "amount": 50
+                      },
+                      {
+                        "userId": "user2",
+                        "amount": 50
+                      }
+                    ]
+    },
+    {
+        "id": "occasion4",
+        "date": "year-month-day",
+        "groupId": "group2",
+        "name": "Linda's Birthday",
+        "organizerId": "user1",
+        "recipientId": "user4",
+        "contributions" : [
+                      {
+                        "userId": "user1",
+                        "amount": 100
+                      },
+                      {
+                        "userId": "user5",
+                        "amount": 200
+                      }
+                    ]
+    }
+]

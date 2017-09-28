@@ -1,0 +1,238 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>microprofile.gift.demo</groupId>
+        <artifactId>acmeGifts</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>microservice-auth</artifactId>
+    <packaging>war</packaging>
+
+    <properties>
+        <warfile.name>authMicroservice</warfile.name>
+        <server.name>authServer</server.name>
+    </properties>
+
+    <dependencies>
+    	<!-- The shared keystore project contains the keystore that all of the
+    	     Liberty servers will use.  It contains a self-signed certificate
+    	     that is used by SSL and to sign JWTs, as well as the public
+    	     certificate signers for Twitter. -->
+        <dependency>
+            <groupId>microprofile.gift.demo</groupId>
+            <artifactId>shared-keystore</artifactId>
+            <version>${version.shared.keystore}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+        </dependency>
+        <!-- The client is using CXF to communicate with Liberty. -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+        </dependency>
+        <!-- The following is necessary to read CXF client configuration -->
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </dependency>
+        <!-- Liberty helper classes that can be used to build JWTs. -->
+        <dependency>
+          <groupId>com.ibm.websphere.appserver.api</groupId>
+          <artifactId>com.ibm.websphere.appserver.api.jwt</artifactId>
+          <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+	                  <!-- Copy the Auth application to the liberty server -->
+                    <execution>
+                        <id>copy-app-to-liberty</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/liberty/wlp/usr/servers/${server.name}/apps</outputDirectory>
+                            <overwrite>true</overwrite>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${warfile.name}.war</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <!-- Copy the keystore to integration tests for HTTPS -->
+                    <execution>
+                    	<id>copy-keystore-to-integration-test</id>
+                    	<phase>pre-integration-test</phase>
+                    	<goals>
+                    		<goal>copy-resources</goal>
+                    	</goals>
+                    	<configuration>
+                    		<outputDirectory>${basedir}/target/test-classes/truststore</outputDirectory>
+                    		<overwrite>true</overwrite>
+                    		<resources>
+                    			<resource>
+                    				<directory>${project.build.directory}/liberty/wlp/usr/servers/${server.name}/resources/security</directory>
+                    				<includes>
+                    					<include>keystore.jceks</include>
+                    				</includes>
+                    			</resource>
+                    		</resources>
+                    	</configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <!-- Copy the keystore that Liberty will use -->
+                    <execution>
+                        <id>copy-keystore-to-liberty</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                          <artifactItems>
+                            <artifact>
+                              <groupId>microprofile.gift.demo</groupId>
+                              <artifactId>shared-keystore</artifactId>
+                              <type>jar</type>
+                              <overWrite>false</overWrite>
+                              <outputDirectory>${project.build.directory}/liberty/wlp/usr/servers/${server.name}/resources/security</outputDirectory>
+                              <includes>keystore.jceks</includes>
+                            </artifact>
+                          </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- Liberty setup. -->
+            <plugin>
+                <groupId>net.wasdev.wlp.maven.plugins</groupId>
+                <artifactId>liberty-maven-plugin</artifactId>
+                <executions>
+                    <!-- Create the liberty server. -->
+                    <execution>
+                        <id>create-liberty-server</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>create-server</goal>
+                        </goals>
+                    </execution>
+
+                    <!-- Start the server before running the tests. -->
+                    <execution>
+                        <id>start-server</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start-server</goal>
+                        </goals>
+                    </execution>
+
+                     <!-- Stop the server after running the tests. -->
+                    <execution>
+                        <id>stop-server</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop-server</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <serverName>${server.name}</serverName>
+                    <appArchive>${project.build.directory}/${warfile.name}.war</appArchive>
+                    <configFile>${basedir}/src/main/liberty/config/server.xml</configFile>
+                    <bootstrapProperties>
+                        <app.name>${warfile.name}.war</app.name>
+                        <http.port>${auth.http.port}</http.port>
+                        <https.port>${auth.https.port}</https.port>
+                        <jwt.issuer>${jwt.issuer}</jwt.issuer>
+                    </bootstrapProperties>
+                </configuration>
+            </plugin>
+
+            <!-- Integration test execution setup. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>integration-test</phase>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/test/**</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <liberty.test.hostname>${auth.hostname}</liberty.test.hostname>
+                                <liberty.test.port>${auth.http.port}</liberty.test.port>
+                                <liberty.test.ssl.port>${auth.https.port}</liberty.test.ssl.port>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify-results</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <summaryFile>${project.build.directory}/test-reports/acme-gifts/failsafe-summary.xml</summaryFile>
+                    <reportsDirectory>${project.build.directory}/test-reports/acme-gifts</reportsDirectory>
+                </configuration>
+            </plugin>
+
+            <!-- Dep to run integration tests. -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <id>default-test</id>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/test/**</exclude>
+                            </excludes>
+                            <reportsDirectory>${project.build.directory}/test-reports/unit</reportsDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                      xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>microprofile.gift.demo</groupId>
+        <artifactId>acmeGifts</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>microservice-occasion</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>war</packaging>
+
+    <properties>
+        <app.name>OccasionsMicroservice</app.name>
+        <warfile.name>${project.artifactId}-${project.version}</warfile.name>
+        <testPath>net/wasdev/samples/microProfile/occasions_test</testPath>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+
+        <!-- Liberty server properties -->
+        <wlpServerName>OccasionsServer</wlpServerName>
+
+        <!--This is set in the ibm-web-ext.xml file -->
+        <warContext>occasions</warContext>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>runnable</id>
+            <properties>
+                <package.file>${project.build.directory}/${app.name}.jar</package.file>
+                <packaging.type>runnable</packaging.type>
+            </properties>
+        </profile>
+        <profile>
+            <id>liberty-test</id>
+
+            <!--Do not start the server unless testing-->
+
+            <activation>
+                <property>
+                    <name>!skipTests</name>
+                </property>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>net.wasdev.wlp.maven.plugins</groupId>
+                        <artifactId>liberty-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>start-server</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>start-server</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>stop-server</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>stop-server</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>non-windows</id>
+            <activation>
+                <os>
+                    <family>!Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <script.extension>.sh</script.extension>
+            </properties>
+        </profile>
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>Windows</family>
+                </os>
+            </activation>
+            <properties>
+                <script.extension>.bat</script.extension>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencies>
+        <!-- Keystore used for SSL -->
+        <dependency>
+            <groupId>microprofile.gift.demo</groupId>
+            <artifactId>shared-keystore</artifactId>
+            <version>${version.shared.keystore}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- for sending system properties to junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        
+        <!-- Mockito -->
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-all</artifactId>
+		    <scope>test</scope>
+		</dependency>
+	
+        <!-- org.glassfish.jersey.client.JerseyClientBuilder isn't picked up without this -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- The following is necessary to read CXF client configuration -->
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+        </dependency>
+
+        <!-- Needed for json things -->
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- MongoDB -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+        </dependency>
+
+        <!-- List utils -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.1</version>
+        </dependency>
+        
+        <!-- JavaEE -->
+        <dependency>
+	     	<groupId>javax</groupId>
+	     	<artifactId>javaee-api</artifactId>
+	     </dependency>
+	     
+		<!-- JSON Web Tokens -->
+		<dependency>
+     		<groupId>com.ibm.websphere.appserver.api</groupId>
+     		<artifactId>com.ibm.websphere.appserver.api.jwt</artifactId>
+        <scope>provided</scope>
+    </dependency>
+    
+        <dependency>                                                                                                           
+           <groupId>org.eclipse.microprofile.fault.tolerance</groupId>                                                         
+           <artifactId>microprofile-fault-tolerance-api</artifactId>                                                           
+           <version>${version.microprofile.faulttolerance}</version>                                                                                             
+           <scope>provided</scope>  
+        </dependency>     
+        
+        <dependency>
+            <groupId>org.eclipse.microprofile.config</groupId>
+            <artifactId>microprofile-config-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+		
+	    <dependency>
+          <groupId>org.eclipse.microprofile.jwt</groupId>
+          <artifactId>microprofile-jwt-auth-api</artifactId>
+          <scope>provided</scope>
+        </dependency>                                                                                                     		
+		
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <packagingExcludes>pom.xml</packagingExcludes>
+                </configuration>
+            </plugin>
+            <!-- Plugin to run unit tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <systemPropertyVariables>
+                        <buildDirectory>${project.build.directory}</buildDirectory>
+                    </systemPropertyVariables>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <id>default-test</id>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/${testPath}/**</exclude>
+                            </excludes>
+                            <reportsDirectory>${project.build.directory}/test-reports/unit</reportsDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-server-files</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeArtifactIds>server-snippet</includeArtifactIds>
+                            <prependGroupId>true</prependGroupId>
+                            <outputDirectory>${project.build.directory}/wlp/usr/servers/${wlpServerName}/configDropins/defaults</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-mongodb-dependency</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-dependencies</goal>
+                        </goals>
+                        <configuration>
+                            <includeArtifactIds>mongo-java-driver</includeArtifactIds>
+                            <outputDirectory>${project.build.directory}/wlp/usr/shared/resources/</outputDirectory>
+                            <stripVersion>true</stripVersion>
+                        </configuration>
+                    </execution>
+                    <!-- Copy the keystore that Liberty will use -->
+                    <execution>
+                        <id>copy-keystore-to-liberty</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                          <artifactItems>
+                            <artifact>
+                              <groupId>microprofile.gift.demo</groupId>
+                              <artifactId>shared-keystore</artifactId>
+                              <type>jar</type>
+                              <overWrite>false</overWrite>
+                              <outputDirectory>${project.build.directory}/wlp/usr/servers/${wlpServerName}/resources/security</outputDirectory>
+                              <includes>keystore.jceks</includes>
+                            </artifact>
+                          </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-app</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/wlp/usr/servers/${wlpServerName}/apps</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>${project.build.directory}</directory>
+                                    <includes>
+                                        <include>${warfile.name}.war</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <!-- Copy the keystore to integration tests for HTTPS -->
+                    <execution>
+                    	<id>copy-keystore-to-integration-test</id>
+                    	<phase>pre-integration-test</phase>
+                    	<goals>
+                    		<goal>copy-resources</goal>
+                    	</goals>
+                    	<configuration>
+                    		<outputDirectory>${basedir}/target/test-classes/truststore</outputDirectory>
+                    		<overwrite>true</overwrite>
+                    		<resources>
+                    			<resource>
+                    				<directory>${project.build.directory}/wlp/usr/servers/${wlpServerName}/resources/security</directory>
+                    				<includes>
+                    					<include>keystore.jceks</include>
+                    				</includes>
+                    			</resource>
+                    		</resources>
+                    	</configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Enable liberty-maven plugin -->
+            <plugin>
+                <groupId>net.wasdev.wlp.maven.plugins</groupId>
+                <artifactId>liberty-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverName>${wlpServerName}</serverName>
+                    <assemblyInstallDirectory>${project.build.directory}</assemblyInstallDirectory>
+                    <configFile>src/main/resources/liberty/config/server.xml</configFile>
+                    <packageFile>${package.file}</packageFile>
+                    <include>${packaging.type}</include>
+                    <bootstrapProperties>
+                        <app.name>${warfile.name}.war</app.name>
+                        <http.port>${occasion.http.port}</http.port>
+                        <https.port>${occasion.https.port}</https.port>
+                        <mongo.hostname>${occasion.mongo.hostname}</mongo.hostname>
+                        <mongo.port>${occasion.mongo.port}</mongo.port>
+                        <user.service.hostname>${user.hostname}</user.service.hostname>
+                        <user.service.port>${user.https.port}</user.service.port>
+                        <group.service.hostname>${group.hostname}</group.service.hostname>
+                    	<group.service.port>${group.https.port}</group.service.port>
+                    	<notification.service.hostname>${notification.hostname}</notification.service.hostname>
+                    	<notification.service.port>${notification.http.port}</notification.service.port>
+                    	<notification_1_1.service.hostname>${notification_1_1.hostname}</notification_1_1.service.hostname>
+                    	<notification_1_1.service.port>${notification_1_1.http.port}</notification_1_1.service.port>
+                      <jwt.issuer>${jwt.issuer}</jwt.issuer>
+                    </bootstrapProperties>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>intall-liberty</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>install-server</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Plugin to run functional tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>integration-test</phase>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/${testPath}/**</include>
+                            </includes>
+                            <systemPropertyVariables>
+                                <java.util.logging.config.file>${project.build.directory}/test-classes/logging.properties</java.util.logging.config.file>
+                                <liberty.test.hostname>${occasion.hostname}</liberty.test.hostname>
+                                <liberty.test.port>${occasion.http.port}</liberty.test.port>
+                                <liberty.test.ssl.port>${occasion.https.port}</liberty.test.ssl.port>
+                                <mongo.test.hostname>${occasion.mongo.hostname}</mongo.test.hostname>
+                                <mongo.test.port>${occasion.mongo.port}</mongo.test.port>
+                                <war.name>${warContext}</war.name>
+                                <jwt.issuer>${jwt.issuer}</jwt.issuer>
+                            </systemPropertyVariables>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>verify-results</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <summaryFile>${project.build.directory}/test-reports/${testPath}/failsafe-summary.xml</summaryFile>
+                    <reportsDirectory>${project.build.directory}/test-reports/${testPath}</reportsDirectory>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>start-database</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>../run-app/startMongo${script.extension}</executable>
+                            <arguments>
+                                <argument>occasionDB</argument>
+                                <argument>${occasion.mongo.port}</argument>
+                                <argument>${mongo.path}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>stop-database</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>../run-app/stopMongo${script.extension}</executable>
+                            <arguments>
+                                <argument>occasionDB</argument>
+                                <argument>${mongo.path}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -1,0 +1,52 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<server description="Auth server">
+    <featureManager>
+        <feature>microProfile-1.0</feature>
+        <feature>mpConfig-1.1</feature>
+        <feature>jwt-1.0</feature>
+        <feature>ssl-1.0</feature>
+    </featureManager>
+
+    <!-- This is the keystore that will be used by SSL and by JWT. 
+    	 The keystore is built using the maven keytool plugin -->
+    <keyStore id="defaultKeyStore" location="keystore.jceks"
+              type="JCEKS" password="secret" />
+
+    <!-- The HTTP ports that the application will use. -->
+    <httpEndpoint id="defaultHttpEndpoint" host="*"
+                  httpPort="${http.port}" httpsPort="${https.port}"/>
+
+	<!-- The auth application.  The application requires SSL. -->
+    <webApplication location="${app.name}" contextRoot="/"/>
+    
+    <!-- This configuration allows cross-origin HTTP requests, such
+         as those from the front-end component (different port). -->
+    <cors domain="/auth"
+          allowedOrigins="*"
+          allowedMethods="GET, DELETE, POST, PUT"
+          allowedHeaders="Accept, Content-Type, Authorization"
+          maxAge="3600" />
+
+    <!-- This JWT builder is currently un-used.  It could be used to build
+         JWT for a logged-in user.  The resulting JWT would be MP JWT
+         compliant if the code using it adds valid group and user names. 
+    	 The JWT is signed using the RS256 algorithm, using the default
+    	 keystore defined above. -->
+    <jwtBuilder id="jwtAuthBuilder" issuer="${jwt.issuer}" expiry="24h"
+                keyAlias="default" audiences="acmeGifts" jti="true"/>
+
+	<!-- This JWT builder is used to build the login JWT.  It differs
+	     only in expiration time from the JWT builder above.  The
+	     code that uses this JWT should only add the 'login' group
+	     to the JWT.  There is no way to specify the group here. -->
+    <jwtBuilder id="jwtAuthLoginBuilder" issuer="${jwt.issuer}" expiry="1h"
+                keyAlias="default" audiences="acmeGifts" jti="true"/>
+</server>

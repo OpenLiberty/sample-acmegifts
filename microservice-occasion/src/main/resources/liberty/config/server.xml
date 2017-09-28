@@ -1,0 +1,57 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<server description="Occasions Liberty Server">
+
+    <featureManager>
+        <feature>microProfile-1.0</feature>
+        <feature>mpConfig-1.1</feature>
+        <feature>mpFaultTolerance-1.0</feature>
+        <feature>mpJwt-1.0</feature>
+        <feature>ssl-1.0</feature>
+    </featureManager>
+
+    <!-- The keystore is built using the maven keytool plugin -->
+    <keyStore id="defaultKeyStore" location="keystore.jceks"
+              type="JCEKS" password="secret" />
+
+    <httpEndpoint httpPort="${http.port}" 
+                  httpsPort="${https.port}" 
+                  id="defaultHttpEndpoint"/>
+
+    <webApplication location="${app.name}" contextRoot="/occasions">
+        <classloader commonLibraryRef="mongodriver"/>
+    </webApplication>
+
+     <cors domain="/occasions"
+           allowedOrigins="*"
+           allowedMethods="GET, DELETE, POST, PUT"
+                        allowedHeaders="Accept, Content-Type, Authorization"
+           maxAge="3600" />
+
+    <!-- Application logging -->
+    <logging traceSpecification="net.wasdev.samples.microProfile.occasions.*=FINER" />
+
+    <!-- MongoDB config -->
+    <library id="mongodriver">
+        <file name="${shared.resource.dir}/mongo-java-driver.jar"/>
+    </library>
+
+    <!-- The JWT built here is to allow the Orchestrator to
+         asynchronously communicate with the other microservices. -->
+    <jwtBuilder id="jwtOccasionBuilder" issuer="${jwt.issuer}" expiry="1h"
+                keyAlias="default" audiences="acmeGifts"/>
+
+    <!-- To facilitate testing the occasion service in absence of the user service, this
+         JWT consumer does not obtain the public key from the user service.  For an
+         example of how to configure JWT using JWK, see the user service. -->
+    <mpJwt id="jwtOccasionConsumer" issuer="${jwt.issuer}"
+           keyName="default" audiences="acmeGifts" />
+                
+</server>
