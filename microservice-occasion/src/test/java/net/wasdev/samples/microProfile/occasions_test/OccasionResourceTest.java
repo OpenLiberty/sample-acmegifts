@@ -599,29 +599,6 @@ public class OccasionResourceTest {
   }
 
   /**
-   * Helper method for testing request success/failure
-   *
-   * @param endpoint the resource to call
-   * @param requestType the http method to invoke
-   * @param expectedOutput the response string we expect from the server to pass the test
-   * @param expectedResponseCode the response code we expect from the server to pass the test
-   * @return the json response public String testEndpointReturnJson(String endpoint, String
-   *     requestType, String expectedOutput, int expectedResponseCode) { String method =
-   *     "testEndpointReturnJson"; logger.entering(clazz, method); logger.fine(" endpoint: " +
-   *     endpoint); logger.fine(" requestType: " + requestType); logger.fine(" expectedOutput: " +
-   *     expectedOutput); logger.fine(" expectedResponseCode: " + expectedResponseCode);
-   *     <p>// build the url String war = System.getProperty("war.name"); String url = "https://" +
-   *     libertyHostname + ":" + libertySslPort + "/" + war + endpoint; logger.fine("url: " + url);
-   *     <p>// make the call and check the response Response response = sendRequest(url,
-   *     requestType); int responseCode = response.getStatus(); logger.fine("responseCode: " +
-   *     responseCode); assertTrue("Incorrect response code: " + responseCode + "\nexpected response
-   *     code: " + expectedResponseCode, responseCode == expectedResponseCode);
-   *     <p>String jsonResponse = response.readEntity(String.class);
-   *     <p>logger.exiting(clazz, method, "\n\n- - - - - Exiting " + method + " with: " +
-   *     jsonResponse + "\n\n"); return jsonResponse; }
-   */
-
-  /**
    * Helper method for testing requests that are supposed to succeed
    *
    * @param endpoint the resource to call
