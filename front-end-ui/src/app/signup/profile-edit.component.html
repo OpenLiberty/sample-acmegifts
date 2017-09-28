@@ -1,0 +1,100 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<div class="body-background">
+  <div [hidden]="eventMessage === null" class="eventBoxError">
+    <div class="fontDark-16Px" style="margin-top:12px; c">
+      <button class="closeEventBoxButton floatRight" (click)="onCloseEventBox()">&#10006;</button> 
+      <img src="assets/images/icon_error.svg" height="16" width="16" style="margin-right:12px;">
+      {{eventMessage}}
+    </div>
+  </div>
+  <br> <br> <br>
+  <div class="boxNoMarginWidth-487Px textAlignCenter">
+    <div class="profile-header-box"></div>
+    <br>
+    <div class="boxBackgroundWhite">
+      <br> <br>
+      <div class="boxNoMarginWidth-311Px">
+        <img class="floatLeft" src="assets/images/modal--img_left.svg" height="50" width="50">
+        <span class="fontDark-24Px">Edit Profile</span>
+        <img class="floatRight" src="assets/images/modal--img_right.svg" height="50" width="50">
+      </div>
+      <br><br><br>
+      <div>
+        <form (ngSubmit)="onUpdateUser()" #profileEditForm="ngForm">
+          <div class="form-group inlineBlock textAlignLeft">
+            <label for="firstname" class="fontDark-16Px">First Name<br>
+            </label> <input type="text" class="form-control" id="firstname" required [(ngModel)]="user.firstName"
+              name="firstname" #firstname="ngModel">
+            <div [hidden]="firstname.valid || firstname.pristine" class="alert alert-danger fontDarkPink-16Px">First
+              name is required</div>
+          </div>
+          <br><br>
+          <div class="form-group inlineBlock textAlignLeft">
+            <label for="lastname" class="fontDark-16Px">Last Name<br>
+            </label> <input type="text" class="form-control" id="lastname" required [(ngModel)]="user.lastName"
+              name="lastname" #lastname="ngModel">
+            <div [hidden]="lastname.valid || lastname.pristine" class="alert alert-danger fontDarkPink-16Px">Last
+              name is required</div>
+          </div>
+          <br><br>
+          <div class="form-group inlineBlock textAlignLeft">
+            <label for="username" class="fontDark-16Px">Username<br>
+            </label> <input type="text" class="form-control" id="username" required [(ngModel)]="user.userName"
+              name="username" [disabled]="user.isTwitterLogin === true" class="inputDisabledOpacityReduced" #username="ngModel">
+            <div [hidden]="username.valid || username.pristine" class="alert alert-danger fontDarkPink-16Px">Username
+              is required</div>
+          </div>
+          <br><br>
+          <div class="form-group inlineBlock textAlignLeft">
+            <label for="password" class="fontDark-16Px">Password<br>
+            </label> <input type="password" class="form-control" id="password" [(ngModel)]="user.password"
+              name="password" [disabled]="user.isTwitterLogin === true" class="inputDisabledOpacityReduced" #password="ngModel">
+          </div>
+          <br><br>
+          <div class="form-group inlineBlock textAlignLeft">
+            <label for="wishlist" class="fontDark-16Px">Wishlist URL<br>
+            </label> <input type="text" class="form-control" id="wishlist" required [(ngModel)]="user.wishListLink"
+              name="wishlist" #wishlist="ngModel">
+            <div [hidden]="wishlist.valid || wishlist.pristine" class="alert alert-danger fontDarkPink-16Px">Wishlist
+              URL is required</div>
+          </div>
+          <br><br>
+          <div class="form-group inlineBlock textAlignLeft">
+            <label for="twitter" class="fontDark-16Px">Twitter Handle<br>
+            </label> <input type="text" class="form-control" id="twitter" [(ngModel)]="user.twitterHandle"
+              name="twitter" [disabled]="user.isTwitterLogin === true" class="inputDisabledOpacityReduced" #twitter="ngModel">
+            <div [hidden]="twitter.valid || twitter.pristine" class="alert alert-danger fontDarkPink-16Px">Twitter
+              Handle is required</div>
+          </div>
+          <br><br>
+          <div class="boxNoMarginWidth-311Px">
+            <button type="button" class="buttonBackgroundTransparentHeight-44px fontRed-16Px floatLeft" 
+                (click)="onDeleteProfile()">Delete profile</button>
+            <br><br><br>
+            <button type="button" class="buttonBackgroundTransparentHeight-44px floatLeft fontDark-16Px"
+              (click)="onCancel()">Cancel</button>
+            <button type="submit" class="buttonBackgroundOrange floatRight fontDark-16Px btn btn-success"
+              [disabled]="!profileEditForm.form.valid">Edit profile</button>
+          </div>
+        </form>
+      </div>
+      <br> <br>
+    </div>
+    <br> <br> <br>
+  </div>
+  <div class="footer-margin">
+    <div class="footer">
+      <div class="footer-acme-gift floatLeft">ACME GIFTS</div>
+      <div class="footer-acme-gift floatRight">"Gift Box" image by Oksana Latysheva licensed
+        under CC By 3.0 US</div>
+    </div>
+  </div>
+</div>

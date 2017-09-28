@@ -1,0 +1,45 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<div class="body-background">
+  <div [hidden]="eventMessageError === null" class="eventBoxError">
+    <div class="fontDark-16Px" style="margin-top:14px; margin-left:20px;">
+      <button class="closeEventBoxButton floatRight" (click)="onCloseEventBox()">&#10006;</button> 
+      <img src="assets/images/icon_error.svg" height="16" width="16" style="margin-right:12px;">
+      {{eventMessageError}}
+    </div>
+  </div>
+  <div class="body-margin">
+    <br> <br>
+    <form (ngSubmit)="onCreateGroup()" #loginForm="ngForm">
+      <div>
+        <label class="fontXlightGray-24Px floatLeft">Create Group</label>
+        <button type="submit" class="buttonBackgroundOrange fontDark-16Px floatRight btn btn-success"
+          [disabled]="!loginForm.form.valid">Create Group</button>
+        <button type="button" class="buttonBackgroundTransparent fontWhite-16Px floatRight" (click)="onCancel()">Cancel</button>
+      </div>
+      <br> <br> <br>
+      <hr class="body-line-separator">
+      <div class="form-group">
+        <p class="fontXLightGray-16Px">Group Name</p>
+        <input type="text" class="form-control" id="name" required [(ngModel)]="group.name" name="name"
+          minlength="1" #name="ngModel">
+      </div>
+      <br>
+    </form>
+    <br>
+    <hr class="body-line-separator">
+    <br>
+  </div>
+  <div class="footer-margin">
+    <div class="footer">
+      <div class="footer-acme-gift">ACME GIFTS</div>
+    </div>
+  </div>
+</div>

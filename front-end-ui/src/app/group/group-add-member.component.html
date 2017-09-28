@@ -1,0 +1,43 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<div class="body-background">
+  <div [hidden]="eventMessageError === null" class="eventBoxError">
+    <div class="fontDark-16Px" style="margin-top:14px; margin-left:20px;">
+      <button class="closeEventBoxButton floatRight" (click)="onCloseEventBox()">&#10006;</button> 
+      <img src="assets/images/icon_error.svg" height="16" width="16" style="margin-right:12px;">
+      {{eventMessageError}}
+    </div>
+  </div>
+  <div class="body-margin">
+    <br> <br>
+    <label class="fontXlightGray-24Px floatLeft">Add Member</label> 
+    <button type="button" class="buttonBackgroundTransparent fontWhite-16Px floatRight" (click)="onCancel()">Cancel</button>
+    <br><br>
+    <hr class="body-line-separator">
+    
+    <div>
+      <p class="fontXLightGray-16Px">Members</p>
+      <input id="name" type="text" placeholder="Search..." [(ngModel)]=query (keyup)=onFilter()>
+    </div>
+    <div class="optionList-select" *ngIf="matchedOptions.length > 0">
+      <ul class="ulNoBulletNoMargin" *ngFor="let match of matchedOptions">
+        <li><a (click)="onAddMember(match)">{{match}}</a></li>
+      </ul>
+    </div>
+    <br> <br> <br>
+    <hr class="body-line-separator">
+    <br>
+  </div>
+  <div class="footer-margin">
+    <div class="footer">
+      <div class="footer-acme-gift">ACME GIFTS</div>
+    </div>
+  </div>
+</div>
