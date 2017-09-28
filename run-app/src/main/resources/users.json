@@ -1,0 +1,47 @@
+[
+    {
+        "id": "user1",
+        "firstName": "John",
+        "lastName": "Smith",
+        "userName": "jsmith",
+        "twitterHandle": "@jsmith",
+        "wishListLink": "http://my.wishlist.com/jsmith",
+        "password": "jsmith"
+    },
+    {
+        "id": "user2",
+        "firstName": "Fred",
+        "lastName": "Murphy",
+        "userName": "fmurphy",
+        "twitterHandle": "@fmurphy",
+        "wishListLink": "http://my.wishlist.com/fmurphy",
+        "password": "fmurphy"
+    },
+    {
+        "id": "user3",
+        "firstName": "Stacy",
+        "lastName": "White",
+        "userName": "swhite",
+        "twitterHandle": "@swhite",
+        "wishListLink": "http://my.wishlist.com/swhite",
+        "password": "swhite"
+    },
+    {
+        "id": "user4",
+        "firstName": "Linda",
+        "lastName": "Williams",
+        "userName": "lwilliams",
+        "twitterHandle": "@lwilliams",
+        "wishListLink": "http://my.wishlist.com/lwilliams",
+        "password": "lwilliams"
+    },
+    {
+        "id": "user5",
+        "firstName": "Allen",
+        "lastName": "Grant",
+        "userName": "agrant",
+        "twitterHandle": "@agrant",
+        "wishListLink": "http://my.wishlist.com/agrant",
+        "password": "agrant"
+    }
+]
