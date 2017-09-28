@@ -1,0 +1,26 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<div *ngIf="this.userName != null" class="header">
+  <div class="fontDarkSpacing89-16px headerMargingLeft floatLeft">ACME GIFTS</div>
+  <div class="headerMargingRightMenu floatRight">
+    <button md-icon-button [mdMenuTriggerFor]="menu">
+      <md-icon svgIcon="hamburger"></md-icon>
+    </button>
+    <md-menu #menu="mdMenu">
+      <button (click)="onLogout()" md-menu-item>
+        <span>Logout</span>
+      </button>
+      <button (click)="onEditProfile()" md-menu-item>
+        <span>Edit Profile</span>
+      </button>
+    </md-menu>
+  </div>
+  <div class="fontDark-16Px headerMargingRight floatRight">Hi, {{this.userName}}!</div>
+</div>
