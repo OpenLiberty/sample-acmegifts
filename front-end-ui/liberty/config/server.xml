@@ -1,0 +1,16 @@
+<server description="UI server">
+    <featureManager>
+        <feature>microProfile-1.0</feature>
+        <feature>ssl-1.0</feature>
+    </featureManager>
+
+    <!-- The keystore for SSL is built using the maven keytool plugin -->
+    <keyStore id="defaultKeyStore" location="keystore.jceks"
+              type="JCEKS" password="secret" />
+
+    <httpEndpoint httpPort="${server.http.port}" httpsPort="${server.https.port}" id="defaultHttpEndpoint" />
+    
+    <webApplication location="${application.name}" contextRoot="/">
+	</webApplication>
+	
+</server>

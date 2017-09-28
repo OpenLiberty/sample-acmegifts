@@ -1,0 +1,259 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <groupId>microprofile.gift.demo</groupId>
+    <artifactId>acmeGifts</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <artifactId>front-end-ui</artifactId>
+  <packaging>war</packaging>
+  
+  <properties>
+    <!-- Liberty server properties -->
+    <server.name>UIServer</server.name>
+      
+    <!-- Application properties -->
+    <warfile.name>UIService</warfile.name>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>microprofile.gift.demo</groupId>
+      <artifactId>shared-keystore</artifactId>
+      <version>${version.shared.keystore}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+      
+      
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <!-- Copy and filter the typescript source to resolve variables. -->
+          <execution>
+            <id>filter-typescript</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/npm_build/src</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${basedir}/src</directory>
+                  <filtering>true</filtering>
+                  <!-- Exclude the angular target directory -->
+                  <excludes>
+                    <exclude>main</exclude>
+                  </excludes>
+                </resource>
+              </resources>
+              <!-- Add to the auto-excludes (png) -->
+              <nonFilteredFileExtensions>
+                <nonFilteredFileExtension>svg</nonFilteredFileExtension>
+              </nonFilteredFileExtensions>
+            </configuration>
+          </execution>
+
+          <!-- Add the web.xml to the WEB-INF directory.
+               This augments what was built by node/npm -->
+          <execution>
+            <id>copy-webxml</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${basedir}/src/main/webapp/WEB-INF</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${basedir}/liberty/app</directory>
+                  <includes>
+                    <include>web.xml</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          
+          <!-- Copy the UI application to the liberty server -->
+          <execution>
+            <id>copy-app-to-liberty</id>
+            <phase>package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/liberty/wlp/usr/servers/${server.name}/apps</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}</directory>
+                  <includes>
+                    <include>${warfile.name}.war</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <!-- Copy the keystore that Liberty will use -->
+          <execution>
+            <id>copy-keystore-to-liberty</id>
+            <phase>package</phase>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifact>
+                  <groupId>microprofile.gift.demo</groupId>
+                  <artifactId>shared-keystore</artifactId>
+                  <type>jar</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}/liberty/wlp/usr/servers/${server.name}/resources/security</outputDirectory>
+                  <includes>keystore.jceks</includes>
+                </artifact>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <!-- Liberty setup. -->
+      <plugin>
+        <groupId>net.wasdev.wlp.maven.plugins</groupId>
+        <artifactId>liberty-maven-plugin</artifactId>
+        <executions>
+          <!-- Create the liberty server. -->
+          <execution>
+            <id>create-liberty-server</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>create-server</goal>
+            </goals>
+          </execution>
+          
+          <!-- Start the server before running the tests. -->
+          <execution>
+            <id>start-server</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>start-server</goal>
+            </goals>
+          </execution>
+          
+          <!-- Stop the server after running the tests. -->
+          <execution>
+            <id>stop-server</id>
+            <phase>post-integration-test</phase>
+            <goals>
+              <goal>stop-server</goal>
+            </goals>
+          </execution>
+        </executions>
+        
+        <configuration>
+          <serverName>${server.name}</serverName>
+          <appArchive>${project.build.directory}/${warfile.name}.war</appArchive>
+          <configFile>${basedir}/liberty/config/server.xml</configFile>
+          <bootstrapProperties>
+            <server.http.port>${frontend.http.port}</server.http.port>
+            <server.https.port>${frontend.https.port}</server.https.port>
+            <application.name>${warfile.name}.war</application.name>
+          </bootstrapProperties>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-clean-plugin</artifactId>
+	      <version>3.0.0</version>
+	      <configuration>
+	        <failOnError>false</failOnError>
+	        <filesets>
+	          <fileset>
+	            <directory>.</directory>
+	            <includes>
+	              <include>src/main/webapp/**/*.*</include>
+	            </includes>
+	            <followSymlinks>false</followSymlinks>
+	          </fileset>
+	        </filesets>
+	      </configuration>
+	    </plugin>
+	    
+	    <plugin>
+		    <groupId>com.github.eirslett</groupId>
+		    <artifactId>frontend-maven-plugin</artifactId>
+		    <version>1.5</version>
+		    <executions>
+		      <execution>
+				    <id>install node and npm</id>
+				    <goals>
+				      <goal>install-node-and-npm</goal>
+				    </goals>
+				    <phase>generate-resources</phase>
+				  </execution>
+				  <execution>
+					  <id>npm install</id>
+					  <goals>
+					    <goal>npm</goal>
+					  </goals>
+					
+					  <phase>generate-resources</phase>
+					  
+					</execution>
+					
+					<execution>
+			      <id>npm run build</id>
+			      <goals>
+			        <goal>npm</goal>
+			      </goals>
+			      <configuration>
+			        <arguments>run build</arguments>
+			      </configuration>
+					</execution>
+					
+					<execution>
+			      <id>npm run lint</id>
+			      <goals>
+			        <goal>npm</goal>
+			      </goals>
+			      <configuration>
+			        <arguments>run lint</arguments>
+			      </configuration>
+					</execution>
+					
+					
+			  </executions>
+			  <configuration>
+			    <nodeVersion>v8.3.0</nodeVersion>
+			    <npmVersion>5.3.0</npmVersion>
+          <workingDirectory>npm_build</workingDirectory>
+			  </configuration>
+		  </plugin>
+        
+    </plugins>
+  </build>
+</project>
