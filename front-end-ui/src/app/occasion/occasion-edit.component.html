@@ -1,0 +1,72 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<div class="body-background">
+    <div [hidden]="eventMessage === null" class="eventBoxError">
+        <div class="fontDark-16Px" style="margin-top:14px; margin-left:20px;">
+            <button class="closeEventBoxButton floatRight" (click)="onCloseEventBox()">&#10006;</button> 
+            <img src="assets/images/icon_error.svg" height="16" width="16" style="margin-right:12px;">
+            {{eventMessage}}
+        </div>
+    </div>
+    <br> <br> <br>
+    <div class="boxNoMarginWidth-487Px textAlignCenter">
+        <div class="profile-header-box"></div>
+        <br>
+        <div class="boxBackgroundWhiteHeight-626Px">
+            <br> <br>
+            <div class="boxNoMarginWidth-311Px">
+                <img class="floatLeft" src="assets/images/modal--img_left.svg" height="50" width="50">
+                <span class="fontDark-24Px">Edit Occasion</span>
+                <img class="floatRight" src="assets/images/modal--img_right.svg" height="50" width="50">
+            </div>
+            <br><br><br>
+            <div>
+                <form (ngSubmit)="onUpdateOccasion()" #updateOccasionForm="ngForm">
+                     <div class="form-group inlineBlock textAlignLeft">
+                        <label for="occasionName" class="fontDark-16Px">Occasion title<br></label>
+                        <input type="text" ngModel="{{occasion.name}}" [disabled]="disable" class="form-control inputDisabledOpacityReduced" id="occasionName" placeholder="{{occasion.name}}" required [(ngModel)]="occasion.name" name="occasionName" #occasionName="ngModel">
+                        <div [hidden]="occasionName.valid || occasionName.pristine" class="alert alert-danger fontDarkPink-16Px">Occasion title is required</div>
+                    </div>
+                    <br><br>
+                    <div class="form-group inlineBlock textAlignLeft">
+                        <label for="date" class="fontDark-16Px">Date<br></label>
+                        <input type="text" class="form-control inputWidth-173px inputDisabledOpacityReduced" id="date" [disabled]="disable" placeholder="yyyy-mm-dd" pattern="\d\d\d\d-[0-1]\d-[0-3]\d" name="date" required [(ngModel)]="occasion.date" #date="ngModel">
+                    </div>
+                    <div class="form-group inlineBlock textAlignLeft">
+                        <label for="contribution" class="fontDark-16Px">Gift amount<br></label>
+                        <input type="text" name="contribution" pattern="0$|0.00$|^([1-9]{1}\d{0,11}\.?\d{0,2})" class="form-control inputWidth-125px" id="contribution" ngModel="{{contributionAmount}}" required [(ngModel)]="contributionAmount" #contribution="ngModel">
+                    </div>
+                    <div [hidden]="date.valid || date.pristine" class="alert alert-danger fontDarkPink-16Px">Valid date is required (yyyy-mm-dd)</div>
+                    <div [hidden]="contribution.valid || contribution.pristine" class="alert alert-danger fontDarkPink-16Px">Valid gift amount (i.e. 0, 1, 1.99) is required</div> 
+                    <br><br>
+                    <div class="form-group inlineBlock textAlignLeft">
+                        <label for="recipient" class="fontDark-16Px">Recipient<br></label>
+                        <select required [(ngModel)]="occasion.recipientId" name="recipient" [disabled]="disable" #recipient="ngModel" class="selectBoxWidth-311Px fontDark-16Px selectDisabledOpacityReduced">
+                            <option value="" disabled>Select a recipient</option>
+                            <option *ngFor="let member of groupMembers" [value]="member.id"> {{ member.firstName }} {{ member.lastName}} </option>
+                        </select>
+                    </div>
+                    <br><br><br><br>
+                    <div class="boxNoMarginWidth-311Px">
+                        <button type="button" class="buttonBackgroundTransparentHeight-44px fontDark-16Px floatLeft" (click)="onCancel()">Cancel</button>
+                        <button type="submit" class="buttonBackgroundOrange fontDark-16Px floatRight btn btn-success" [disabled]="!updateOccasionForm.form.valid">Update occasion</button>
+                    </div>    
+                </form>
+            </div>
+        </div>
+    </div>
+    <br><br><br>
+    <div class="footer-margin">
+        <div class="footer">
+            <div class="footer-acme-gift floatLeft">ACME GIFTS</div>
+            <div class="footer-acme-gift floatRight">"Gift Box" image by Oksana Latysheva licensed under CC By 3.0 US</div>
+        </div>
+    </div>
+</div>
