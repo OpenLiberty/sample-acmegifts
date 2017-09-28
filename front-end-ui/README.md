@@ -1,3 +1,3 @@
 # FrontEndUi
 
-AcmeGifts front end implementation.
+Acme Gifts front end implementation.

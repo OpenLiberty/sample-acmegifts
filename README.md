@@ -11,8 +11,9 @@ A social gift giving application built on the [MicroProfile](http://microprofile
 
 ## What is Acme Gifts?
 
-Acme Gifts is designed to be a social gift giving application. It provides a platform for users to create and join groups and exchange gifts within those groups. For example, a specific user may be a part of a 
-co-workers group as well as a friends or family group. In each of these groups, occasions can be created (i.e. John's Birthday, Stacy's Retirement, etc.) to occur on a specific date. Users in that group can then pledge a contribution to that occasion, and when the occasion occurs, the recipient will be notified via Twitter of the total sum that their group raised for them. They are then informed to choose an item off of their predefined wish-list for the allotted sum. 
+Acme Gifts is a Java microservices application that was designed to run on Open Liberty and showcase MicroProfile. The front-end was written using Angular 2, and the back-end uses microservices written to the MicroProfile 1.2 specification. The MicroProfile services used include Config 1.1, Fault Tolerance 1.0, and JWT 1.0. Each service, as well as the front end, was designed to run in an independent Liberty server instance.
+
+Acme Gifts provides a platform for users to create and join groups and exchange gifts within those groups. For example, a specific user may be a part of a co-workers group as well as a friends or family group. In each of these groups, occasions can be created (i.e. John's Birthday, Stacy's Retirement, etc.) to occur on a specific date. Users in that group can then pledge a contribution to that occasion, and when the occasion occurs, the recipient will be notified via Twitter of the total sum that their group raised for them. They are then informed to choose an item off of their predefined wish-list for the allotted sum. 
 
 ## Getting Started
 
@@ -22,8 +23,7 @@ co-workers group as well as a friends or family group. In each of these groups, 
 
 * Java 8 - Java 8 must be used to compile and run this project.
 
-* MongoDB - [MongoDB](https://www.mongodb.com/) v3.4.6 must be installed and either set on the environment path or set using the <mongo.path> property in the 
-   AcmeGifts pom.xml.
+* MongoDB - [MongoDB](https://www.mongodb.com/) v3.4.6 must be installed and either set on the environment path or set using the <mongo.path> property in sample-acmegifts/pom.xml.
 
 * Running in admin mode (Windows only) - Maven commands must be run in admin mode to ensure that the Mongo databases are successfully auto-started in the background
 
@@ -31,7 +31,7 @@ co-workers group as well as a friends or family group. In each of these groups, 
 Build and start the full suite of microservices that make up the Acme Gifts application
 
     git clone https://github.com/OpenLiberty/sample-acmegifts.git
-    cd AcmeGifts
+    cd sample-acmegifts
     mvn clean install
     mvn package -P start-databases,start-servers -pl run-app
 
@@ -45,7 +45,7 @@ Acme Gifts is secured with self-signed certificates. The certificate is generate
 'shared-keystore' project is built, and copied into each of the other projects.
    
    **IMPORTANT** 
-   After the microservices are started, the first time you use AcmeGifts, you will need to accept
+   After the microservices are started, the first time you use Acme Gifts, you will need to accept
    the self-signed certificate browser challenge.
 
    **FIREFOX NOTE**
@@ -98,7 +98,7 @@ The user microservice manages the lifecycle of users and user login within the A
 * To allow users to login using Twitter, complete the [Twitter Configuration](#twitter-configuration)
 
 #### Build and Start
-Issue the following commands from within AcmeGifts/microservice-user directory
+Issue the following commands from within sample-acmegifts/microservice-user directory
 
     mvn clean package install
     mvn exec:exec@start-database
@@ -109,7 +109,7 @@ Issue the following commands from within AcmeGifts/microservice-user directory
 The group microservice manages the lifecycle of groups within the Acme Gifts application. 
 
 #### Build and Start
-Issue the following commands from within AcmeGifts/microservice-group directory
+Issue the following commands from within sample-acmegifts/microservice-group directory
 
     mvn clean package install
     mvn exec:exec@start-database
@@ -120,7 +120,7 @@ Issue the following commands from within AcmeGifts/microservice-group directory
 The occasion microservice manages the lifecycle and orchestration of occasions within the Acme Gifts application. 
 
 #### Build and Start
-Issue the following commands from within AcmeGifts/microservice-occasion directory
+Issue the following commands from within sample-acmegifts/microservice-occasion directory
 
     mvn clean package install
     mvn exec:exec@start-database
@@ -135,12 +135,12 @@ scheduled occasions take place.
 
 * Optionally, update the location/name of the administrative log by updating the entry located under the
    "Optional Microservice Configuration" label in the "properties" section of the
-   AcmeGifts/microservice-notification_v1_1 pom.xml. The default value is: 
+   sample-acmegifts/microservice-notification_v1_1 pom.xml. The default value is: 
    
    `notification.log.file = ${project.build.directory}/logs/notifications.log`
    
 #### Build and Start
-Issue the following commands from within AcmeGifts/microservice-notification directory
+Issue the following commands from within sample-acmegifts/microservice-notification directory
 
     mvn clean package install
     mvn liberty:start-server
@@ -155,31 +155,31 @@ The notification microservice v1_1 is a notification service that logs to a file
 
 * Optionally, update the location/name of the administrative log and fallback log by updating the entry located under the
    "Optional Microservice Configuration" label in the "properties" section of the
-   AcmeGifts/microservice-notification_v1_1 pom.xml. The default values are: 
+   sample-acmegifts/microservice-notification_v1_1 pom.xml. The default values are: 
    
    `notification.log.file = ${project.build.directory}/logs/notifications.log`
    
    `fallback.notification.log.file = ${project.build.directory}/logs/fallbacknotifications.log`   
 
 #### Build and Start
-Issue the following commands from within AcmeGifts/microservice-notification_v1_1 directory
+Issue the following commands from within sample-acmegifts/microservice-notification_v1_1 directory
 
     mvn clean package install
     mvn liberty:start-server
 
 ### Frontend UI:
 
-The ACME Gifts UI is written in Angular 2 and built using the frontend-maven-plugin. This plugin downloads and installs local versions of Node and NPM which makes calls to Angular CLI to install and build the source code. Compiled files are placed in src/main/webapp which Maven builds into a war to deploy in Liberty.
+The Acme Gifts UI is written in Angular 2 and built using the frontend-maven-plugin. This plugin downloads and installs local versions of Node and NPM which makes calls to Angular CLI to install and build the source code. Compiled files are placed in src/main/webapp which Maven builds into a war to deploy in Liberty.
 
 #### Build and Start
-Issue the following commands from within AcmeGifts/front-end-ui directory
+Issue the following commands from within sample-acmegifts/front-end-ui directory
 
     mvn clean package install
     mvn liberty:start-server
     
 ### Auth Microservice:
 
-The auth microservice manages the creation and validation of JSON Web Tokens (JWTs) used to secure the ACME Gifts application.
+The auth microservice manages the creation and validation of JSON Web Tokens (JWTs) used to secure the Acme  Gifts application.
 
 #### Build and Start
 Issue the following commands from within AcmeGifts/microservice-auth directory
@@ -193,12 +193,10 @@ Issue the following commands from within AcmeGifts/microservice-auth directory
 Acme Gifts provides the ability for users to login using Twitter credentials as well as receive tweets when occasions occur. Follow the steps below to configure these features.
 
 1. Specify valid twitter generated keys/secrets/tokens. 
-   These properties to update are located under the "Optional Microservice Configuration" label in the "properties" 
-   section of the AcmeGifts pom.xml. Update the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
-   These values can be obtained from a valid twitter account application to be used on behalf of the AcmeGifts
-   application. Steps for setting up and obtaining the needed values:
+   These properties to update are located under the "Optional Microservice Configuration" label in the "properties" section of sample-acmegifts/pom.xml. Update the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
+   These values can be obtained from a valid twitter account application to be used on behalf of the Acme Gifts application. Steps for setting up and obtaining the needed values:
    
-   a. Go to: https://apps.twitter.com/ to register the 'Gifts' application under a 
+   a. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a 
     valid twitter account. This account will be used on behalf of the Gifts application.
     NOTE: Be sure to fill in the 'Callback URL' section when creating the application. 
     The entry can be a dummy URL. If the application exists already, go to the 'Settings' tab 
@@ -214,7 +212,7 @@ Acme Gifts provides the ability for users to login using Twitter credentials as 
 ### Host and Port Configuration
 You can customize the ports and host names used by the microservices and their resources.
 These values can be updated under the "Optional Microservice Configuration" label in the "properties" 
-section of the AcmeGifts pom.xml. These are the defaults:
+section of the Acme Gifts pom.xml. These are the defaults:
 
     - user.hostname = localhost
     - user.http.port = 5050  
