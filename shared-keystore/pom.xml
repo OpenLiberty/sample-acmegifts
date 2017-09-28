@@ -1,0 +1,111 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>microprofile.gift.demo</groupId>
+        <artifactId>acmeGifts</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>shared-keystore</artifactId>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-rs-client</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <scope>provided</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <!-- Generate the keystore used by the Liberty servers -->
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>keytool-maven-plugin</artifactId>
+              <executions>
+                <!-- Delete any keystore that exists already -->
+                <execution>
+                  <goals>
+                    <goal>clean</goal>
+                  </goals>
+                  <id>startOver</id>
+                  <phase>generate-resources</phase>
+                </execution>
+                <!-- Create the keys used by Liberty SSL -->
+                <execution>
+                  <goals>
+                    <goal>generateKeyPair</goal>
+                  </goals>
+                  <id>createKeystore</id>
+                  <phase>generate-resources</phase>
+                  <configuration>
+                    <keypass>secret</keypass>
+                    <keyalg>RSA</keyalg>
+                    <keysize>2048</keysize>
+                    <sigalg>SHA256withRSA</sigalg>
+                    <alias>default</alias>
+                    <dname>cn=localhost, ou=userServer, O=IBM, C=us</dname>
+                    <validity>999</validity>
+                    <skipIfExist>true</skipIfExist>
+                  </configuration>
+                </execution>
+                <!-- Import the certificate signers used by Twitter -->
+                <execution>
+                  <goals>
+                    <goal>importCertificate</goal>
+                  </goals>
+                  <id>addTwitter1</id>
+                  <phase>generate-resources</phase>
+                  <configuration>
+                    <alias>Twitter1</alias>
+                    <file>${basedir}/certs/DigiCertSHA2HighAssuranceServerCA.crt</file>
+                    <trustcacerts>true</trustcacerts>
+                  </configuration>
+                </execution>
+                <execution>
+                  <goals>
+                    <goal>importCertificate</goal>
+                  </goals>
+                  <id>addTwitter2</id>
+                  <phase>generate-resources</phase>
+                  <configuration>
+                    <alias>Twitter2</alias>
+                    <file>${basedir}/certs/DigiCertSHA2SecureServerCA.crt</file>
+                    <trustcacerts>true</trustcacerts>
+                  </configuration>
+                </execution>
+              </executions>
+              <!-- Global configuration for the keytool plugin -->
+              <configuration>
+                <keystore>${basedir}/src/main/resources/keystore.jceks</keystore>
+                <storepass>secret</storepass>
+                <storetype>jceks</storetype>
+              </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
