@@ -1,0 +1,122 @@
+{
+	"swagger": "2.0",
+	"info": {
+		"title": "Group Service API",
+		"description": "Group Service API",
+		"version": "1.0.0"		
+	},
+	"paths":{
+		"/groups":{
+			"post":{
+			    "summary":"Creates a group",
+				"parameters":[{
+				    "name":"group",
+				    "in":"body",
+				    "required":"true",
+				    "schema":{
+				    	"$ref":"#/definitions/Group"
+				    }
+				}],
+				"responses":{
+					"200":{
+						"description": "Group is successfully created",
+						"schema":{
+							"type":"object",
+							"properties":[{
+								"id":{
+									"type":"string"
+								}
+							}]
+						}
+					}
+				}
+			}
+		},
+		"/groups/{id}":{
+			"get":{
+			    "summary":"Gets group info for a specified group id",
+			    "parameters":{
+					"name":"id",
+					"required":"true",
+					"in":"path",
+					"type":"string"
+				},
+			    "responses":{
+				    "200":{
+					    "description": "Group information is successfully retrieved",
+					    "schema":{
+					    	"$ref":"#/definitions/Group"
+					    }
+				    },
+				    "400":{
+					    "description": "Group is not found"
+				    }
+				}
+			},
+			"delete":{
+			    "summary":"Deletes a group with a specified group id",
+			    "parameters":{
+					"name":"id",
+					"required":"true",
+					"in":"path",
+					"type":"string"
+				},
+			    "responses":{
+				    "200":{
+					    "description": "Group is successfully deleted"
+				    },
+				    "400":{
+					    "description": "Group is not found"
+				    }
+				}
+			},
+			"put":{
+			    "summary":"Updates a group",
+				"parameters":[{
+					"name":"id",
+					"required":"true",
+					"in":"path",
+					"type":"string"
+				    },
+				    {
+				    "name":"group",
+				    "in":"body",
+				    "required":"true",
+				    "schema":{
+				    	"$ref":"#/definitions/Group"
+				    }
+				}],
+				"responses":{
+					"200":{
+						"description": "Group is successfully updated"
+					},
+				    "400":{
+					    "description": "Group is not found"
+				    }
+				}
+			}
+		}
+    },
+    "definitions":{
+    	"Group":{
+    		"type":"object",
+	    	"properties":{
+	    		"groupName":{
+	    			"type":"string"
+	    		},
+	    		"members":{
+	    			"type":"array",
+	    			"items":{
+	    				"type":"string"
+	    			}
+	    		},
+	    		"occasions":{
+	    			"type":"array",
+	    			"items":{
+	    				"type":"string"
+	    			}
+	    		}
+	    	}
+	    }
+    }
+}

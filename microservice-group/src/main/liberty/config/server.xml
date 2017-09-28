@@ -1,0 +1,44 @@
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<server description="Group server">
+    <featureManager>
+        <feature>microProfile-1.0</feature>
+        <feature>mpConfig-1.1</feature>
+        <feature>mpJwt-1.0</feature>
+        <feature>ssl-1.0</feature>
+    </featureManager>
+
+    <!-- The keystore is built using the maven keytool plugin -->
+    <keyStore id="defaultKeyStore" location="keystore.jceks"
+              type="JCEKS" password="secret" />
+
+    <httpEndpoint httpPort="${http.port}" httpsPort="${https.port}"
+                  id="defaultHttpEndpoint"/>
+
+    <library id="mongodriver">
+      <file name="${shared.resource.dir}/mongo-java-driver.jar"/>
+    </library>
+    
+    <webApplication location="${app.name}" contextRoot="/">
+      <classloader commonLibraryRef="mongodriver"/>
+	  </webApplication>
+
+    <cors domain="/groups" 
+          allowedOrigins="*" 
+          allowedMethods="GET, DELETE, POST, PUT"
+          allowedHeaders="Accept, Content-Type, Authorization" 
+          maxAge="3600"/>
+
+    <!-- To facilitate testing the group service in absence of the user service, this
+         JWT consumer does not obtain the public key from the user service.  For an
+         example of how to configure JWT using JWK, see the user service. -->
+    <mpJwt id="jwtGroupConsumer" keyName="default"
+           audiences="acmeGifts" issuer="${jwt.issuer}"/>
+</server>
