@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2017 IBM Corporation and others.
+  All rights reserved. This program and the accompanying materials
+  are made available under the terms of the Eclipse Public License v1.0
+  which accompanies this distribution, and is available at
+  http://www.eclipse.org/legal/epl-v10.html
+ 
+  Contributors:
+  IBM Corporation - initial API and implementation
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>microprofile.gift.demo</groupId>
+    <artifactId>acmeGifts</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>Acme Gifts</name>
+    <description>Acme gift giving using microservices</description>
+    <url>http://maven.apache.org</url>
+
+    <properties>
+        <!-- Plugins -->
+        <version.liberty.plugin>2.0</version.liberty.plugin>
+        <version.compiler.plugin>3.5.1</version.compiler.plugin>
+        <version.resources.plugin>3.0.1</version.resources.plugin>
+        <version.clean.plugin>3.0.0</version.clean.plugin>
+        <version.dependency.plugin>2.10</version.dependency.plugin>
+        <version.exec.plugin>1.5.0</version.exec.plugin>
+        <version.install.plugin>2.5.2</version.install.plugin>
+        <version.war.plugin>2.6</version.war.plugin>
+        <warfile.name>GIFTPROJ</warfile.name>
+        <version.jre>1.8</version.jre>
+        <version.keytool.plugin>1.5</version.keytool.plugin>
+        <version.exec.plugin>1.5.0</version.exec.plugin>
+        <version.jar.plugin>3.0.2</version.jar.plugin>
+        
+        <!-- Database. -->
+        <version.mongodb>2.14.3</version.mongodb>
+
+        <!-- Liberty Server -->
+        <version.liberty>17.0.0.3-RC</version.liberty>
+
+        <!-- Dependencies -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <version.shared.keystore>0.0.1-SNAPSHOT</version.shared.keystore>
+        <version.javaee>7.0</version.javaee>
+        <version.glassfish.json>1.0.4</version.glassfish.json>
+        <version.com.ibm.websphere.appserver.api.jwt>1.0.16</version.com.ibm.websphere.appserver.api.jwt>
+        <version.microprofile.config>1.0</version.microprofile.config>
+        <version.microprofile.api.jwt>1.0-RC10</version.microprofile.api.jwt>
+        <version.microprofile.faulttolerance>1.0-RC1</version.microprofile.faulttolerance>
+
+        <!-- Test -->
+        <version.junit>4.12</version.junit>
+        <version.surefire.plugin>2.19.1</version.surefire.plugin>
+        <version.failsafe.plugin>2.19.1</version.failsafe.plugin>
+        <version.apache.cxf>3.1.1</version.apache.cxf>
+        <version.spring.context>4.3.9.RELEASE</version.spring.context>
+        <version.mockito>1.9.5</version.mockito>
+        
+        <!-- Optional Microservice Configuration -->
+        <user.hostname>localhost</user.hostname>
+        <user.http.port>5050</user.http.port>
+        <user.https.port>5051</user.https.port>
+        <user.mongo.hostname>localhost</user.mongo.hostname>
+        <user.mongo.port>5052</user.mongo.port>
+        
+        <group.hostname>localhost</group.hostname>
+        <group.http.port>5053</group.http.port>
+        <group.https.port>5054</group.https.port>
+        <group.mongo.hostname>localhost</group.mongo.hostname>
+        <group.mongo.port>5055</group.mongo.port>
+        
+        <occasion.hostname>localhost</occasion.hostname>
+        <occasion.http.port>5056</occasion.http.port>
+        <occasion.https.port>5057</occasion.https.port>
+        <occasion.mongo.hostname>localhost</occasion.mongo.hostname>
+        <occasion.mongo.port>5058</occasion.mongo.port>
+        
+        <notification.hostname>localhost</notification.hostname>
+        <notification.http.port>5059</notification.http.port>
+        <notification.https.port>5060</notification.https.port>
+        
+        <notification_1_1.hostname>localhost</notification_1_1.hostname>
+        <notification_1_1.http.port>5061</notification_1_1.http.port>
+        <notification_1_1.https.port>5062</notification_1_1.https.port>
+
+        <frontend.http.port>5063</frontend.http.port>
+        <frontend.https.port>5064</frontend.https.port>
+        <frontend.hostname>localhost</frontend.hostname>
+
+        <auth.http.port>5065</auth.http.port>
+        <auth.https.port>5066</auth.https.port>
+        <auth.hostname>localhost</auth.hostname>
+        
+        <!-- Optional path to Mongo install bin directory (for use when auto starting and stopping the databases) -->
+        <mongo.path></mongo.path>
+        
+        <!-- JSON Web Token used for microservice authorization -->
+        <jwt.shared.key>secret</jwt.shared.key>
+        <jwt.issuer>http://wasdev.net</jwt.issuer>
+        
+        <!-- Optional Twitter configuration -->
+        <!-- IMPORTANT. -->
+        <!-- Replace the CHANGE_ME values with valid twitter generated keys/secrets/tokens. -->
+        <!-- The consumer key/secret are required for Twitter login and for tweeting.       -->
+        <!-- The user access key/secret are only required for tweeting. -->
+        <!-- These values can be obtained from a valid twitter account application to be used on behalf of the Gifts application. -->
+        <!-- Steps for setting up and obtaining the needed values: -->
+        <!-- a. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a 
+                valid twitter account. This account will be used on behalf of the Acme Gifts application.
+                NOTE: Be sure to fill in the 'Callback URL' section when creating the application. The entry can be a dummy URL.
+                If the application exists already, go to the 'Settings' tab and make sure something was
+                specified in the 'Callback URL' section. -->
+        <!-- b. Under the Details tab, modify the access level to 'Read, write, and direct messages'. -->
+        <!-- c. Under the 'Key and Access Tokens' tab, generate access token/secret. -->
+        <!-- d. Replace CHANGE_ME with the consumer key/secret and the access 
+            token/secret generated values. -->
+        <twitter.app.consumer.key>CHANGE_ME</twitter.app.consumer.key>
+        <twitter.app.consumer.secret>CHANGE_ME</twitter.app.consumer.secret>
+        <twitter.user.access.token>CHANGE_ME</twitter.user.access.token>
+        <twitter.user.access.secret>CHANGE_ME</twitter.user.access.secret>
+        
+    </properties>
+
+    <repositories>
+      <!-- This repository contains the open-liberty preview -->
+      <repository>
+        <id>openliberty-repo</id>
+        <name>openliberty-repo</name>
+        <url>http://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/wasliberty-open-liberty/</url>
+      </repository>
+      <!-- This repository contains microprofile pre-release specifications -->
+      <repository>
+        <id>eclipse-repo</id>
+        <name>eclipse-repo</name>
+        <url>https://repo.eclipse.org/content/groups/releases/</url>
+      </repository>
+    </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- Shared dependencies. -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${version.javaee}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <!-- Pre-release microprofile specifications -->
+            <dependency>
+              <groupId>org.eclipse.microprofile.jwt</groupId>
+              <artifactId>microprofile-jwt-auth-api</artifactId>
+              <version>${version.microprofile.api.jwt}</version>
+              <scope>provided</scope>
+            </dependency>
+
+            <!-- Liberty helpers -->
+	          <dependency>
+    	 	      <groupId>com.ibm.websphere.appserver.api</groupId>
+     		      <artifactId>com.ibm.websphere.appserver.api.jwt</artifactId>
+     		      <version>${version.com.ibm.websphere.appserver.api.jwt}</version>
+     	      </dependency>
+            
+            <!-- Database. -->
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>${version.mongodb}</version>
+                <scope>provided</scope>
+            </dependency>
+            
+            <!-- Test -->
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.json</artifactId>
+                <version>${version.glassfish.json}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${version.junit}</version>
+                <scope>test</scope>
+            </dependency>
+           <dependency>
+			    <groupId>org.mockito</groupId>
+			    <artifactId>mockito-all</artifactId>
+			    <version>${version.mockito}</version>
+			    <scope>test</scope>
+			</dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-rs-client</artifactId>
+                <version>${version.apache.cxf}</version>
+                <scope>test</scope>
+            </dependency>
+        <!-- The following is necessary to read CXF client configuration -->
+        <dependency>
+          <groupId>org.springframework</groupId>
+          <artifactId>spring-context</artifactId>
+          <version>${version.spring.context}</version>
+          <scope>test</scope>
+        </dependency>
+        
+            <dependency>
+                <groupId>org.eclipse.microprofile.config</groupId>
+                <artifactId>microprofile-config-api</artifactId>
+                <version>${version.microprofile.config}</version>
+            </dependency>      
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <!-- Shared plugins -->
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${version.clean.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>${version.resources.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${version.compiler.plugin}</version>
+                    <configuration>
+                        <encoding>UTF-8</encoding>
+                        <compilerArgument>-XDignore.symbol.file</compilerArgument>
+                        <source>${version.jre}</source>
+                        <target>${version.jre}</target>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${version.war.plugin}</version>
+                    <configuration>
+                        <failOnMissingWebXml>false</failOnMissingWebXml>
+                        <attachClasses>true</attachClasses>
+                        <archive>
+                            <manifest>
+                                <addClasspath>true</addClasspath>
+                                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            </manifest>
+                            <manifestEntries>
+                                <Date>${maven.build.timestamp}</Date>
+                                <Specification-Title>${project.name}</Specification-Title>
+                                <Specification-Version>${project.version}</Specification-Version>
+                                <Specification-Vendor>${project.organization.name}</Specification-Vendor>
+                                <Implementation-Title>${project.name}</Implementation-Title>
+                                <Implementation-Version>${project.version}</Implementation-Version>
+                                <Implementation-Vendor>${project.organization.name}</Implementation-Vendor>
+                            </manifestEntries>
+                        </archive>
+                        <warName>${warfile.name}</warName>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>${version.dependency.plugin}</version>
+                    <configuration>
+                        <useJvmChmod>true</useJvmChmod>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>${version.install.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>${version.exec.plugin}</version>
+                </plugin>
+                <plugin>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>keytool-maven-plugin</artifactId>
+                  <version>${version.keytool.plugin}</version>
+                </plugin>
+                
+                <!-- Liberty server operations and management. -->
+                <plugin>
+                    <groupId>net.wasdev.wlp.maven.plugins</groupId>
+                    <artifactId>liberty-maven-plugin</artifactId>
+                    <version>${version.liberty.plugin}</version>
+                    <configuration>
+                      <assemblyArtifact>
+                        <groupId>io.openliberty</groupId>
+                        <artifactId>openliberty-runtime</artifactId>
+                        <version>${version.liberty}</version>
+                        <type>zip</type>
+                      </assemblyArtifact>
+                    </configuration>
+                </plugin>
+
+                <!-- Integration test plugins -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${version.surefire.plugin}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>${version.failsafe.plugin}</version>
+                </plugin>
+                <plugin>
+			        <groupId>org.apache.maven.plugins</groupId>
+			        <artifactId>maven-jar-plugin</artifactId>
+			        <version>${version.jar.plugin}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <modules>
+        <module>shared-keystore</module>
+        <module>microservice-auth</module>
+        <module>microservice-user</module>
+        <module>microservice-group</module>
+        <module>microservice-notification</module>
+        <module>microservice-occasion</module>
+        <module>front-end-ui</module>
+        <module>microservice-notification_v1_1</module>
+        <module>run-app</module>
+    </modules>
+</project>

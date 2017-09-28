@@ -1,0 +1,36 @@
+# Ignore node files
+front-end-ui/node/
+front-end-ui/node_modules/
+
+# Ignore target directories.
+target/
+
+# Ignore the settigs directories.
+.settings/
+
+# Ignore .metadata directories
+.metadata/
+
+# Ignore RemoteSystemsTempFiles
+RemoteSystemsTempFiles/
+
+# Ignore class files.
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+
+# ignore vim swap files
+*.swp
+
+# ignore certificates/keystores
+*.pkcs12
+*.pem
