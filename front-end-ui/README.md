@@ -47,7 +47,7 @@ Enter your newly created username and password.
 
 ### Create a group
 
-Now you are in the groups view. This view shows all groups that you belong to.
+Now you are in the groups page. This page shows all groups that you belong to.
 
 ![alt text](collateral/groupsNoEntries.bmp)
    
@@ -55,7 +55,7 @@ Let's create a couple of groups. A Co-workers and a Friends group. We have alrea
 
 ![alt text](collateral/createGroup.bmp)
 
-Enter the group name and and click on the **Create group** button.
+Enter the group name and click on the **Create group** button. You will be routed to the main groups page, which shows the Co-workers and Friends groups:
 
 ![alt text](collateral/groups.bmp)
 
@@ -64,14 +64,17 @@ Note the amounts next to each group. They show the amount of money that you have
 
 ### Add members to the group
 
-You are now in the Co-workers group view. It looks like this:
+You are now in the Co-workers group page.  
+There are no occasions yet, but there is a single member in the group, John. John is the creator of the group; therefore, he is automatically added as a member of the group.
 
 ![alt text](collateral/groupNoEntries.bmp)
 
-Let's add a members to this group. To add members, all you need to do is search for the person using person's name, last name, or username.  
-Click on **Add Member**. We have already added Fred, let's add Stacy to the list. Once you find Stacy, click on her name. She will be automatically added as a member of Co-workers and you will be back in the group view. We will create an occasion next. Click on **Add Occasion**.  
+Let's add new members to this group. To do so, click on **Add Member**. This takes you to the Add member page.
 
 ![alt text](collateral/groupAddMember.bmp) 
+
+To add members, all you need to do is search for the person using person's name, last name, or username.  
+We have already added Fred. Let's add Stacy to the group. Once we find Stacy using the search box, we click on her name. She will be automatically added as a member of the Co-workers group, and we will be back in the Co-workers group page. We will create an occasion next. Click on **Add Occasion**.  
 
 
 ### Create an occasion
@@ -80,13 +83,13 @@ Enter the name of the occasion, the date you want it to take place, the amount y
 
 ![alt text](collateral/groupOccasionCreate.bmp) 
 
-Now let's assume, that someone within your group created an occasion for which you are the recipient. This occasion will show in your occasions view, but no contribution amount will show. You can only see your own contribution amounts and not the amount that others contribute to you.  
-In this example, Linda, a member of the Co-workers group, created an occasion for John's birthday. This is how the group view looks now that we have added members and occasions:
+Now let's assume, that someone within your group created an occasion for which you are the recipient. This occasion will show in your occasions page, but no contribution amount will show. You can only see your own contribution amounts and not the amount that others contribute to you.  
+In this example, Linda, a member of the Co-workers group, created an occasion for John's birthday. This is how the group page looks now that we have added members and occasions:
 
 ![alt text](collateral/group.bmp)  
 
 We are done!  
-Now the system will automatically track of the occasion date and will automatically send a notification to the recipient on the day of the event. Note that this application only does occasion notifications for now.
+Now the system will automatically track of the occasion date and will automatically send a notification on the day of the event. Note that this application only does occasion notifications for now.
 
 
 ### Occasion execution
@@ -102,13 +105,13 @@ For visual purposes, you will see a notification on the screen. It will look lik
 
 ![alt text](collateral/groupOccasionNotificationLogged.bmp)
  
-Notice that the occasion has now disappeared from the view.  
+Notice that the occasion has now disappeared from the page.  
 
 Now, using microprofile's Fault Tolerance, we can fallback to using another notification service.  
-We realize that notification service v1 does not really send notifications to recipients, so we have upgraded it to do so. V1_1 not only logs to a file as v1 did, but it will tweet to the Acme Gifts account that a notification was sent, and it will send direct message notifications to Twitter users that follow acme gifts.  
-So, next, we will take down notification service v1 and we will start notification service v1.1 to test it without causing service interruptions. For that, we use microprofile's fault tolerance function. In particular we use the retry policy and fallback support.
+We realize that notification service v1 does not really send notifications to recipients, so we have upgraded it to do so. V1_1 not only logs to a file as v1 did, but it will tweet to the Acme Gifts account that a notification was sent, and it will send direct message notifications to occasion recipients that specified a twitter handle in their profile.  
+Next, we will take down notification service v1, and we will start notification service v1.1 to test it without causing service interruptions. For that, we use microprofile's fault tolerance function. In particular we use the retry policy and fallback support.
 
-Back with our example, If you remember John created an occasion for Stacy's retirement party and after the occasion took place, the group now shows that a tweet was sent: 
+Back with our example, If you remember, John created an occasion for Stacy's retirement party. If this occasion now runs, while notification service v1_1 active and notification service v1 is down, the group page shows that a tweet was sent: 
 
 ![alt text](collateral/groupOccasionNotificationTweeted.bmp)
 
@@ -134,7 +137,7 @@ We are done!
 
 ### Optional Actions
 
-In the group view you can click on the overflow menu icon next to each occasion. There you will have 3 options that allow you to delete any occasion, edit any occasion, or run any occasion immediately.
+In the group page you can click on the overflow menu icon next to each occasion. There you will have 3 options that allow you to delete any occasion, edit any occasion, or run any occasion immediately.
 
 ![alt text](collateral/groupOccasionOverflowMenu.bmp)
 
