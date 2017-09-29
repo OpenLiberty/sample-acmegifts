@@ -8,12 +8,17 @@ A social gift giving application built on the [MicroProfile](http://microprofile
 * [Using the Application](#using-the-application)
 * [Microservices](#microservices)
 * [Configuration and Customization](#configuration-and-customization)
+* [Using Acme Gifts](#using-acme-gifts)
 
 ## What is Acme Gifts?
 
 Acme Gifts is a Java microservices application that was designed to run on Open Liberty and showcase MicroProfile. The front-end was written using Angular 2, and the back-end uses microservices written to the MicroProfile 1.2 specification. The MicroProfile services used include Config 1.1, Fault Tolerance 1.0, and JWT 1.0. Each service, as well as the front end, was designed to run in an independent Liberty server instance.
 
 Acme Gifts provides a platform for users to create and join groups and exchange gifts within those groups. For example, a specific user may be a part of a co-workers group as well as a friends or family group. In each of these groups, occasions can be created (i.e. John's Birthday, Stacy's Retirement, etc.) to occur on a specific date. Users in that group can then pledge a contribution to that occasion, and when the occasion occurs, the recipient will be notified via Twitter of the total sum that their group raised for them. They are then informed to choose an item off of their predefined wish-list for the allotted sum. 
+
+### Architecture
+![alt text](collateral/architecture.bmp)
+
 
 ## Getting Started
 
@@ -190,7 +195,9 @@ Issue the following commands from within AcmeGifts/microservice-auth directory
 ## Configuration and Customization
 
 ### Twitter Configuration
-Acme Gifts provides the ability for users to login using Twitter credentials as well as receive tweets when occasions occur. Follow the steps below to configure these features.
+Acme Gifts provides the ability for users to login using Twitter credentials as well as receive direct messages when occasions occur. Note that in order for occasion recipients to be notified of the occasion with a direct message, they must be following the twitter account being used on behalf of Acme Gifts.  
+
+Follow the steps below to configure an existing twitter account for Acme Gifts.
 
 1. Specify valid twitter generated keys/secrets/tokens. 
    These properties to update are located under the "Optional Microservice Configuration" label in the "properties" section of sample-acmegifts/pom.xml. Update the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
@@ -249,3 +256,6 @@ section of the Acme Gifts pom.xml. These are the defaults:
 ### Bootstrapping Data 
 The Acme Gifts application can be started with custom bootstrap data. Users, groups, and occasions can be preloaded for demo purposes. 
 Checkout the run-app [readme](run-app/README.md) for usage details.
+
+## Using Acme Gifts
+For details on how to use Acme Gifts checkout [Using Acme Gifts](front-end-ui/README.md).
