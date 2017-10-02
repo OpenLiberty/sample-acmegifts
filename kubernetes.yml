@@ -13,7 +13,6 @@ spec:
       containers:
       - name: mongo
         image: mongo
-        imagePullPolicy: Always
         ports:
         - containerPort: 27017
 ---
@@ -43,7 +42,6 @@ spec:
       containers:
       - name: front-end-ui
         image: acmegifts/front-end-ui:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 9443
 ---
@@ -74,7 +72,6 @@ spec:
       containers:
       - name: microservice-auth
         image: acmegifts/microservice-auth:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 9443
 ---
@@ -105,7 +102,6 @@ spec:
       containers:
       - name: microservice-user
         image: acmegifts/microservice-user:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 9443
 ---
@@ -136,7 +132,6 @@ spec:
       containers:
       - name: microservice-group
         image: acmegifts/microservice-group:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 9443
 ---
@@ -167,7 +162,6 @@ spec:
       containers:
       - name: microservice-occasion
         image: acmegifts/microservice-occasion:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 9443
 ---
@@ -198,7 +192,6 @@ spec:
       containers:
       - name: microservice-notification
         image: acmegifts/microservice-notification:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 9443
         - containerPort: 9080
@@ -234,7 +227,6 @@ spec:
       containers:
       - name: microservice-notification11
         image: acmegifts/microservice-notification-v1-1:latest
-        imagePullPolicy: Always
         ports:
         - containerPort: 9443
         - containerPort: 9080
