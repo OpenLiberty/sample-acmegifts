@@ -259,3 +259,28 @@ Checkout the run-app [readme](run-app/README.md) for usage details.
 
 ## Using Acme Gifts
 For details on how to use Acme Gifts checkout [Using Acme Gifts](front-end-ui/README.md).
+
+## Running Acme Gifts on Minikube
+Acme Gifts can be run on a minikube Kubernetes cluster as follows: 
+
+1. Ensure that ingress is enabled:
+   ```
+   minikube addons enable ingress
+   ```
+2. Ensure `kubectl` is targeting your cluster (as it would be after a `minikube start`) and then run the command:
+   ```
+   kubectl apply -f kubernetes.yaml
+   ```
+3. Wait for all of the pods to show as running when the following commands is executed:
+   ```
+   kubectl get pods
+   ```
+4.  Access the Acme Gifts UI in a browser using the IP address returned by:
+   ```
+   minikube ip
+   ``` 
+
+This will use pre-built images from Docker Hub. If you wish to build your own images, use the script `docker-build`. If you want the resulting images to be used inside a minikube environment, make sure that you target your Docker CLI at the minikube Docker Engine before building using the following command:
+```
+eval $(minikube docker-env)
+```
