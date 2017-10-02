@@ -39,10 +39,9 @@ export class OccasionService {
 
     private jwt: string = null;
 
-    // Maven fills in these variables from the pom.xml
-    groupUrl     = 'https://${group.hostname}:${group.https.port}/groups/';
-    occasionUrl  = 'https://${occasion.hostname}:${occasion.https.port}/occasions/';
-    userUrl      = 'https://${user.hostname}:${user.https.port}/users/';
+    groupUrl     = '/service/groups/';
+    occasionUrl  = '/service/occasions/';
+    userUrl      = '/service/users/';
 
     createOccasion(occasion: Occasion): Observable<JSON> {
         const payload = JSON.stringify(occasion);

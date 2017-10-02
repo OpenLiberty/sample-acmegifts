@@ -21,7 +21,7 @@
     <properties>
         <warfile.name>notificationMicroservice</warfile.name>
         <server.name>notificationServer</server.name>
-        <notification.log.file>${project.build.directory}/logs/notifications.log</notification.log.file>
+        <notification.log.file>/logs/notifications.log</notification.log.file>
     </properties>
 
     <dependencies>
