@@ -17,8 +17,8 @@ import { Observable } from 'rxjs/Rx';
  */
 @Injectable()
 export class AuthService {
-    // Maven fills in these variables from the pom.xml
-    private url = 'https://${auth.hostname}:${auth.https.port}/auth/';
+    
+    private url = '/service/auth/';
 
     constructor(private http: HttpClient) {}
 

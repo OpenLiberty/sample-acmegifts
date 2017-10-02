@@ -22,8 +22,7 @@ import { Observable } from 'rxjs/Rx';
 export class GroupService {
     private groups: Group[];
 
-    // Maven fills in these variables from the pom.xml
-    private groupsUrl = 'https://${group.hostname}:${group.https.port}/groups/';
+    private groupsUrl = '/service/groups/';
 
   constructor(private http: HttpClient) {
       if (sessionStorage.jwt == null) {

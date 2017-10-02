@@ -22,9 +22,8 @@ import { Users } from '../users';
 export class UserService {
     private users: User[];
 
-    // Maven fills in these variables from the pom.xml
-    private userUrl = 'https://${user.hostname}:${user.https.port}/users/';
-    private userUrl2 = 'https://${user.hostname}:${user.https.port}/users';
+    private userUrl = '/service/users/';
+    private userUrl2 = '/service/users';
 
   constructor(private http: HttpClient) {}
 

@@ -68,7 +68,7 @@
                     <keysize>2048</keysize>
                     <sigalg>SHA256withRSA</sigalg>
                     <alias>default</alias>
-                    <dname>cn=localhost, ou=userServer, O=IBM, C=us</dname>
+                    <dname>cn=*.default.svc.cluster.local, ou=userServer, O=IBM, C=us</dname>
                     <validity>999</validity>
                     <skipIfExist>true</skipIfExist>
                   </configuration>
