@@ -10,7 +10,6 @@
 // ******************************************************************************
 package test;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -271,10 +270,13 @@ public class GroupResourceTest {
   public void testGetAllGroupsNoJWT() throws Exception {
     System.out.println("\nStarting testGetAllGroupsNoJWT");
 
-    // Make GET call get all groups.
+    // Make GET call get all groups.  Note that early versions of the
+    // mpJwt-1.0 feature would return an HTTP 401 when accessing an
+    // unprotected resource with no JWT, and later versions would return
+    // a 500 due to an NPE.  We'll accept either here.
     String url = getBaseURL();
     makeConnection("GET", url, null, 200, "users");
-    makeConnection("GET", url, null, 401, null);
+    makeConnection("GET", url, null, new Integer[] {401, 500}, null);
   }
 
   /** Try to get all groups as an invalid user (invalid group). */
@@ -387,6 +389,16 @@ public class GroupResourceTest {
   private JsonObject makeConnection(
       String method, String urlString, String payload, int expectedResponseCode, String group)
       throws IOException, GeneralSecurityException {
+    return makeConnection(method, urlString, payload, new Integer[] {expectedResponseCode}, group);
+  }
+
+  private JsonObject makeConnection(
+      String method,
+      String urlString,
+      String payload,
+      Integer[] acceptableResponseCodes,
+      String group)
+      throws IOException, GeneralSecurityException {
 
     // Setup connection
     System.out.println("Creating connection - Method: " + method + ", URL: " + urlString);
@@ -419,10 +431,12 @@ public class GroupResourceTest {
       response = invoBuild.build(method).invoke();
     }
 
-    System.out.println("Response: " + response.getStatus());
+    int actualResponseCode = response.getStatus();
+    System.out.println("Response: " + actualResponseCode);
     // Verify that the response code is as expected
-    assertEquals(
-        "HTTP response code is not as expected", expectedResponseCode, response.getStatus());
+    assertTrue(
+        "HTTP response code (" + actualResponseCode + ") is not as expected",
+        Arrays.asList(acceptableResponseCodes).contains(Integer.valueOf(actualResponseCode)));
 
     String responseString = response.readEntity(String.class);
     response.close();
