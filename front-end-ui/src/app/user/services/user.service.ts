@@ -21,17 +21,17 @@ import { Users } from '../users';
 @Injectable()
 export class UserService {
     private users: User[];
+    private url = '${user.service.url}';
 
-    private userUrl = '/service/users/';
-    private userUrl2 = '/service/users';
-
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+      this.url = this.url + ((this.url.indexOf('/', this.url.length - 1) === -1) ? '/': '') ;
+  }
 
   getUsers(): Observable<Users> {
       let headers = new HttpHeaders();
       headers = headers.set('Authorization', sessionStorage.jwt);
 
-      return this.http.get<Users>(this.userUrl2, { headers: headers })
+      return this.http.get<Users>(this.url, { headers: headers })
       .map(data => data);
   }
 
@@ -39,7 +39,7 @@ export class UserService {
       let headers = new HttpHeaders();
       headers = headers.set('Authorization', sessionStorage.jwt);
 
-      return this.http.get<User>(this.userUrl + userId, { headers: headers })
+      return this.http.get<User>(this.url + userId, { headers: headers })
       .map(data => data);
   }
 
@@ -47,9 +47,9 @@ export class UserService {
       let headers = new HttpHeaders();
       headers = headers.set('Content-Type', 'application/json');
       headers = headers.set('Authorization', sessionStorage.jwt);
-
       const payload = JSON.stringify(user);
-      return this.http.post<HttpResponse<any>>(this.userUrl, payload, { headers: headers, observe: 'response' })
+
+      return this.http.post<HttpResponse<any>>(this.url, payload, { headers: headers, observe: 'response' })
       .map(data => data);
   }
 
@@ -59,7 +59,7 @@ export class UserService {
       headers = headers.set('Authorization', sessionStorage.jwt);
       const payload = JSON.stringify(user);
 
-      return this.http.put<HttpResponse<any>>(this.userUrl + user.id, payload, { headers: headers, observe: 'response' })
+      return this.http.put<HttpResponse<any>>(this.url + user.id, payload, { headers: headers, observe: 'response' })
       .map(data => data);
   }
   
@@ -67,7 +67,7 @@ export class UserService {
       let headers = new HttpHeaders();
       headers = headers.set('Authorization', sessionStorage.jwt);
 
-      return this.http.delete<HttpResponse<any>>(this.userUrl + userId, { headers: headers })
+      return this.http.delete<HttpResponse<any>>(this.url + userId, { headers: headers })
       .map(data => data);
   }
 }

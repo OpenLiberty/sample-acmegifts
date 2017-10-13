@@ -52,8 +52,10 @@ public class OccasionResourceTest {
   private static final String clazz = OccasionResourceTest.class.getName();
   private static final Logger logger = Logger.getLogger(clazz);
 
-  private static final String libertySslPort = System.getProperty("liberty.test.ssl.port");
-  private static final String libertyHostname = System.getProperty("liberty.test.hostname");
+  private static final String occasionServiceURL =
+      System.getProperty("liberty.test.occasion.service.url");
+  private static final int mongoPort = Integer.parseInt(System.getProperty("mongo.test.port"));
+  private static final String mongoHostname = System.getProperty("mongo.test.hostname");
 
   @Rule public TestName name = new TestName();
 
@@ -62,8 +64,6 @@ public class OccasionResourceTest {
   public static void beforeClass() throws UnknownHostException {
     String method = "beforeClass";
     logger.entering(clazz, method);
-    int mongoPort = Integer.parseInt(System.getProperty("mongo.test.port"));
-    String mongoHostname = System.getProperty("mongo.test.hostname");
     mongoClient = new MongoClient(mongoHostname, mongoPort);
     db = mongoClient.getDB("gifts-occasion");
     collection = db.getCollection("occasions");
@@ -93,9 +93,6 @@ public class OccasionResourceTest {
   public void testGETBadGroup() {
     logger.entering(
         clazz, name.getMethodName(), "\n\n+ + + + + Entering " + name.getMethodName() + "\n\n");
-
-    // Use this to put the occasions in the db, and assemble the expected output
-    JsonArrayBuilder jab = Json.createArrayBuilder();
 
     // build the json payload for occasion 1
     List<Occasion.Contribution> contributions = new ArrayList<>();
@@ -132,9 +129,6 @@ public class OccasionResourceTest {
 
     // get the ID
     occasion = new Occasion(collection.findOne(occasion.toDbo()));
-
-    String expectedFinal = occasion.toString();
-    String occasionToGet = occasion.getId().toString();
 
     // build the json payload for occasion 3
     contributions = new ArrayList<>();
@@ -175,9 +169,6 @@ public class OccasionResourceTest {
   public void testGET() {
     logger.entering(
         clazz, name.getMethodName(), "\n\n+ + + + + Entering " + name.getMethodName() + "\n\n");
-
-    // Use this to put the occasions in the db, and assemble the expected output
-    JsonArrayBuilder jab = Json.createArrayBuilder();
 
     // build the json payload for occasion 1
     List<Occasion.Contribution> contributions = new ArrayList<>();
@@ -570,8 +561,7 @@ public class OccasionResourceTest {
     logger.fine("  expectedResponseCode: " + expectedResponseCode);
 
     // build the url
-    String war = System.getProperty("war.name");
-    String url = "https://" + libertyHostname + ":" + libertySslPort + "/" + war + endpoint;
+    String url = occasionServiceURL + endpoint;
     logger.fine("url: " + url);
 
     // make the call and check the response
@@ -623,8 +613,7 @@ public class OccasionResourceTest {
     logger.fine("  expectedResponseCode: " + expectedResponseCode);
 
     // build url
-    String war = System.getProperty("war.name");
-    String url = "https://" + libertyHostname + ":" + libertySslPort + "/" + war + endpoint;
+    String url = occasionServiceURL + endpoint;
     logger.fine("url: " + url);
 
     String responseString = "";

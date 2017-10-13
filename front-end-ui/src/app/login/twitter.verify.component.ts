@@ -12,6 +12,7 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders, HttpResponse} from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService } from '../user/services/user.service';
+import { LoginService } from './services/login.service';
 
 class TwitterOauthData {
   constructor(
@@ -23,14 +24,15 @@ class TwitterOauthData {
 
 @Component({
   template: '',
-  providers: [UserService]
+  providers: [UserService, LoginService]
 })
 export class TwitterVerifyComponent implements OnInit {
 
     private sub: any = null;
 
     constructor(private http: HttpClient, private route: ActivatedRoute,
-                private router: Router, private userService: UserService) {}
+                private router: Router, private userService: UserService,
+                private loginService: LoginService) {}
 
     // This performs the second part of the twitter login.  We're
     // basically delegating to the user microservice, who should
@@ -50,7 +52,7 @@ export class TwitterVerifyComponent implements OnInit {
         headers = headers.set('Content-Type', 'application/json');
         headers = headers.set('Authorization', sessionStorage.jwt);
 
-        this.http.post(url, body, {headers: headers, observe: 'response'}).subscribe((res: HttpResponse<any>) => {
+        this.loginService.loginWithTwitterVerify(body).subscribe((res: HttpResponse<any>) => {
             const id: string = res.body['id'];
             const twitterLogin: boolean = res.body['twitter'];
 

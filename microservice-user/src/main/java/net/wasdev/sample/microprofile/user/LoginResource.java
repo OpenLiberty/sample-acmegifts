@@ -98,26 +98,17 @@ public class LoginResource {
   private String twitterConsumerSecret;
 
   /**
-   * The host serving the twitter sign-in callback URL. Twitter requires a callback URL to be used
-   * after Twitter receives the username and password from the user. The caller is then redirected
-   * to the callback, where our application completes the sign-in process.
+   * The URL serving the twitter sign-in callback. Twitter requires a callback URL to be used after
+   * Twitter receives the username and password from the user. The caller is then redirected to the
+   * callback, where our application completes the sign-in process.
    *
    * <p>This value is injected by MP Config. It is specified in the project POM, and copied into the
    * Liberty server bootstrap.properties during the build. bootstrap.properties is a pre-defined
    * config source for MP config.
    */
   @Inject
-  @ConfigProperty(name = "acme.gifts.frontend.hostname")
-  private String callbackHostname;
-
-  /**
-   * The port serving the twitter sign-in callback URL. This value is injected by MP Config. It is
-   * specified in the project POM, and copied into the Liberty server bootstrap.properties during
-   * the build. bootstrap.properties is a pre-defined config source for MP config.
-   */
-  @Inject
-  @ConfigProperty(name = "acme.gifts.frontend.port")
-  private int callbackPort;
+  @ConfigProperty(name = "acme.gifts.frontend.url")
+  private String frontEndCallbackURL;
 
   /** The user ID key for login response body */
   public static final String LOGIN_RESPONSE_ID_KEY = "id";
@@ -377,7 +368,7 @@ public class LoginResource {
    * @return The URL that Twitter will redirect us to after the first phase of the login.
    */
   private final String buildTwitterCallbackURL() {
-    return "https://" + callbackHostname + ":" + callbackPort + "/login/twitter/verify";
+    return frontEndCallbackURL + "/login/twitter/verify";
   }
 
   /**

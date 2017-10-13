@@ -22,9 +22,12 @@ import { Observable } from 'rxjs/Rx';
 export class GroupService {
     private groups: Group[];
 
-    private groupsUrl = '/service/groups/';
+    // Maven fills in these variables from the pom.xml
+    private url = '${group.service.url}';
 
   constructor(private http: HttpClient) {
+      this.url = this.url + ((this.url.indexOf('/', this.url.length - 1) === -1) ? '/': '') ;
+
       if (sessionStorage.jwt == null) {
           console.log('JSON Web Token is not available. Login before you continue.');
       }
@@ -34,7 +37,7 @@ export class GroupService {
       let headers = new HttpHeaders();
       headers = headers.set('Authorization', sessionStorage.jwt);
 
-      return this.http.get<Groups>(this.groupsUrl + '?userId=' + userId, { headers: headers })
+      return this.http.get<Groups>(this.url + '?userId=' + userId, { headers: headers })
       .map(data => data)
   }
 
@@ -42,7 +45,7 @@ export class GroupService {
       let headers = new HttpHeaders();
       headers = headers.set('Authorization', sessionStorage.jwt);
 
-      return this.http.get<Group>(this.groupsUrl + groupId, { headers: headers })
+      return this.http.get<Group>(this.url + groupId, { headers: headers })
       .map(data => data)
   }
 
@@ -51,7 +54,7 @@ export class GroupService {
       headers = headers.set('Content-Type', 'application/json');
       headers = headers.set('Authorization', sessionStorage.jwt);
       
-      return this.http.post<HttpResponse<any>>(this.groupsUrl, payload, { headers: headers })
+      return this.http.post<HttpResponse<any>>(this.url, payload, { headers: headers })
       .map(data => data);
   }
 
@@ -60,7 +63,7 @@ export class GroupService {
       headers = headers.set('Content-Type', 'application/json');
       headers = headers.set('Authorization', sessionStorage.jwt);
 
-      return this.http.put<HttpResponse<any>>(this.groupsUrl + groupId, payload, { headers: headers })
+      return this.http.put<HttpResponse<any>>(this.url + groupId, payload, { headers: headers })
       .map(data => data);
   }
 
@@ -68,7 +71,7 @@ export class GroupService {
       let headers = new HttpHeaders();
       headers = headers.set('Authorization', sessionStorage.jwt);
 
-      return this.http.delete<HttpResponse<any>>(this.groupsUrl + groupId, { headers: headers })
+      return this.http.delete<HttpResponse<any>>(this.url + groupId, { headers: headers })
       .map(data => data);
   }
 }

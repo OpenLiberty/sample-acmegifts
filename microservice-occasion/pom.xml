@@ -33,9 +33,6 @@
 
         <!-- Liberty server properties -->
         <wlpServerName>OccasionsServer</wlpServerName>
-
-        <!--This is set in the ibm-web-ext.xml file -->
-        <warContext>occasions</warContext>
     </properties>
 
     <profiles>
@@ -283,13 +280,14 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-app</id>
+                        <id>copy-app-to-liberty</id>
                         <phase>package</phase>
                         <goals>
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
                             <outputDirectory>${project.build.directory}/wlp/usr/servers/${wlpServerName}/apps</outputDirectory>
+                            <overwrite>true</overwrite>
                             <resources>
                                 <resource>
                                     <directory>${project.build.directory}</directory>
@@ -305,7 +303,7 @@
                     	<id>copy-keystore-to-integration-test</id>
                     	<phase>pre-integration-test</phase>
                     	<goals>
-                    		<goal>copy-resources</goal>
+                            <goal>copy-resources</goal>
                     	</goals>
                     	<configuration>
                     		<outputDirectory>${basedir}/target/test-classes/truststore</outputDirectory>
@@ -347,7 +345,7 @@
                     	<notification.service.port>${notification.http.port}</notification.service.port>
                     	<notification_1_1.service.hostname>${notification_1_1.hostname}</notification_1_1.service.hostname>
                     	<notification_1_1.service.port>${notification_1_1.http.port}</notification_1_1.service.port>
-                      <jwt.issuer>${jwt.issuer}</jwt.issuer>
+                        <jwt.issuer>${jwt.issuer}</jwt.issuer>
                     </bootstrapProperties>
                 </configuration>
                 <executions>
@@ -377,12 +375,9 @@
                             </includes>
                             <systemPropertyVariables>
                                 <java.util.logging.config.file>${project.build.directory}/test-classes/logging.properties</java.util.logging.config.file>
-                                <liberty.test.hostname>${occasion.hostname}</liberty.test.hostname>
-                                <liberty.test.port>${occasion.http.port}</liberty.test.port>
-                                <liberty.test.ssl.port>${occasion.https.port}</liberty.test.ssl.port>
+                                <liberty.test.occasion.service.url>${occasion.service.url}</liberty.test.occasion.service.url>
                                 <mongo.test.hostname>${occasion.mongo.hostname}</mongo.test.hostname>
                                 <mongo.test.port>${occasion.mongo.port}</mongo.test.port>
-                                <war.name>${warContext}</war.name>
                                 <jwt.issuer>${jwt.issuer}</jwt.issuer>
                             </systemPropertyVariables>
                         </configuration>

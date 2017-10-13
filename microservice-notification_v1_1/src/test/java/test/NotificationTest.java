@@ -30,7 +30,6 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /** Notification Resource tests. */
@@ -47,29 +46,25 @@ public class NotificationTest {
    */
   private final String twitterRecepientName = "CHANGE_ME";
 
-  private static String logFile;
   private static final String libertyPort = System.getProperty("liberty.test.port");
   private static final String libertyHostname = System.getProperty("liberty.test.hostname");
-  private static String fallbackLogFile;
+  private static final String logFile = System.getProperty("log.file");
+  private static final String fallbackLogFile = System.getProperty("fallback.log.file");
+  private static final String notificationServiceURL =
+      "http://" + libertyHostname + ":" + libertyPort + "/notifications";
 
   public static final String JSON_KEY_NOTIFICATION = "notification";
   public static final String JSON_KEY_TWITTER_HANDLE = "twiterHandle";
   public static final String JSON_KEY_MESSAGE = "message";
 
-  @BeforeClass
-  public static void setup() {
-    logFile = System.getProperty("log.file");
-    fallbackLogFile = System.getProperty("fallback.log.file");
-  }
-
   /**
-   * Tests sending a twitter post and a direct notification. IMPORTANT: Update the variables with
-   * value: CHANGE_ME before enabling this test.
+   * Tests sending a twitter post and a direct notification. IMPORTANT: Before enabling this test,
+   * update the application's twitter related properties (default: CHANGE_ME) with valid values.
+   * These properties are located in the application's root pom.xml.
    */
   // @Test
   public void testTwitterPostMention() throws Exception {
     // Post a message.
-    String url = "http://" + libertyHostname + ":" + libertyPort + "/notifications";
     String userMention = "@" + twitterRecepientHandle;
     JsonObjectBuilder content = Json.createObjectBuilder();
     content.add(JSON_KEY_TWITTER_HANDLE, twitterRecepientHandle);
@@ -83,7 +78,8 @@ public class NotificationTest {
     JsonObjectBuilder notification = Json.createObjectBuilder();
     notification.add(JSON_KEY_NOTIFICATION, content.build());
 
-    Response response = processRequest(url, "POST", notification.build().toString());
+    Response response =
+        processRequest(notificationServiceURL, "POST", notification.build().toString());
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -109,7 +105,6 @@ public class NotificationTest {
   @Test
   public void testInvalidTwitterRecepientHandle() throws Exception {
     // Request a twitter notification with an invalid mode.
-    String url = "http://" + libertyHostname + ":" + libertyPort + "/notifications";
     JsonObjectBuilder content = Json.createObjectBuilder();
     content.add(JSON_KEY_TWITTER_HANDLE, "BAD_RECEPIENT_HANDLE");
     content.add(
@@ -120,7 +115,8 @@ public class NotificationTest {
             + "Steve W., Don W., and Jane W. have contributed a total of $100,000 for your gift. A gift from your wishlist at link: http://www.somewishlistLink/Sarah was ordered and mailed.");
     JsonObjectBuilder notification = Json.createObjectBuilder();
     notification.add(JSON_KEY_NOTIFICATION, content.build());
-    Response response = processRequest(url, "POST", notification.build().toString());
+    Response response =
+        processRequest(notificationServiceURL, "POST", notification.build().toString());
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),

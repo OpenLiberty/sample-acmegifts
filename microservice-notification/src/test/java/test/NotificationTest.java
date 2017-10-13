@@ -30,33 +30,27 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 /** Notification Resource tests. */
 public class NotificationTest {
 
+  private static final String libertyHostname = System.getProperty("liberty.test.hostname");
+  private static final String libertyPort = System.getProperty("liberty.test.port");
+  private static final String logFile = System.getProperty("log.file");
+  private static final String notificationServiceURL =
+      "http://" + libertyHostname + ":" + libertyPort + "/notifications";
   private static final String JSON_KEY_NOTIFICATION = "notification";
-  private static String logFile;
-
-  @BeforeClass
-  public static void setup() {
-    logFile = System.getProperty("log.file");
-  }
 
   /** Tests sending a single notification. */
   @Test
   public void testNotification() throws Exception {
-    String libertyHostname = System.getProperty("liberty.test.hostname");
-    String libertyPort = System.getProperty("liberty.test.port");
-
-    String url = "http://" + libertyHostname + ":" + libertyPort + "/notifications";
     JsonObjectBuilder payload = Json.createObjectBuilder();
     payload.add(
         JSON_KEY_NOTIFICATION,
         "Happy birthday Joe D.\nJack D., Jane D. and James D. have contributed a total of $10,000 for your gift. A gift from your wishlist at link: http://www.somewishlistLink/Joe was ordered and mailed.");
 
-    Response response = processRequest(url, "POST", payload.build().toString());
+    Response response = processRequest(notificationServiceURL, "POST", payload.build().toString());
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -67,7 +61,7 @@ public class NotificationTest {
         JSON_KEY_NOTIFICATION,
         "Happy Mother's Day Sarah W.\nSteve W., Don W. and Jane W. have contributed a total of $100,000 for your gift. A gift from your wishlist at link: http://www.somewishlistLink/Sarah was ordered and mailed.");
 
-    response = processRequest(url, "POST", payload.build().toString());
+    response = processRequest(notificationServiceURL, "POST", payload.build().toString());
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),

@@ -51,20 +51,15 @@ public class UserResourceTest {
   private static MongoClient mongo;
   private static DB database;
 
-  private static String baseUrl;
+  private static final String userServiceURL = System.getProperty("liberty.test.user.service.url");
+  private static final int mongoPort = Integer.parseInt(System.getProperty("mongo.test.port"));
+  private static final String mongoHostname = System.getProperty("mongo.test.hostname");
 
   @BeforeClass
   public static void setup() throws Exception {
     // Connect to the database before starting tests.
-    int mongoPort = Integer.parseInt(System.getProperty("mongo.test.port"));
-    String mongoHostname = System.getProperty("mongo.test.hostname");
     mongo = new MongoClient(mongoHostname, mongoPort);
     database = mongo.getDB("gifts-user");
-    baseUrl =
-        "https://"
-            + System.getProperty("liberty.test.hostname")
-            + ":"
-            + System.getProperty("liberty.test.ssl.port");
   }
 
   @AfterClass
@@ -90,8 +85,7 @@ public class UserResourceTest {
     User user1 =
         new User(
             null, "Isaac", "Newton", "inewton", "@inewton", "inewtonWishListLink", "mypassword");
-    String url = baseUrl + "/users/";
-    Response response = processRequest(url, "POST", user1.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user1.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -119,7 +113,7 @@ public class UserResourceTest {
             "@ivannewton",
             "ivannewtonWishListLink",
             "myPassword");
-    response = processRequest(url, "POST", user2.getJson(), loginAuthHeader);
+    response = processRequest(userServiceURL, "POST", user2.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.BAD_REQUEST.getStatusCode() + ".",
         Status.BAD_REQUEST.getStatusCode(),
@@ -137,10 +131,9 @@ public class UserResourceTest {
     User user1 =
         new User(
             null, "Isaac", "Newton", "inewton", "@inewton", "inewtonWishListLink", "mypassword");
-    String url = baseUrl + "/users/";
 
     // This request should fail since the JWT is in the wrong group.
-    Response response = processRequest(url, "POST", user1.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user1.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.UNAUTHORIZED.getStatusCode() + ".",
         Status.UNAUTHORIZED.getStatusCode(),
@@ -155,7 +148,6 @@ public class UserResourceTest {
         "Bearer "
             + new JWTVerifier()
                 .createJWT("unauthenticated", new HashSet<String>(Arrays.asList("login")));
-    String url = baseUrl + "/users/";
     User user =
         new User(
             null,
@@ -165,7 +157,7 @@ public class UserResourceTest {
             "@jMaxwell",
             "jMaxwellWishListLink",
             "myPassword");
-    Response response = processRequest(url, "POST", user.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -193,7 +185,7 @@ public class UserResourceTest {
             "@jamesMaxwell",
             "jamesMaxwellWishListLink",
             "newPassword");
-    String updateUrl = baseUrl + "/users/" + dbId;
+    String updateUrl = userServiceURL + "/" + dbId;
     response = processRequest(updateUrl, "PUT", updatedUser1.getJson(), authHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
@@ -206,7 +198,7 @@ public class UserResourceTest {
     assertTrue("User jamesMaxwell does not contain expected data.", updatedUser1.isEqual(dbUser));
 
     // Test 3: Update user not in database.  This should fail.
-    updateUrl = baseUrl + "/users/" + new ObjectId().toString();
+    updateUrl = userServiceURL + "/" + new ObjectId().toString();
     User updatedUser3 =
         new User(
             null, "Non", "Existent", "NonExistentUserName", "@ne", "neWishListLink", "noPassword");
@@ -225,7 +217,6 @@ public class UserResourceTest {
         "Bearer "
             + new JWTVerifier()
                 .createJWT("unauthenticated", new HashSet<String>(Arrays.asList("login")));
-    String url = baseUrl + "/users/";
     User user =
         new User(
             null,
@@ -235,7 +226,7 @@ public class UserResourceTest {
             "@aEinstein",
             "aEinsteinWishListLink",
             "myPassword");
-    Response response = processRequest(url, "POST", user.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -254,7 +245,7 @@ public class UserResourceTest {
     assertTrue("User aEinstein does not contain expected data.", user.isEqual(dbUser));
 
     // Delete user.
-    String deleteUrl = baseUrl + "/users/" + dbId;
+    String deleteUrl = userServiceURL + "/" + dbId;
     response = processRequest(deleteUrl, "DELETE", null, authHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
@@ -281,7 +272,6 @@ public class UserResourceTest {
         "Bearer "
             + new JWTVerifier()
                 .createJWT("unauthenticated", new HashSet<String>(Arrays.asList("login")));
-    String addUserUrl = baseUrl + "/users";
     User user =
         new User(
             null,
@@ -291,7 +281,7 @@ public class UserResourceTest {
             "@rFeynman",
             "rFeynmanWishListLink",
             "myPassword");
-    Response response = processRequest(addUserUrl, "POST", user.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -310,7 +300,7 @@ public class UserResourceTest {
     assertTrue("User rFeynman does not contain expected data.", user.isEqual(dbUser));
 
     // Test 1: Get user data for existing user.
-    String getUrl = baseUrl + "/users/" + dbId;
+    String getUrl = userServiceURL + "/" + dbId;
     response = processRequest(getUrl, "GET", null, authHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
@@ -324,7 +314,7 @@ public class UserResourceTest {
     assertFalse("Response contained a password", responseUserObject.containsKey("password"));
 
     // Test 2: Get user data for non-existing user.  This should fail.
-    getUrl = baseUrl + "/users/" + new ObjectId().toString();
+    getUrl = userServiceURL + "/" + new ObjectId().toString();
     response = processRequest(getUrl, "GET", null, authHeader);
     assertEquals(
         "HTTP response code should have been " + Status.BAD_REQUEST.getStatusCode() + ".",
@@ -340,7 +330,6 @@ public class UserResourceTest {
         "Bearer "
             + new JWTVerifier()
                 .createJWT("unauthenticated", new HashSet<String>(Arrays.asList("login")));
-    String addUserUrl = baseUrl + "/users";
     User user =
         new User(
             null,
@@ -350,7 +339,7 @@ public class UserResourceTest {
             "@rFeynman",
             "rFeynmanWishListLink",
             "myPassword");
-    Response response = processRequest(addUserUrl, "POST", user.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -368,7 +357,7 @@ public class UserResourceTest {
 
     // Test 1: Get user data for existing user with the JWT we created for login.
     //         This should fail because the JWT is in the wrong group.
-    String getUrl = baseUrl + "/users/" + dbId;
+    String getUrl = userServiceURL + "/" + dbId;
     response = processRequest(getUrl, "GET", null, loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.UNAUTHORIZED.getStatusCode() + ".",
@@ -384,7 +373,6 @@ public class UserResourceTest {
         "Bearer "
             + new JWTVerifier()
                 .createJWT("unauthenticated", new HashSet<String>(Arrays.asList("login")));
-    String url1 = baseUrl + "/users";
     User gGalilei =
         new User(
             null,
@@ -394,7 +382,7 @@ public class UserResourceTest {
             "@gGalilei",
             "gGalileiWishListLink",
             "myPassword");
-    Response response = processRequest(url1, "POST", gGalilei.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", gGalilei.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -406,10 +394,9 @@ public class UserResourceTest {
     String dbId1 = responseJson1.getString(KEY_USER_ID);
     gGalilei.setId(dbId1);
 
-    String url2 = baseUrl + "/users";
     User mCurie =
         new User(null, "Marie", "Curie", "mCurie", "@mCurie", "mCurieWishListLink", "myPassword");
-    response = processRequest(url2, "POST", mCurie.getJson(), loginAuthHeader);
+    response = processRequest(userServiceURL, "POST", mCurie.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -432,8 +419,7 @@ public class UserResourceTest {
     assertTrue("User mCurie does not contain expected data.", mCurie.isEqual(dbUser));
 
     // Get users.
-    String url = baseUrl + "/users";
-    response = processRequest(url, "GET", null, authHeader);
+    response = processRequest(userServiceURL, "GET", null, authHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),

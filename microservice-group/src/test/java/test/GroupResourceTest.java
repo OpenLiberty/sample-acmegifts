@@ -40,6 +40,8 @@ import org.junit.Test;
 
 public class GroupResourceTest {
 
+  private static final String groupServiceURL =
+      System.getProperty("liberty.test.group.service.url");
   private static MongoClient mongo;
   private static DB db;
 
@@ -76,8 +78,7 @@ public class GroupResourceTest {
 
     Group group = new Group(null, "testGroup", new String[] {"12345"});
 
-    String url = getBaseURL();
-    JsonObject response = makeConnection("POST", url, group.getJson(), 200);
+    JsonObject response = makeConnection("POST", groupServiceURL, group.getJson(), 200);
 
     // Verify that the correct data is in mongo
     String id = response.getString("id");
@@ -103,7 +104,7 @@ public class GroupResourceTest {
     group.setId(dbGroup.getObjectId(Group.DB_ID).toString());
 
     // Make GET call with group id
-    String url = getBaseURL() + "/" + dbGroup.getObjectId(Group.DB_ID);
+    String url = groupServiceURL + "/" + dbGroup.getObjectId(Group.DB_ID);
     JsonObject response = makeConnection("GET", url, null, 200);
 
     Group returnedGroup = new Group(response.toString());
@@ -157,7 +158,7 @@ public class GroupResourceTest {
     group3.setId(dbgroup3.getObjectId(Group.DB_ID).toString());
 
     // Make GET call get all groups associated to the specified user ID.
-    String url = getBaseURL() + "?userId=" + jorgeWashingtonDbId;
+    String url = groupServiceURL + "?userId=" + jorgeWashingtonDbId;
     JsonObject response = makeConnection("GET", url, null, 200);
 
     // Verify the returned group info is correct
@@ -228,8 +229,7 @@ public class GroupResourceTest {
     group3.setId(dbgroup3.getObjectId(Group.DB_ID).toString());
 
     // Make GET call get all groups.
-    String url = getBaseURL();
-    JsonObject response = makeConnection("GET", url, null, 200);
+    JsonObject response = makeConnection("GET", groupServiceURL, null, 200);
 
     // Verify the returned group info is correct
     assertTrue("Invalid response.", response != null);
@@ -274,9 +274,8 @@ public class GroupResourceTest {
     // mpJwt-1.0 feature would return an HTTP 401 when accessing an
     // unprotected resource with no JWT, and later versions would return
     // a 500 due to an NPE.  We'll accept either here.
-    String url = getBaseURL();
-    makeConnection("GET", url, null, 200, "users");
-    makeConnection("GET", url, null, new Integer[] {401, 500}, null);
+    makeConnection("GET", groupServiceURL, null, 200, "users");
+    makeConnection("GET", groupServiceURL, null, new Integer[] {401, 500}, null);
   }
 
   /** Try to get all groups as an invalid user (invalid group). */
@@ -285,10 +284,9 @@ public class GroupResourceTest {
     System.out.println("\nStarting testGetAllGroupsInvalidJWTGroup");
 
     // Make GET call get all groups.
-    String url = getBaseURL();
-    makeConnection("GET", url, null, 200, "users");
-    makeConnection("GET", url, null, 200, "orchestrator");
-    makeConnection("GET", url, null, 401, "unauthGroup");
+    makeConnection("GET", groupServiceURL, null, 200, "users");
+    makeConnection("GET", groupServiceURL, null, 200, "orchestrator");
+    makeConnection("GET", groupServiceURL, null, 401, "unauthGroup");
   }
 
   /**
@@ -309,7 +307,7 @@ public class GroupResourceTest {
 
     ObjectId groupId = dbGroup.getObjectId(Group.DB_ID);
     // Make DELETE call with group id
-    String url = getBaseURL() + "/" + groupId;
+    String url = groupServiceURL + "/" + groupId;
     makeConnection("DELETE", url, null, 200);
 
     // Verify that the group no longer exists in mongo
@@ -329,7 +327,7 @@ public class GroupResourceTest {
     String groupId = "123456789";
 
     // Make DELETE call with non-existent group id
-    String url = getBaseURL() + "/" + groupId;
+    String url = groupServiceURL + "/" + groupId;
     makeConnection("DELETE", url, null, 400);
   }
 
@@ -345,7 +343,7 @@ public class GroupResourceTest {
     String groupId = "123456789";
 
     // Make DELETE call with non-existent group id
-    String url = getBaseURL() + "/" + groupId;
+    String url = groupServiceURL + "/" + groupId;
     makeConnection("GET", url, null, 400);
   }
 
@@ -369,7 +367,7 @@ public class GroupResourceTest {
     // Create updated group
     ObjectId groupId = dbGroup.getObjectId(Group.DB_ID);
     Group newGroup = new Group(groupId.toString(), "newTestGroup", new String[] {"12345"});
-    String url = getBaseURL() + "/" + groupId;
+    String url = groupServiceURL + "/" + groupId;
     makeConnection("PUT", url, newGroup.getJson(), 200);
 
     // Verify that the new group information is in mongo
@@ -446,12 +444,5 @@ public class GroupResourceTest {
     }
 
     return Group.stringToJsonObj(responseString);
-  }
-
-  private String getBaseURL() {
-    String port = System.getProperty("liberty.test.ssl.port");
-    String hostname = System.getProperty("liberty.test.hostname");
-
-    return "https://" + hostname + ":" + port + "/groups";
   }
 }

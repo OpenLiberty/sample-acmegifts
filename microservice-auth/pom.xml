@@ -197,9 +197,7 @@
                                 <include>**/test/**</include>
                             </includes>
                             <systemPropertyVariables>
-                                <liberty.test.hostname>${auth.hostname}</liberty.test.hostname>
-                                <liberty.test.port>${auth.http.port}</liberty.test.port>
-                                <liberty.test.ssl.port>${auth.https.port}</liberty.test.ssl.port>
+                                <liberty.test.auth.service.url>${auth.service.url}</liberty.test.auth.service.url>
                             </systemPropertyVariables>
                         </configuration>
                     </execution>
