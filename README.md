@@ -9,6 +9,7 @@ A social gift giving application built on the [MicroProfile](http://microprofile
 * [Microservices](#microservices)
 * [Configuration and Customization](#configuration-and-customization)
 * [Using Acme Gifts](#using-acme-gifts)
+* [Running Acme Gifts on Minikube](#running-acme-gifts-on-minikube)
 
 ## What is Acme Gifts?
 
@@ -16,7 +17,6 @@ Acme Gifts is a Java microservices application that was designed to run on Open 
 
 Acme Gifts provides a platform for users to create and join groups and exchange gifts within those groups. For example, a specific user may be a part of a co-workers group as well as a friends or family group. In each of these groups, occasions can be created (i.e. John's Birthday, Stacy's Retirement, etc.) to occur on a specific date. Users in that group can then pledge a contribution to that occasion, and when the occasion occurs, the recipient will be notified via Twitter of the total sum that their group raised for them. They are then informed to choose an item off of their predefined wish-list for the allotted sum. 
 
-### Architecture
 ![alt text](collateral/architecture.bmp)
 
 
@@ -140,7 +140,7 @@ scheduled occasions take place.
 
 * Optionally, update the location/name of the administrative log by updating the entry located under the
    "Optional Microservice Configuration" label in the "properties" section of the
-   sample-acmegifts/microservice-notification_v1_1 pom.xml. The default value is: 
+   sample-acmegifts/microservice-notification pom.xml. The default value is: 
    
    `notification.log.file = ${project.build.directory}/logs/notifications.log`
    
@@ -162,9 +162,9 @@ The notification microservice v1_1 is a notification service that logs to a file
    "Optional Microservice Configuration" label in the "properties" section of the
    sample-acmegifts/microservice-notification_v1_1 pom.xml. The default values are: 
    
-   `notification.log.file = ${project.build.directory}/logs/notifications.log`
+   `notification_1_1.log.file = ${project.build.directory}/logs/${project.build.directory}/logs/notifications_1_1.log`
    
-   `fallback.notification.log.file = ${project.build.directory}/logs/fallbacknotifications.log`   
+   `notification_1_1.fallback.log.file = ${project.build.directory}/logs/notifications_1_1_fallback.log`   
 
 #### Build and Start
 Issue the following commands from within sample-acmegifts/microservice-notification_v1_1 directory
@@ -259,3 +259,46 @@ Checkout the run-app [readme](run-app/README.md) for usage details.
 
 ## Using Acme Gifts
 For details on how to use Acme Gifts checkout [Using Acme Gifts](front-end-ui/README.md).
+
+## Running Acme Gifts on Minikube
+Acme Gifts can run on a minikube Kubernetes cluster.
+
+### Pre-reqs
+1. Minikube.
+1. Kubectl.
+1. Docker.
+1. Virtual Machine driver (i.e. VirtualBox).
+
+### Usage:
+The following instructions show how to run pre-built images of the application from Docker Hub. These images do not contain the 
+custom information required to perform actions such as logging-in with twitter or using the twitter notification support 
+provided by `notification microservice v1_1`. If you wish to perform twitter related action, you will need to build your own images
+using the provided `docker-build` script. Before executing the script, update the following entries:
+  - -Dtwitter.app.consumer.key=CHANGE_ME \
+  - -Dtwitter.app.consumer.secret=CHANGE_ME \
+  - -Dtwitter.user.access.token=CHANGE_ME \
+  - -Dtwitter.user.access.secret=CHANGE_ME \
+
+See [Twitter Configuration](#twitter-configuration) on how to obtain the needed information.
+
+Note that if you want the resulting images to be used inside a minikube environment, make sure that you target your Docker CLI at the minikube Docker Engine before building using the following command: `eval $(minikube docker-env)`.
+
+1. Start minikube:
+
+   `minikube start`
+	
+1. Ensure that ingress is enabled:
+   
+   `minikube addons enable ingress`
+   
+1. Ensure `kubectl` is targeting your cluster (as it would be after a `minikube start`) and then run the command:
+   
+   `kubectl apply -f kubernetes.yml`
+
+1. Wait for all of the pods to show as running when the following commands is executed:
+   
+   `kubectl get pods`
+   
+1.  Access the Acme Gifts UI in a browser using the IP address returned by:
+
+    `minikube ip`

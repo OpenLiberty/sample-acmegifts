@@ -29,13 +29,10 @@ import org.junit.Test;
 public class AuthResourceTest {
 
   /**
-   * This is the SSL port that the Liberty auth server is listening on. We'll use it to call JAX-RS
+   * This is the URL that the Liberty auth server is listening on. We'll use it to call JAX-RS
    * services in our tests.
    */
-  private static final String libertySslPort = System.getProperty("liberty.test.ssl.port");
-
-  /** This is the hostname the Liberty server is listening on. */
-  private static final String libertyHostname = System.getProperty("liberty.test.hostname");
+  private static final String authServiceURL = System.getProperty("liberty.test.auth.service.url");
 
   /**
    * Tests the JWT we get back from the auth service is valid. We test the JWT to make sure it was
@@ -48,8 +45,7 @@ public class AuthResourceTest {
   @Test
   public void testLoginJwtValidity() throws Exception {
     // Get the JWT from the auth service.
-    String url = "https://" + libertyHostname + ":" + libertySslPort + "/auth";
-    Response response = processRequest(url, "GET", null, null);
+    Response response = processRequest(authServiceURL, "GET", null, null);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),

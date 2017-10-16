@@ -257,6 +257,11 @@ public class Orchestrator {
       String method, String urlString, String payload, String jwtTokenString) throws IOException {
 
     Client client = ClientBuilder.newClient();
+
+    // Set the client connection timeout to 10 seconds. This is the amount of time the client
+    // will attempt to establish a connection before it times out.
+    client.property("http.connection.timeout", 10000);
+
     WebTarget target = client.target(urlString);
     Response response;
 

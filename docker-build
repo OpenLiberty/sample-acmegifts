@@ -1,0 +1,59 @@
+#!/bin/bash
+
+MONGO_HOSTNAME="mongo"
+MONGO_PORT=27017
+DOMAIN="default.svc.cluster.local"
+MINIKUBE_IP=$(minikube ip)
+
+mvn -Dmaven.test.skip=true \
+  -Dkeystore_CN=*.$DOMAIN \
+  -Duser.mongo.hostname=$MONGO_HOSTNAME \
+  -Duser.mongo.port=$MONGO_PORT \
+  -Duser.http.port=9080 \
+  -Duser.https.port=9443 \
+  -Duser.hostname=user.$DOMAIN \
+  -Duser.service.url=/service/users \
+  -Duser.service.login.url=/service/logins \
+  -Dgroup.mongo.hostname=$MONGO_HOSTNAME \
+  -Dgroup.mongo.port=$MONGO_PORT \
+  -Dgroup.http.port=9080 \
+  -Dgroup.https.port=9443 \
+  -Dgroup.hostname=group.$DOMAIN \
+  -Dgroup.service.url=/service/groups \
+  -Doccasion.mongo.hostname=$MONGO_HOSTNAME \
+  -Doccasion.mongo.port=$MONGO_PORT \
+  -Doccasion.http.port=9080 \
+  -Doccasion.https.port=9443 \
+  -Doccasion.hostname=occasion.$DOMAIN \
+  -Doccasion.service.url=/service/occasions \
+  -Dnotification.http.port=9080 \
+  -Dnotification.https.port=9443 \
+  -Dnotification.hostname=notification.$DOMAIN \
+  -Dnotification.log.file=/logs/notifications.log \
+  -Dnotification_1_1.http.port=9080 \
+  -Dnotification_1_1.https.port=9443 \
+  -Dnotification_1_1.hostname=notification11.$DOMAIN \
+  -Dnotification_1_1.log.file=/logs/notifications_1_1.log \
+  -Dnotification_1_1.fallback.log.file=/logs/notifications_1_1_fallback.log \
+  -Dtwitter.app.consumer.key=CHANGE_ME \
+  -Dtwitter.app.consumer.secret=CHANGE_ME \
+  -Dtwitter.user.access.token=CHANGE_ME \
+  -Dtwitter.user.access.secret=CHANGE_ME \
+  -Dfrontend.http.port=9080 \
+  -Dfrontend.https.port=9443 \
+  -Dfrontend.hostname=frontend.$DOMAIN \
+  -Dfrontend.url=https://$MINIKUBE_IP \
+  -Dauth.http.port=9080 \
+  -Dauth.https.port=9443 \
+  -Dauth.hostname=auth.$DOMAIN \
+  -Dauth.service.url=/service/auth \
+  clean package install
+
+NAMESPACE="acmegifts"
+docker build -t $NAMESPACE/front-end-ui:latest front-end-ui
+docker build -t $NAMESPACE/microservice-auth:latest microservice-auth
+docker build -t $NAMESPACE/microservice-group:latest microservice-group
+docker build -t $NAMESPACE/microservice-notification:latest microservice-notification
+docker build -t $NAMESPACE/microservice-notification-v1-1:latest microservice-notification_v1_1
+docker build -t $NAMESPACE/microservice-occasion:latest microservice-occasion
+docker build -t $NAMESPACE/microservice-user:latest microservice-user

@@ -60,7 +60,8 @@ public class JWTVerifier {
   private static final String JWT_ISSUER = System.getProperty("jwt.issuer", "http://wasdev.net");
 
   /** The hostname we'll use in our tests. The hostname of the user service. */
-  private static final String libertyHostname = System.getProperty("liberty.user.service.hostname");
+  private static final String libertyHostname =
+      System.getProperty("liberty.test.user.service.hostname");
 
   /** The SSL port we'll use in our tests. The ssl port of the user service. */
   private static final String libertySslPort = System.getProperty("liberty.user.service.ssl.port");

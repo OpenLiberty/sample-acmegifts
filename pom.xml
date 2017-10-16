@@ -63,18 +63,22 @@
         <user.hostname>localhost</user.hostname>
         <user.http.port>5050</user.http.port>
         <user.https.port>5051</user.https.port>
+        <user.service.login.url>https://${user.hostname}:${user.https.port}/logins</user.service.login.url>
+        <user.service.url>https://${user.hostname}:${user.https.port}/users</user.service.url>
         <user.mongo.hostname>localhost</user.mongo.hostname>
         <user.mongo.port>5052</user.mongo.port>
 
         <group.hostname>localhost</group.hostname>
         <group.http.port>5053</group.http.port>
         <group.https.port>5054</group.https.port>
+        <group.service.url>https://${group.hostname}:${group.https.port}/groups</group.service.url>
         <group.mongo.hostname>localhost</group.mongo.hostname>
         <group.mongo.port>5055</group.mongo.port>
 
         <occasion.hostname>localhost</occasion.hostname>
         <occasion.http.port>5056</occasion.http.port>
         <occasion.https.port>5057</occasion.https.port>
+        <occasion.service.url>https://${occasion.hostname}:${occasion.https.port}/occasions</occasion.service.url>
         <occasion.mongo.hostname>localhost</occasion.mongo.hostname>
         <occasion.mongo.port>5058</occasion.mongo.port>
 
@@ -86,13 +90,15 @@
         <notification_1_1.http.port>5061</notification_1_1.http.port>
         <notification_1_1.https.port>5062</notification_1_1.https.port>
 
+        <frontend.hostname>localhost</frontend.hostname>
         <frontend.http.port>5063</frontend.http.port>
         <frontend.https.port>5064</frontend.https.port>
-        <frontend.hostname>localhost</frontend.hostname>
+        <frontend.url>https://${frontend.hostname}:${frontend.https.port}</frontend.url>
 
+        <auth.hostname>localhost</auth.hostname>
         <auth.http.port>5065</auth.http.port>
         <auth.https.port>5066</auth.https.port>
-        <auth.hostname>localhost</auth.hostname>
+        <auth.service.url>https://${auth.hostname}:${auth.https.port}/auth</auth.service.url>
 
         <!-- Optional path to Mongo install bin directory (for use when auto starting and stopping the databases) -->
         <mongo.path></mongo.path>
@@ -121,7 +127,6 @@
         <twitter.app.consumer.secret>CHANGE_ME</twitter.app.consumer.secret>
         <twitter.user.access.token>CHANGE_ME</twitter.user.access.token>
         <twitter.user.access.secret>CHANGE_ME</twitter.user.access.secret>
-
     </properties>
 
     <repositories>

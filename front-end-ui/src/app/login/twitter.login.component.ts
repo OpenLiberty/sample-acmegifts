@@ -12,15 +12,17 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse, HttpResponse} from '@angular/common/http';
 import { Router } from '@angular/router';
 import { AuthService } from '../auth/services/auth.service';
+import { LoginService } from './services/login.service';
 
 @Component({
   template: '',
-  providers: [AuthService]
+  providers: [AuthService, LoginService]
 })
 export class TwitterLoginComponent implements OnInit {
 
     constructor(private http: HttpClient, private router: Router,
-                private authService: AuthService ) {}
+                private authService: AuthService,
+                private loginService: LoginService) {}
 
     // This performs the first part of the twitter login.  We're
     // basically delegating to the user microservice, who should
@@ -30,19 +32,14 @@ export class TwitterLoginComponent implements OnInit {
     ngOnInit() {
         this.authService.getLoginJwt().subscribe((res2: HttpResponse<any>) => {
             sessionStorage.jwt = res2.headers.get('Authorization');
-
-            let headers = new HttpHeaders();
-            headers = headers.set('Authorization', sessionStorage.jwt);
-
-            // Maven fills in these variables from the pom.xml
-            const url = 'https://${user.hostname}:${user.https.port}/logins/twitter';
-            this.http.get(url, {headers: headers, observe: 'body'}).subscribe(resBody => {
-            if ('error' in resBody) {
-                this.router.navigate([ '/login' ], { queryParams: {'retryMessage': resBody['error']} });
-            } else {
-                const oauthToken: string = resBody['oauth_token'];
-                window.location.href = 'https://api.twitter.com/oauth/authenticate?oauth_token=' + oauthToken;
-            }
+            this.loginService.loginWithTwitter().subscribe((response: HttpResponse<any>) => {
+                let resBody = response.body;
+                if ('error' in resBody) {
+                    this.router.navigate([ '/login' ], { queryParams: {'retryMessage': resBody['error']} });
+                } else {
+                    const oauthToken: string = resBody['oauth_token'];
+                    window.location.href = 'https://api.twitter.com/oauth/authenticate?oauth_token=' + oauthToken;
+                }
             }, (err: any) => {
                 this.router.navigate([ '/login' ], { queryParams: {'retryMessage': 'serverError'} });
             });

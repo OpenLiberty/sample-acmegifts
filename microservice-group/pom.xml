@@ -241,9 +241,7 @@
                     <summaryFile>${project.build.directory}/test-reports/acme-gifts/failsafe-summary.xml</summaryFile>
                     <reportsDirectory>${project.build.directory}/test-reports/acme-gifts</reportsDirectory>
                     <systemPropertyVariables>
-                        <liberty.test.hostname>${group.hostname}</liberty.test.hostname>
-                        <liberty.test.port>${group.http.port}</liberty.test.port>
-                        <liberty.test.ssl.port>${group.https.port}</liberty.test.ssl.port>
+                        <liberty.test.group.service.url>${group.service.url}</liberty.test.group.service.url>
                         <mongo.test.hostname>${group.mongo.hostname}</mongo.test.hostname>
                         <mongo.test.port>${group.mongo.port}</mongo.test.port>
                         <jwt.issuer>${jwt.issuer}</jwt.issuer>

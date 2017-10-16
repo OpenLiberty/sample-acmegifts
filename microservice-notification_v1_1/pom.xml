@@ -23,8 +23,8 @@
         <server.name>notificationServer</server.name>
 
         <!-- Optional Microservice Configuration -->
-        <notification.log.file>${project.build.directory}/logs/notifications.log</notification.log.file>
-        <fallback.notification.log.file>${project.build.directory}/logs/fallbacknotifications.log</fallback.notification.log.file>        
+        <notification_1_1.log.file>${project.build.directory}/logs/notifications_1_1.log</notification_1_1.log.file>
+        <notification_1_1.fallback.log.file>${project.build.directory}/logs/notifications_1_1_fallback.log</notification_1_1.fallback.log.file>        
     </properties>
 
     <dependencies>
@@ -185,8 +185,8 @@
 
                 <configuration>
                     <bootstrapProperties>
-                        <log.file>${notification.log.file}</log.file>
-                        <fallback.log.file>${fallback.notification.log.file}</fallback.log.file>
+                        <log.file>${notification_1_1.log.file}</log.file>
+                        <fallback.log.file>${notification_1_1.fallback.log.file}</fallback.log.file>
                         <twitter.consumer.key>${twitter.app.consumer.key}</twitter.consumer.key>
                         <twitter.consumer.secret>${twitter.app.consumer.secret}</twitter.consumer.secret>
                         <twitter.access.token>${twitter.user.access.token}</twitter.access.token>
@@ -216,8 +216,9 @@
                         </goals>
                         <configuration>
                             <systemPropertyVariables>
-                                <log.file>${notification.log.file}</log.file>
-                                <fallback.log.file>${fallback.notification.log.file}</fallback.log.file>
+
+                                <log.file>${notification_1_1.log.file}</log.file>
+                                <fallback.log.file>${notification_1_1.fallback.log.file}</fallback.log.file>
                                 <twitter.consumer.key>${twitter.app.consumer.key}</twitter.consumer.key>
                                 <twitter.consumer.secret>${twitter.app.consumer.secret}</twitter.consumer.secret>
                                 <twitter.access.token>${twitter.user.access.token}</twitter.access.token>

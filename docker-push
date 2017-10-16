@@ -1,0 +1,10 @@
+#!/bin/bash
+
+NAMESPACE="acmegifts"
+docker push $NAMESPACE/front-end-ui:latest
+docker push $NAMESPACE/microservice-auth:latest
+docker push $NAMESPACE/microservice-group:latest
+docker push $NAMESPACE/microservice-notification:latest
+docker push $NAMESPACE/microservice-notification-v1-1:latest
+docker push $NAMESPACE/microservice-occasion:latest
+docker push $NAMESPACE/microservice-user:latest

@@ -43,18 +43,18 @@ public class LoginResourceTest {
 
   private static MongoClient mongo;
   private static DB database;
-
-  /** The SSL port we'll use in our tests. This is the Liberty SSL port. */
-  private static final String libertySslPort = System.getProperty("liberty.test.ssl.port");
-
-  /** The hostname we'll use in our tests. This is the hostname running Liberty. */
-  private static final String libertyHostname = System.getProperty("liberty.test.hostname");
+  private static final int mongoPort = Integer.parseInt(System.getProperty("mongo.test.port"));
+  private static final String mongoHostname = System.getProperty("mongo.test.hostname");
+  private static final String userServiceURL = System.getProperty("liberty.test.user.service.url");
+  private static final String userServiceLoginURL =
+      System.getProperty("liberty.test.user.service.login.url");
+  private static final String libertyPort = System.getProperty("liberty.test.port");
+  private static final String libertyHostname =
+      System.getProperty("liberty.test.user.service.hostname");
 
   @BeforeClass
   public static void setup() throws Exception {
     // Open a connection to the Mongo database before the tests start.
-    int mongoPort = Integer.parseInt(System.getProperty("mongo.test.port"));
-    String mongoHostname = System.getProperty("mongo.test.hostname");
     mongo = new MongoClient(mongoHostname, mongoPort);
     database = mongo.getDB("gifts-user");
   }
@@ -80,10 +80,9 @@ public class LoginResourceTest {
         "Bearer "
             + new JWTVerifier()
                 .createJWT("unauthenticated", new HashSet<String>(Arrays.asList("login")));
-    String url = "https://" + libertyHostname + ":" + libertySslPort + "/users";
     User user =
         new User(null, "Niels", "Bohr", "nBohr", "@nBohr", "nBohrWishListLink", "myPassword");
-    Response response = processRequest(url, "POST", user.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -102,12 +101,13 @@ public class LoginResourceTest {
     assertTrue("User rFeynman does not contain expected data.", user.isEqual(dbUser));
 
     // Test 1: Login user.
-    String postUrl = "https://" + libertyHostname + ":" + libertySslPort + "/logins";
     JsonObjectBuilder loginPayload = Json.createObjectBuilder();
     loginPayload.add(User.JSON_KEY_USER_NAME, user.userName);
     loginPayload.add(User.JSON_KEY_USER_PASSWORD, user.password);
 
-    response = processRequest(postUrl, "POST", loginPayload.build().toString(), loginAuthHeader);
+    response =
+        processRequest(
+            userServiceLoginURL, "POST", loginPayload.build().toString(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -123,7 +123,9 @@ public class LoginResourceTest {
     // Test 2: Test login for a non-existing user.
     loginPayload.add(User.JSON_KEY_USER_NAME, "nonExistentUser");
     loginPayload.add(User.JSON_KEY_USER_PASSWORD, "Something");
-    response = processRequest(postUrl, "POST", loginPayload.build().toString(), loginAuthHeader);
+    response =
+        processRequest(
+            userServiceLoginURL, "POST", loginPayload.build().toString(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.BAD_REQUEST.getStatusCode() + ".",
         Status.BAD_REQUEST.getStatusCode(),
@@ -138,10 +140,9 @@ public class LoginResourceTest {
         "Bearer "
             + new JWTVerifier()
                 .createJWT("unauthenticated", new HashSet<String>(Arrays.asList("login")));
-    String url = "https://" + libertyHostname + ":" + libertySslPort + "/users";
     User user =
         new User(null, "Niels", "Bohr", "nBohr", "@nBohr", "nBohrWishListLink", "myPassword");
-    Response response = processRequest(url, "POST", user.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -160,14 +161,14 @@ public class LoginResourceTest {
     assertTrue("User rFeynman does not contain expected data.", user.isEqual(dbUser));
 
     // Test 1: Login user.
-    String postUrl = "https://" + libertyHostname + ":" + libertySslPort + "/logins";
     JsonObjectBuilder loginPayload = Json.createObjectBuilder();
     loginPayload.add(User.JSON_KEY_USER_NAME, user.userName);
     loginPayload.add(User.JSON_KEY_USER_PASSWORD, user.password);
 
     // Use the JWT that we got back from the logged-in use to log in a new user.
     // This should not succeed.
-    response = processRequest(postUrl, "POST", loginPayload.build().toString(), authHeader);
+    response =
+        processRequest(userServiceLoginURL, "POST", loginPayload.build().toString(), authHeader);
     assertEquals(
         "HTTP response code should have been " + Status.UNAUTHORIZED.getStatusCode() + ".",
         Status.UNAUTHORIZED.getStatusCode(),
@@ -182,10 +183,9 @@ public class LoginResourceTest {
         "Bearer "
             + new JWTVerifier()
                 .createJWT("unauthenticated", new HashSet<String>(Arrays.asList("login")));
-    String url = "https://" + libertyHostname + ":" + libertySslPort + "/users";
     User user =
         new User(null, "Niels", "Bohr", "nBohr", "@nBohr", "nBohrWishListLink", "myPassword");
-    Response response = processRequest(url, "POST", user.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),
@@ -204,12 +204,13 @@ public class LoginResourceTest {
     assertTrue("User rFeynman does not contain expected data.", user.isEqual(dbUser));
 
     // Test 1: Login the user with an incorrect password.  This should fail.
-    String postUrl = "https://" + libertyHostname + ":" + libertySslPort + "/logins";
     JsonObjectBuilder loginPayload = Json.createObjectBuilder();
     loginPayload.add(User.JSON_KEY_USER_NAME, user.userName);
     loginPayload.add(User.JSON_KEY_USER_PASSWORD, user.password + "X");
 
-    response = processRequest(postUrl, "POST", loginPayload.build().toString(), loginAuthHeader);
+    response =
+        processRequest(
+            userServiceLoginURL, "POST", loginPayload.build().toString(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.UNAUTHORIZED.getStatusCode() + ".",
         Status.UNAUTHORIZED.getStatusCode(),
@@ -219,17 +220,15 @@ public class LoginResourceTest {
   /** Tests login via the non-SSL port. The connection should be denied or forwarded. */
   @Test
   public void testLoginNonSsl() throws Exception {
-    String libertyPort = System.getProperty("liberty.test.port");
 
     // Add a user.
     String loginAuthHeader =
         "Bearer "
             + new JWTVerifier()
                 .createJWT("unauthenticated", new HashSet<String>(Arrays.asList("login")));
-    String url = "https://" + libertyHostname + ":" + libertySslPort + "/users";
     User user =
         new User(null, "Niels", "Bohr", "nBohr", "@nBohr", "nBohrWishListLink", "myPassword");
-    Response response = processRequest(url, "POST", user.getJson(), loginAuthHeader);
+    Response response = processRequest(userServiceURL, "POST", user.getJson(), loginAuthHeader);
     assertEquals(
         "HTTP response code should have been " + Status.OK.getStatusCode() + ".",
         Status.OK.getStatusCode(),

@@ -17,10 +17,13 @@ import { Observable } from 'rxjs/Rx';
  */
 @Injectable()
 export class AuthService {
-    // Maven fills in these variables from the pom.xml
-    private url = 'https://${auth.hostname}:${auth.https.port}/auth/';
 
-    constructor(private http: HttpClient) {}
+    // Maven fills in these variables from the pom.xml
+    private url: string = "${auth.service.url}";
+
+    constructor(private http: HttpClient) {
+        this.url = this.url + ((this.url.indexOf('/', this.url.length - 1) === -1) ? '/': '') ;
+    }
 
     getLoginJwt(): Observable<HttpResponse<any>> {
         return this.http.get<HttpResponse<any>>(this.url, { observe: 'response'}).map(data => data);

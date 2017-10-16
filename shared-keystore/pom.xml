@@ -18,6 +18,10 @@
     <artifactId>shared-keystore</artifactId>
     <packaging>jar</packaging>
 
+    <properties>
+        <keystore_CN>localhost</keystore_CN>    
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>javax</groupId>
@@ -68,7 +72,7 @@
                     <keysize>2048</keysize>
                     <sigalg>SHA256withRSA</sigalg>
                     <alias>default</alias>
-                    <dname>cn=localhost, ou=userServer, O=IBM, C=us</dname>
+                    <dname>cn=${keystore_CN}, ou=userServer, O=IBM, C=us</dname>
                     <validity>999</validity>
                     <skipIfExist>true</skipIfExist>
                   </configuration>

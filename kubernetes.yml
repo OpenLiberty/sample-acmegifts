@@ -1,0 +1,345 @@
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: mongo-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - name: mongo
+        image: mongo
+        ports:
+        - containerPort: 27017
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo
+spec:
+  selector:
+    app: mongo
+  ports:
+  - protocol: TCP
+    port: 27017
+    targetPort: 27017
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: front-end-ui-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: front-end-ui
+    spec:
+      containers:
+      - name: front-end-ui
+        image: acmegifts/front-end-ui:latest
+        ports:
+        - containerPort: 9443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: front-end-ui
+spec:
+  selector:
+    app: front-end-ui
+  ports:
+  - name: https
+    protocol: TCP
+    port: 9443
+    targetPort: 9443
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: microservice-auth-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: microservice-auth
+    spec:
+      containers:
+      - name: microservice-auth
+        image: acmegifts/microservice-auth:latest
+        ports:
+        - containerPort: 9443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth
+spec:
+  selector:
+    app: microservice-auth
+  ports:
+  - name: https
+    protocol: TCP
+    port: 9443
+    targetPort: 9443
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: microservice-user-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: microservice-user
+    spec:
+      containers:
+      - name: microservice-user
+        image: acmegifts/microservice-user:latest
+        ports:
+        - containerPort: 9443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+spec:
+  selector:
+    app: microservice-user
+  ports:
+  - name: https
+    protocol: TCP
+    port: 9443
+    targetPort: 9443
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: microservice-group-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: microservice-group
+    spec:
+      containers:
+      - name: microservice-group
+        image: acmegifts/microservice-group:latest
+        ports:
+        - containerPort: 9443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: group
+spec:
+  selector:
+    app: microservice-group
+  ports:
+  - name: https
+    protocol: TCP
+    port: 9443
+    targetPort: 9443
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: microservice-occasion-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: microservice-occasion
+    spec:
+      containers:
+      - name: microservice-occasion
+        image: acmegifts/microservice-occasion:latest
+        ports:
+        - containerPort: 9443
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: occasion
+spec:
+  selector:
+    app: microservice-occasion
+  ports:
+  - name: https
+    protocol: TCP
+    port: 9443
+    targetPort: 9443
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: microservice-notification-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: microservice-notification
+    spec:
+      containers:
+      - name: microservice-notification
+        image: acmegifts/microservice-notification:latest
+        ports:
+        - containerPort: 9443
+        - containerPort: 9080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification
+spec:
+  selector:
+    app: microservice-notification
+  ports:
+  - name: http
+    protocol: TCP
+    port: 9080
+    targetPort: 9080
+  - name: https
+    protocol: TCP
+    port: 9443
+    targetPort: 9443
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: microservice-notification11-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: microservice-notification11
+    spec:
+      containers:
+      - name: microservice-notification11
+        image: acmegifts/microservice-notification-v1-1:latest
+        ports:
+        - containerPort: 9443
+        - containerPort: 9080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: notification11
+spec:
+  selector:
+    app: microservice-notification11
+  ports:
+  - name: http
+    protocol: TCP
+    port: 9080
+    targetPort: 9080
+  - name: https
+    protocol: TCP
+    port: 9443
+    targetPort: 9443
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: front-end-ui-ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /
+    ingress.kubernetes.io/secure-backends: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: front-end-ui
+          servicePort: 9443
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: auth-ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /auth
+    ingress.kubernetes.io/secure-backends: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /service/auth
+        backend:
+          serviceName: auth
+          servicePort: 9443
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: users-ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /users
+    ingress.kubernetes.io/secure-backends: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /service/users
+        backend:
+          serviceName: user
+          servicePort: 9443
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: logins-ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /logins
+    ingress.kubernetes.io/secure-backends: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /service/logins
+        backend:
+          serviceName: user
+          servicePort: 9443
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: groups-ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /groups
+    ingress.kubernetes.io/secure-backends: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /service/groups
+        backend:
+          serviceName: group
+          servicePort: 9443
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: occasions-ingress
+  annotations:
+    ingress.kubernetes.io/rewrite-target: /occasions
+    ingress.kubernetes.io/secure-backends: "true"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /service/occasions
+        backend:
+          serviceName: occasion
+          servicePort: 9443

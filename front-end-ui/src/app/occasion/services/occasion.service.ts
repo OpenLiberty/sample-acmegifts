@@ -23,12 +23,23 @@ import { UserService } from '../../user/services/user.service';
 
 @Injectable()
 export class OccasionService {
+    private jwt: string = null;
+
+    // Maven fills in these variables from the pom.xml
+    private groupUrl = '${group.service.url}';
+    private userUrl = '${user.service.url}';   
+    private occasionUrl = '${occasion.service.url}';
 
     constructor(private route: ActivatedRoute,
         private groupService: GroupService,
         private http: HttpClient,
         private router: Router,
         private userService: UserService) {
+
+        this.groupUrl = this.groupUrl + ((this.groupUrl.indexOf('/', this.groupUrl.length - 1) === -1) ? '/': '') ;
+        this.userUrl = this.userUrl + ((this.userUrl.indexOf('/', this.userUrl.length - 1) === -1) ? '/': '');
+        this.occasionUrl = this.occasionUrl + ((this.occasionUrl.indexOf('/', this.occasionUrl.length - 1) === -1) ? '/': '');
+
         if (sessionStorage.jwt === null ||
             sessionStorage.jwt === 'null' ||
             sessionStorage.jwt === '"null"' ||
@@ -36,13 +47,6 @@ export class OccasionService {
             console.log('Json Web Token is not available. Login before you continue.');
         }
     }
-
-    private jwt: string = null;
-
-    // Maven fills in these variables from the pom.xml
-    groupUrl     = 'https://${group.hostname}:${group.https.port}/groups/';
-    occasionUrl  = 'https://${occasion.hostname}:${occasion.https.port}/occasions/';
-    userUrl      = 'https://${user.hostname}:${user.https.port}/users/';
 
     createOccasion(occasion: Occasion): Observable<JSON> {
         const payload = JSON.stringify(occasion);

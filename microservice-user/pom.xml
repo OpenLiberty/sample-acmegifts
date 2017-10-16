@@ -205,11 +205,9 @@
                         <https.port>${user.https.port}</https.port>
                         <mongo.hostname>${user.mongo.hostname}</mongo.hostname>
                         <mongo.port>${user.mongo.port}</mongo.port>
-
                         <twitter.consumer.key>${twitter.app.consumer.key}</twitter.consumer.key>
                         <twitter.consumer.secret>${twitter.app.consumer.secret}</twitter.consumer.secret>
-                        <acme.gifts.frontend.hostname>${frontend.hostname}</acme.gifts.frontend.hostname>
-                        <acme.gifts.frontend.port>${frontend.https.port}</acme.gifts.frontend.port>
+                        <acme.gifts.frontend.url>${frontend.url}</acme.gifts.frontend.url>
                         <jwt.issuer>${jwt.issuer}</jwt.issuer>
                     </bootstrapProperties>
                 </configuration>
@@ -231,13 +229,13 @@
                                 <include>**/test/**</include>
                             </includes>
                             <systemPropertyVariables>
-		                        <liberty.test.hostname>${user.hostname}</liberty.test.hostname>
+		                <liberty.test.user.service.hostname>${user.hostname}</liberty.test.user.service.hostname>
                                 <liberty.test.port>${user.http.port}</liberty.test.port>
-                                <liberty.test.ssl.port>${user.https.port}</liberty.test.ssl.port>
-								<mongo.test.hostname>${user.mongo.hostname}</mongo.test.hostname>
-                                <mongo.test.port>${user.mongo.port}</mongo.test.port>
-                                <liberty.user.service.hostname>${user.hostname}</liberty.user.service.hostname>
                                 <liberty.user.service.ssl.port>${user.https.port}</liberty.user.service.ssl.port>
+                                <mongo.test.hostname>${user.mongo.hostname}</mongo.test.hostname>
+                                <mongo.test.port>${user.mongo.port}</mongo.test.port>
+                                <liberty.test.user.service.url>${user.service.url}</liberty.test.user.service.url>
+                                <liberty.test.user.service.login.url>${user.service.login.url}</liberty.test.user.service.login.url>
                             </systemPropertyVariables>
                         </configuration>
                     </execution>
