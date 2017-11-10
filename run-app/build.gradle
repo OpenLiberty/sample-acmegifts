@@ -1,0 +1,9 @@
+
+description = ''
+dependencies {
+    compile group: 'javax', name: 'javaee-api', version:'7.0'
+  compile project(':shared-keystore')
+    compile group: 'org.glassfish', name: 'javax.json', version:'1.0.4'
+    compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
+    compile group: 'org.springframework', name: 'spring-context', version:'4.3.9.RELEASE'
+}

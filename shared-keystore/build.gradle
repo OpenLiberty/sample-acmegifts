@@ -1,0 +1,7 @@
+
+description = ''
+dependencies {
+    compileOnly group: 'javax', name: 'javaee-api', version:'7.0'
+    compileOnly group: 'org.glassfish', name: 'javax.json', version:'1.0.4'
+    compileOnly group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
+}
