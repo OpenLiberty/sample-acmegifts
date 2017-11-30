@@ -1,7 +1,86 @@
-
 apply plugin: 'war'
+apply plugin: 'liberty'
+apply plugin: 'org.ysb33r.nodejs.npm'
 
-description = ''
+description = 'Microservice :: Frontend UI'
 dependencies {
-  providedCompile project(':shared-keystore')
+    providedCompile project(':shared-keystore')
+    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.3'
 }
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        // to be removed
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.ysb33r.gradle:nodejs-gradle-plugin:0.1"
+
+        // snapshot to removed upon release
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.1-SNAPSHOT"
+    }
+}
+
+ext {
+    warfileName = 'UIService'
+    wlpServerName = 'UIServer'
+}
+
+war {
+    archiveName = warfileName + '.' + ext
+}
+
+nodejs {
+    // comes with npm version '4.2.0'
+    executable version : '7.1.0'
+}
+
+npm {
+    homeDirectory 'src/main/static/'
+}
+
+// tasks.addRule("Pattern: npm<Command><Args>") { String taskName ->
+//     description = 'Flexible Gradle task to run npm commands'
+//     println taskName
+// }
+
+task npmInstall(type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
+    description = 'Run npm install from Gradle.'
+    command 'install'
+}
+
+task npmBuild(type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
+    description = 'Run npm run build from Gradle.'
+    command 'run'
+    cmdArgs 'build'
+}
+
+task npmLint(type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
+    description = 'Run npm run lint from Gradle.'
+    command 'run'
+    cmdArgs 'lint'
+}
+
+liberty {
+    server {
+        name = wlpServerName
+        apps = [war]
+        configFile = new File("${projectDir}/liberty/config/server.xml")
+        bootstrapProperties = 
+            ['server.http.port':frontendHttpPort, 'server.https.port':frontendHttpsPort, 'application.name':war.archiveName]
+        looseApplication = false
+    }
+}
+
+task url {
+    doLast { println frontendURL }
+}
+
+test.dependsOn 'libertyStart'
+test.finalizedBy 'libertyStop'

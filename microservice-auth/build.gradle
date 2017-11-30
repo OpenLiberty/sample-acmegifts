@@ -1,12 +1,48 @@
-
 apply plugin: 'war'
+apply plugin: 'liberty'
 
-description = ''
+description = 'Microservice :: Authentication'
 dependencies {
-  testCompile project(':shared-keystore')
+    testCompile project(':shared-keystore')
+
     testCompile group: 'org.glassfish', name: 'javax.json', version:'1.0.4'
     testCompile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
     testCompile group: 'org.springframework', name: 'spring-context', version:'4.3.9.RELEASE'
     providedCompile group: 'javax', name: 'javaee-api', version:'7.0'
     providedCompile group: 'com.ibm.websphere.appserver.api', name: 'com.ibm.websphere.appserver.api.jwt', version:'1.0.16'
+    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.3'
 }
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.1"
+    }
+}
+
+ext {
+    warfileName = 'authMicroservice'
+    wlpSeverName = 'authServer'
+}
+
+war {
+    archiveName = warfileName + '.' + ext
+}
+
+liberty {
+    server {
+        name = wlpSeverName
+        apps = [war]
+        bootstrapProperties =
+            ['app.name':war.archiveName, 'http.port':authHttpPort, 'https.port':authHttpsPort,
+            'jwt.issuer':jwtIssuer]
+    }
+}
+
+task url {
+    doLast { println authURL }
+}
+
+// add integ test?
