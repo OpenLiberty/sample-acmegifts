@@ -2,14 +2,16 @@
 #
 # Example usage:
 #
-# stopMongo.sh <databaseName> [mongoPath] 
+# stopMongo.sh <databaseName> <buildDir> [mongoPath] 
 #
 # <databaseName> : The name of the directory where the Mongo DB is running
+# <buildDir>     : Name of the build directory (Gradle = build, Maven = target)
 # [mongoPath] : Optional, absolute path to the Mongo install bin directory
 #
 
 dbName=$1
-mongoPath=$2
+buildDir=$2
+mongoPath=$3
 
 # Set mongo path if defined
 if [ -z mongoPath ]; then
@@ -17,8 +19,8 @@ if [ -z mongoPath ]; then
 fi
 
 # Kill any existing mongo server
-if [ -e ./target/${dbName}.pid ]; then
+if [ -e ./${buildDir}/${dbName}.pid ]; then
 
-	kill `cat ./target/${dbName}.pid`
-	rm ./target/${dbName}.pid
+	kill `cat ./${buildDir}/${dbName}.pid`
+	rm ./${buildDir}/${dbName}.pid
 fi

@@ -1,6 +1,9 @@
 apply plugin: 'war'
 apply plugin: 'liberty'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 description = 'Microservice :: User'
 dependencies {
     compile group: 'org.twitter4j', name: 'twitter4j-core', version:'4.0.6'
@@ -26,7 +29,7 @@ buildscript {
     }
     dependencies {
         // snapshot to removed upon release
-        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.1-SNAPSHOT"
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.2-SNAPSHOT"
     }
 }
 
@@ -36,7 +39,7 @@ ext {
 }
 
 war {
-    archiveName = warfileName + '.' + ext
+    archiveName = warfileName + '.' + extension
 }
 
 liberty {
@@ -48,12 +51,92 @@ liberty {
             'mongo.hostname':userMongoHostname, 'mongo.port':userMongoPort, 'twitter.consumer.key':twitterAppConsumerKey,
             'twitter.consumer.secret':twitterAppConsumerKey, 'acme.gifts.frontend.url':frontendURL,
             'jwt.issuer':jwtIssuer]
+
+        // temp?
+        looseApplication = false
     }
 }
 
 task url {
     doLast { println userURL }
 }
+
+task startDatabase (type: Exec) {
+    description 'Execute the script to start the database.'
+
+    // NOTE: these params are likely to change, especially 'build'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/C', '../run-app/startMongo.bat', 'userDB', userMongoPort, 'build', mongoPath
+    } else {
+        commandLine 'sh', '../run-app/startMongo.sh', 'userDB', userMongoPort, 'build', mongoPath
+    }
+
+    doLast {
+        println 'Info: Starting the database.'
+    }
+}
+
+task stopDatabase (type: Exec) {
+    description 'Execute the script to stop the database.'
+    args = ['userDB', mongoPath]
+
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/C', '../run-app/stopMongo.bat', 'userDB', 'build', mongoPath
+    } else {
+        commandLine 'sh', '../run-app/stopMongo.sh', 'userDB', 'build', mongoPath
+    }
+
+    doLast {
+        println 'Info: Stopping the database.'
+    }
+}
+
+test {
+    doLast {
+        println 'inside the test block'
+    }
+    reports.html.destination = file("$buildDir/reports/unit")
+    reports.junitXml.destination = file("$buildDir/test-results/unit")
+    exclude '**/test/**'
+}
+
+task integrationTest(type: Test) {
+    group 'Verification'
+    description 'Runs the integration tests.'
+    reports.html.destination = file("$buildDir/reports/it")
+    reports.junitXml.destination = file("$buildDir/test-results/it")
+    include '**/test/**'
+
+    systemProperties = ['liberty.test.user.service.hostname': userHostname,
+                        'liberty.test.port': userHttpPort,
+                        'liberty.user.service.ssl.port': userHttpsPort,
+                        'mongo.test.hostname': userMongoHostname,
+                        'mongo.test.port': userMongoPort,
+                        'liberty.test.user.service.url': userServiceURL,
+                        'liberty.test.user.service.login.url': userServiceLoginURL]
+}
+
+task copyKeystore {
+    doLast {
+        println "copyKeystore"
+        // copy from test-classes/truststore/keystore.jceks
+        // into buildDir/liberty/wlp/usr/servers/serverName/resources/security
+    }
+}
+
+task copyKeystoreLiberty {
+    doLast {
+        println "copyKeystoreLiberty"
+
+    }
+}
+
+check.dependsOn integrationTest
+integrationTest.dependsOn copyKeystore
+integrationTest.dependsOn copyKeystoreLiberty
+
+startDatabase.mustRunAfter build
+stopDatabase.mustRunAfter startDatabase
 
 //integrationt est execution setup
 //plugin to start and stop the databases
