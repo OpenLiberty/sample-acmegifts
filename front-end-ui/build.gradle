@@ -23,7 +23,7 @@ buildscript {
         classpath "gradle.plugin.org.ysb33r.gradle:nodejs-gradle-plugin:0.1"
 
         // snapshot to removed upon release
-        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.1-SNAPSHOT"
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.2-SNAPSHOT"
     }
 }
 
@@ -33,38 +33,44 @@ ext {
 }
 
 war {
-    archiveName = warfileName + '.' + ext
+    archiveName = warfileName + '.' + extension
 }
 
 nodejs {
-    // comes with npm version '4.2.0'
-    executable version : '7.1.0'
+    // comes with npm version '5.3.0'
+    executable version : '8.3.0'
 }
 
 npm {
-    homeDirectory 'src/main/static/'
+    homeDirectory "${projectDir}/npm_build"
 }
 
-// tasks.addRule("Pattern: npm<Command><Args>") { String taskName ->
-//     description = 'Flexible Gradle task to run npm commands'
-//     println taskName
-// }
-
-task npmInstall(type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
+task npmInstall (type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
     description = 'Run npm install from Gradle.'
     command 'install'
+    outputs.dir("{projectDir}/npm_build/node_modules")
+}
+
+task cpySrc (type: Copy) {
+    from 'src'
+    into 'npm_build/src'
 }
 
 task npmBuild(type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
     description = 'Run npm run build from Gradle.'
     command 'run'
-    cmdArgs 'build'
+    cmdArgs 'build', '${projectDir}/npm_build'
+    dependsOn 'cpySrc', 'npmInstall'
+    outputs.dir("${projectDir}/src/main/webapp")
 }
 
-task npmLint(type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
+task npmLint (type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
     description = 'Run npm run lint from Gradle.'
     command 'run'
     cmdArgs 'lint'
+    dependsOn 'npmBuild'
+    // run onlyIf npmBuild is not UP-TO-DATE
+    outputs.dir("${projectDir}/src/main/webapp")
 }
 
 liberty {
@@ -82,5 +88,16 @@ task url {
     doLast { println frontendURL }
 }
 
-test.dependsOn 'libertyStart'
-test.finalizedBy 'libertyStop'
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(":front-end-ui:libertyStart")) {
+        libertyStart.doLast {
+            println ("Application should be running on ${frontendURL}")
+        }
+    }
+}
+
+// tie node into build
+build.dependsOn 'npmLint'
+
+// make sure webapp is built
+libertyStart.dependsOn 'npmLint'
