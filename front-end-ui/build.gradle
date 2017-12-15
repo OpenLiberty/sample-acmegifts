@@ -1,3 +1,5 @@
+import org.ysb33r.gradle.nodejs.tasks.NpmTask
+
 apply plugin: 'war'
 apply plugin: 'liberty'
 apply plugin: 'org.ysb33r.nodejs.npm'
@@ -45,7 +47,7 @@ npm {
     homeDirectory "${projectDir}/npm_build"
 }
 
-task npmInstall (type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
+task npmInstall (type: NpmTask) {
     description = 'Run npm install from Gradle.'
     command 'install'
     outputs.dir("{projectDir}/npm_build/node_modules")
@@ -54,9 +56,10 @@ task npmInstall (type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
 task cpySrc (type: Copy) {
     from 'src'
     into 'npm_build/src'
+    outputs.dir("npm_build/src")
 }
 
-task npmBuild(type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
+task npmBuild(type: NpmTask) {
     description = 'Run npm run build from Gradle.'
     command 'run'
     cmdArgs 'build', '${projectDir}/npm_build'
@@ -64,7 +67,7 @@ task npmBuild(type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
     outputs.dir("${projectDir}/src/main/webapp")
 }
 
-task npmLint (type: org.ysb33r.gradle.nodejs.tasks.NpmTask) {
+task npmLint (type: NpmTask) {
     description = 'Run npm run lint from Gradle.'
     command 'run'
     cmdArgs 'lint'
@@ -78,7 +81,7 @@ liberty {
         name = wlpServerName
         apps = [war]
         configFile = new File("${projectDir}/liberty/config/server.xml")
-        bootstrapProperties = 
+        bootstrapProperties =
             ['server.http.port':frontendHttpPort, 'server.https.port':frontendHttpsPort, 'application.name':war.archiveName]
         looseApplication = false
     }

@@ -5,6 +5,12 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 description = 'Microservice :: User'
+
+configurations{
+    // Used for copyDependency
+    mongo {}
+}
+
 dependencies {
     compile group: 'org.twitter4j', name: 'twitter4j-core', version:'4.0.6'
     testCompile project(':shared-keystore')
@@ -12,11 +18,11 @@ dependencies {
     testCompile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
     testCompile group: 'org.springframework', name: 'spring-context', version:'4.3.9.RELEASE'
     providedCompile group: 'javax', name: 'javaee-api', version:'7.0'
-    providedCompile group: 'org.mongodb', name: 'mongo-java-driver', version:'2.14.3'
     providedCompile group: 'com.ibm.websphere.appserver.api', name: 'com.ibm.websphere.appserver.api.jwt', version:'1.0.16'
     providedCompile group: 'org.eclipse.microprofile.jwt', name: 'microprofile-jwt-auth-api', version:'1.0-RC10'
     providedCompile group: 'org.eclipse.microprofile.config', name: 'microprofile-config-api', version:'1.0'
     libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.3'
+    mongo group: 'org.mongodb', name: 'mongo-java-driver', version: '2.14.3'
 }
 
 buildscript {
@@ -96,7 +102,7 @@ test {
         println 'inside the test block'
     }
     reports.html.destination = file("$buildDir/reports/unit")
-    reports.junitXml.destination = file("$buildDir/test-results/unit")
+    reports.junitXml.destination = file("$buildDir/test-reports/unit")
     exclude '**/test/**'
 }
 
@@ -104,8 +110,9 @@ task integrationTest(type: Test) {
     group 'Verification'
     description 'Runs the integration tests.'
     reports.html.destination = file("$buildDir/reports/it")
-    reports.junitXml.destination = file("$buildDir/test-results/it")
+    reports.junitXml.destination = file("$buildDir/test-reports/it")
     include '**/test/**'
+    // include '$buildDir/test-classes'
 
     systemProperties = ['liberty.test.user.service.hostname': userHostname,
                         'liberty.test.port': userHttpPort,
@@ -116,24 +123,20 @@ task integrationTest(type: Test) {
                         'liberty.test.user.service.login.url': userServiceLoginURL]
 }
 
-task copyKeystore {
-    doLast {
-        println "copyKeystore"
-        // copy from test-classes/truststore/keystore.jceks
-        // into buildDir/liberty/wlp/usr/servers/serverName/resources/security
-    }
+task copyKeystore (type: Copy) {
+//    temp fetching
+    from '/Users/dshi/Desktop/sample-acmegifts/shared-keystore/target/shared-keystore-0.0.1-SNAPSHOT.jar'
+    into "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
 }
 
-task copyKeystoreLiberty {
-    doLast {
-        println "copyKeystoreLiberty"
-
-    }
+task copyDependency (type: Copy) {
+    into "${buildDir}/wlp/usr/shared/resources/"
+    from configurations.mongo
+    dependsOn 'libertyCreate'
 }
 
 check.dependsOn integrationTest
 integrationTest.dependsOn copyKeystore
-integrationTest.dependsOn copyKeystoreLiberty
 
 startDatabase.mustRunAfter build
 stopDatabase.mustRunAfter startDatabase
