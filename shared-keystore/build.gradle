@@ -32,12 +32,12 @@ task generateKeyPair (type: KeytoolTask) {
         alias = 'default'
         dname = 'CN=localhost,OU=userServer,O=IBM,C=US'
         validity = '999'
-        keystore = 'src/main/resources/keystore.jceks'
+        keystore = "${projectDir}/src/main/resources/keystore.jceks"
         storepass = 'secret'
         storetype = 'jceks'
-
-        outputs.file('src/main/resources/keystore.jceks')
     }
+    onlyIf { ! new File("${projectDir}/src/main/resources/keystore.jceks").exists() }
+    outputs.file("${projectDir}/src/main/resources/keystore.jceks")       // for clean
 }
 
 task addTwitter1 (type: KeytoolTask) {
@@ -45,12 +45,11 @@ task addTwitter1 (type: KeytoolTask) {
     options {
         alias = 'Twitter1'
         file = 'certs/DigiCertSHA2HighAssuranceServerCA.crt'
-        keystore = 'src/main/resources/keystore.jceks'
+        keystore = "${projectDir}/src/main/resources/keystore.jceks"
         storepass = 'secret'
         storetype = 'jceks'
-
-        outputs.file('src/main/resources/keystore.jceks')
     }
+    ignoreExitValue = true
 }
 
 task addTwitter2 (type: KeytoolTask) {
@@ -58,12 +57,13 @@ task addTwitter2 (type: KeytoolTask) {
     options {
         alias = 'Twitter2'
         file = 'certs/DigiCertSHA2SecureServerCA.crt'
-        keystore = 'src/main/resources/keystore.jceks'
+        keystore = "${projectDir}/src/main/resources/keystore.jceks"
         storepass = 'secret'
         storetype = 'jceks'
-
-        outputs.file('src/main/resources/keystore.jceks')
     }
+    ignoreExitValue = true
 }
 
-clean.dependsOn 'cleanGenerateKeyPair'
+assemble.finalizedBy 'generateKeyPair'
+generateKeyPair.finalizedBy 'addTwitter1', 'addTwitter2'
+clean.finalizedBy 'cleanGenerateKeyPair'

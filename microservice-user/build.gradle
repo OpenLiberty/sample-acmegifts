@@ -9,6 +9,7 @@ description = 'Microservice :: User'
 configurations{
     // Used for copyDependency
     mongo {}
+    keystore {}
 }
 
 dependencies {
@@ -18,11 +19,13 @@ dependencies {
     testCompile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
     testCompile group: 'org.springframework', name: 'spring-context', version:'4.3.9.RELEASE'
     providedCompile group: 'javax', name: 'javaee-api', version:'7.0'
+    providedCompile group: 'org.mongodb', name: 'mongo-java-driver', version: '2.14.3'
     providedCompile group: 'com.ibm.websphere.appserver.api', name: 'com.ibm.websphere.appserver.api.jwt', version:'1.0.16'
     providedCompile group: 'org.eclipse.microprofile.jwt', name: 'microprofile-jwt-auth-api', version:'1.0-RC10'
     providedCompile group: 'org.eclipse.microprofile.config', name: 'microprofile-config-api', version:'1.0'
     libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.3'
     mongo group: 'org.mongodb', name: 'mongo-java-driver', version: '2.14.3'
+    keystore project(':shared-keystore')
 }
 
 buildscript {
@@ -48,6 +51,12 @@ war {
     archiveName = warfileName + '.' + extension
 }
 
+sourceSets {
+    integrationTest {
+        resources.srcDir file('src/test/resources')
+    }
+}
+
 liberty {
     server {
         name = wlpServerName
@@ -67,40 +76,8 @@ task url {
     doLast { println userURL }
 }
 
-task startDatabase (type: Exec) {
-    description 'Execute the script to start the database.'
-
-    // NOTE: these params are likely to change, especially 'build'
-    if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        commandLine 'cmd', '/C', '../run-app/startMongo.bat', 'userDB', userMongoPort, 'build', mongoPath
-    } else {
-        commandLine 'sh', '../run-app/startMongo.sh', 'userDB', userMongoPort, 'build', mongoPath
-    }
-
-    doLast {
-        println 'Info: Starting the database.'
-    }
-}
-
-task stopDatabase (type: Exec) {
-    description 'Execute the script to stop the database.'
-    args = ['userDB', mongoPath]
-
-    if (System.properties['os.name'].toLowerCase().contains('windows')) {
-        commandLine 'cmd', '/C', '../run-app/stopMongo.bat', 'userDB', 'build', mongoPath
-    } else {
-        commandLine 'sh', '../run-app/stopMongo.sh', 'userDB', 'build', mongoPath
-    }
-
-    doLast {
-        println 'Info: Stopping the database.'
-    }
-}
-
 test {
-    doLast {
-        println 'inside the test block'
-    }
+    group 'Verification'
     reports.html.destination = file("$buildDir/reports/unit")
     reports.junitXml.destination = file("$buildDir/test-reports/unit")
     exclude '**/test/**'
@@ -123,23 +100,57 @@ task integrationTest(type: Test) {
                         'liberty.test.user.service.login.url': userServiceLoginURL]
 }
 
+task copyKeystoreSrc (type: Copy) {
+    group 'CopyTasks'
+    dependsOn 'copyDependency'
+    configurations.keystore.each {
+        from(zipTree(it)) {
+            include "keystore.jceks"
+        }
+    }
+    into "src/test/resources"
+    outputs.dir("src/test/resources")
+}
+
 task copyKeystore (type: Copy) {
-//    temp fetching
-    from '/Users/dshi/Desktop/sample-acmegifts/shared-keystore/target/shared-keystore-0.0.1-SNAPSHOT.jar'
+    group 'CopyTasks'
+    dependsOn 'copyKeystoreSrc'
+    from "src/test/resources/keystore.jceks"
     into "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
+    outputs.file("${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
 }
 
 task copyDependency (type: Copy) {
-    into "${buildDir}/wlp/usr/shared/resources/"
-    from configurations.mongo
+    group 'CopyTasks'
     dependsOn 'libertyCreate'
+    from configurations.mongo
+    into "${buildDir}/wlp/usr/shared/resources/"
+    outputs.file("${buildDir}/wlp/usr/shared/resources/mongo-java-driver-2.14.3.jar")
 }
 
-check.dependsOn integrationTest
-integrationTest.dependsOn copyKeystore
+task startDatabase (type: Exec) {
+    group 'database'
+    description 'Execute the script to start the database.'
 
-startDatabase.mustRunAfter build
-stopDatabase.mustRunAfter startDatabase
+    // NOTE: these params are likely to change, especially 'build'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/C', '../run-app/startMongo.bat', 'userDB', userMongoPort, 'build', mongoPath
+    } else {
+        commandLine 'sh', '../run-app/startMongo.sh', 'userDB', userMongoPort, 'build', mongoPath
+    }
+}
 
-//integrationt est execution setup
-//plugin to start and stop the databases
+task stopDatabase (type: Exec) {
+    group 'database'
+    description 'Execute the script to stop the database.'
+    args = ['userDB', mongoPath]
+
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/C', '../run-app/stopMongo.bat', 'userDB', 'build', mongoPath
+    } else {
+        commandLine 'sh', '../run-app/stopMongo.sh', 'userDB', 'build', mongoPath
+    }
+}
+
+check.dependsOn 'copyDependency'
+copyKeystore.dependsOn ':shared-keystore:assemble'
