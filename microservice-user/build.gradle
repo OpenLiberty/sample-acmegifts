@@ -48,7 +48,7 @@ ext {
 }
 
 war {
-    archiveName = warfileName + '.' + extension
+    archiveName = "${warfileName}.${extension}"
 }
 
 sourceSets {
@@ -107,16 +107,16 @@ task copyKeystoreSrc (type: Copy) {
             include "keystore.jceks"
         }
     }
-    into "src/test/resources"
-    outputs.dir("src/test/resources")
+    into "src/test/resources/truststore"
+    outputs.dir("src/test/resources/truststore")
 }
 
 task copyKeystore (type: Copy) {
     group 'CopyTasks'
     dependsOn 'copyKeystoreSrc'
     from "src/test/resources/keystore.jceks"
-    into "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/truststore/security"
-    outputs.file("${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security/truststore/keystore.jceks")
+    into "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
+    outputs.file("${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
 }
 
 task copyDependency (type: Copy) {
@@ -151,6 +151,8 @@ task stopDatabase (type: Exec) {
     }
 }
 
+integrationTest.dependsOn 'libertyStart', 'startDatabase'
+integrationTest.finalizedBy 'libertyStop', 'stopDatabase'
 check.dependsOn 'copyDependency'
 libertyStart.dependsOn 'copyKeystore'
 copyKeystore.dependsOn ':shared-keystore:assemble'
