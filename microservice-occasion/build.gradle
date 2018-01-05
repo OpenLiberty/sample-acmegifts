@@ -1,7 +1,17 @@
 apply plugin: 'war'
 apply plugin: 'liberty'
 
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
 description = 'Microservice :: Occasion'
+
+configurations{
+    // Used for copyDependency
+    mongo {}
+    keystore {}
+}
+
 dependencies {
     compile group: 'org.apache.commons', name: 'commons-collections4', version:'4.1'
     testCompile project(':shared-keystore')
@@ -16,6 +26,8 @@ dependencies {
     providedCompile group: 'org.eclipse.microprofile.config', name: 'microprofile-config-api', version:'1.0'
     providedCompile group: 'org.eclipse.microprofile.jwt', name: 'microprofile-jwt-auth-api', version:'1.0-RC10'
     libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.3'
+    mongo group: 'org.mongodb', name: 'mongo-java-driver', version: '2.14.3'
+    keystore project(':shared-keystore')
 }
 
 buildscript {
@@ -43,11 +55,98 @@ liberty {
     server {
         name = wlpServerName
         bootstrapProperties =
-            ['app.name':warfileName + '.war', 'http.port':occasionHttpPort, 'https.port':occasionHttpsPort,
-            'mongo.hostname':occasionMongoHostname, 'mongo.port':occasionMongoPort]
+            ['app.name':"${warfileName}.war'", 'http.port':occasionHttpPort, 'https.port':occasionHttpsPort,
+            'mongo.hostname':occasionMongoHostname, 'mongo.port':occasionMongoPort,
+            'user.service.hostname': userHostname, 'user.service.port': userHttpsPort,
+            'group.service.hostname': groupHostname, 'group.service.port': groupHttpsPort,
+            'notification.service.hostname': notificationHostname, 'notification.service.port': notificationHttpPort,
+            'notification_1_1.service.hostname': notification_v1_1_Hostname,
+            'notification_1_1.service.port': notification_v1_1_HttpPort,
+            'jwt.issuer': jwtIssuer]
     }
 }
 
 task url {
     doLast { println occasionURL }
 }
+
+test {
+    group 'Verification'
+    reports.html.destination = file("$buildDir/reports/unit")
+    reports.junitXml.destination = file("$buildDir/test-reports/unit")
+    exclude '**/test/**'
+}
+
+task integrationTest(type: Test) {
+    group 'Verification'
+    description 'Runs the integration tests.'
+    reports.html.destination = file("$buildDir/reports/it")
+    reports.junitXml.destination = file("$buildDir/test-reports/it")
+    include '**/test/**'
+
+    systemProperties = ['java.util.logging.config.file': "${buildDir}/test-classes/loggin.properties", //FIXME
+                        'liberty.test.occasion.service.url': occasionServiceURL,
+                        'mongo.test.hostname': occasionMongoHostname,
+                        'mongo.test.port': occasionMongoPort,
+                        'jwt.issuer': jwtIssuer]
+}
+
+task copyKeystore (type: Copy) {
+    configurations.keystore.each {
+        from(zipTree(it)) {
+            include "keystore.jceks"
+        }
+    }
+    into "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
+    outputs.file("${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
+}
+
+task testKeystore(type: Copy) {
+    from "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
+    into "${buildDir}/resources/test/truststore/"
+    outputs.file("${buildDir}/resources/test/truststore/keystore.jceks")
+}
+
+task copyServerSnippetDependency(type: Copy) {
+    doLast {
+        println ("Doesn't seem to do anything for now.")
+    }
+}
+
+task copyDependency (type: Copy) {
+    dependsOn 'libertyCreate'
+    from configurations.mongo
+    into "${buildDir}/wlp/usr/shared/resources/"
+    outputs.file("${buildDir}/wlp/usr/shared/resources/mongo-java-driver-2.14.3.jar")
+}
+
+
+task startDatabase (type: Exec) {
+    group 'database'
+    description 'Execute the script to start the database.'
+
+    // NOTE: these params are likely to change, especially 'build'
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/C', '../run-app/startMongo.bat', 'occasionDB', occasionMongoPort, 'build', mongoPath
+    } else {
+        commandLine 'sh', '../run-app/startMongo.sh', 'occasionDB', occasionMongoPort, 'build', mongoPath
+    }
+}
+
+task stopDatabase (type: Exec) {
+    group 'database'
+    description 'Execute the script to stop the database.'
+    args = ['groupDB', mongoPath]
+
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/C', '../run-app/stopMongo.bat', 'occasionDB', 'build', mongoPath
+    } else {
+        commandLine 'sh', '../run-app/stopMongo.sh', 'occasionDB', 'build', mongoPath
+    }
+}
+
+integrationTest.dependsOn 'libertyStart', 'startDatabase', 'testKeystore'
+integrationTest.finalizedBy 'libertyStop', 'stopDatabase'
+check.dependsOn 'copyDependency'
+libertyStart.dependsOn 'copyKeystore'
+copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'
