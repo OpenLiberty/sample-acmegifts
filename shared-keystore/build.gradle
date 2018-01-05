@@ -50,6 +50,10 @@ task addTwitter1 (type: KeytoolTask) {
         storetype = 'jceks'
     }
     ignoreExitValue = true
+
+    doLast {
+        println ("Ignore duplicate certification keytool error.")
+    }
 }
 
 task addTwitter2 (type: KeytoolTask) {
@@ -62,6 +66,10 @@ task addTwitter2 (type: KeytoolTask) {
         storetype = 'jceks'
     }
     ignoreExitValue = true
+
+    doLast {
+        println ("Ignore duplicate certification keytool error.")
+    }
 }
 
 assemble.finalizedBy 'generateKeyPair'
