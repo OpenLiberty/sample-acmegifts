@@ -66,9 +66,6 @@ liberty {
             'mongo.hostname':userMongoHostname, 'mongo.port':userMongoPort, 'twitter.consumer.key':twitterAppConsumerKey,
             'twitter.consumer.secret':twitterAppConsumerKey, 'acme.gifts.frontend.url':frontendURL,
             'jwt.issuer':jwtIssuer]
-
-        // temp?
-        looseApplication = false
     }
 }
 
@@ -96,31 +93,27 @@ task integrationTest(type: Test) {
                         'mongo.test.hostname': userMongoHostname,
                         'mongo.test.port': userMongoPort,
                         'liberty.test.user.service.url': userServiceURL,
-                        'liberty.test.user.service.login.url': userServiceLoginURL]
+                        'liberty.test.user.service.login.url': userServiceLoginURL,
+                        "javax.net.ssl.keyStorePassword": "secret"]
 }
 
-task copyKeystoreSrc (type: Copy) {
-    group 'CopyTasks'
-    dependsOn 'copyDependency'
+task copyKeystore (type: Copy) {
     configurations.keystore.each {
         from(zipTree(it)) {
             include "keystore.jceks"
         }
     }
-    into "src/test/resources/truststore"
-    outputs.dir("src/test/resources/truststore")
-}
-
-task copyKeystore (type: Copy) {
-    group 'CopyTasks'
-    dependsOn 'copyKeystoreSrc'
-    from "src/test/resources/keystore.jceks"
     into "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
     outputs.file("${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
 }
 
+task testKeystore(type: Copy) {
+    from "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
+    into "${buildDir}/resources/test/truststore/"
+    outputs.file("${buildDir}/resources/test/truststore/keystore.jceks")
+}
+
 task copyDependency (type: Copy) {
-    group 'CopyTasks'
     dependsOn 'libertyCreate'
     from configurations.mongo
     into "${buildDir}/wlp/usr/shared/resources/"
@@ -151,8 +144,8 @@ task stopDatabase (type: Exec) {
     }
 }
 
-integrationTest.dependsOn 'libertyStart', 'startDatabase'
+integrationTest.dependsOn 'libertyStart', 'startDatabase', 'testKeystore'
 integrationTest.finalizedBy 'libertyStop', 'stopDatabase'
 check.dependsOn 'copyDependency'
 libertyStart.dependsOn 'copyKeystore'
-copyKeystore.dependsOn ':shared-keystore:assemble'
+copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'
