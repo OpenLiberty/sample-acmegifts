@@ -54,10 +54,12 @@ task integrationTest(type: Test) {
     reports.html.destination = file("$buildDir/reports/it")
     reports.junitXml.destination = file("$buildDir/test-reports/it")
     include '**/test/**'
+
+    systemProperties = ['liberty.test.auth.service.url': authServiceURL,
+                        'javax.net.ssl.keyStorePassword': "secret"]
 }
 
-task copyKeystore (type: Copy) {
-    // Specifically, shared-keystore jar
+task copyKeystore(type: Copy) {
     configurations.testCompile.each {
         from(zipTree(it)) {
             include "keystore.jceks"
@@ -67,7 +69,13 @@ task copyKeystore (type: Copy) {
     outputs.file("${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
 }
 
-integrationTest.dependsOn 'libertyStart'
-//integrationTest.finalizedBy 'libertyStop'
+task testKeystore(type: Copy) {
+    from "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
+    into "${buildDir}/resources/test/truststore/"
+    outputs.file("${buildDir}/resources/test/truststore/keystore.jceks")
+}
+
+integrationTest.dependsOn 'libertyStart', 'testKeystore'
+integrationTest.finalizedBy 'libertyStop'
 libertyStart.dependsOn 'copyKeystore'
 copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'
