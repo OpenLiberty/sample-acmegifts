@@ -48,6 +48,13 @@ task url {
     doLast { println authURL }
 }
 
+test {
+    group 'Verification'
+    reports.html.destination = file("$buildDir/reports/unit")
+    reports.junitXml.destination = file("$buildDir/test-reports/unit")
+    exclude '**/test/**'
+}
+
 task integrationTest(type: Test) {
     group 'Verification'
     description 'Runs the integration tests.'
