@@ -16,16 +16,10 @@ buildscript {
         maven {
             url "https://plugins.gradle.org/m2/"
         }
-        // to be removed
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
     }
     dependencies {
         classpath "gradle.plugin.org.ysb33r.gradle:nodejs-gradle-plugin:0.1"
-
-        // snapshot to removed upon release
-        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.2-SNAPSHOT"
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
     }
 }
 

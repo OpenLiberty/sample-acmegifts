@@ -25,14 +25,9 @@ dependencies {
 buildscript {
     repositories {
         mavenCentral()
-        // to be removed
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
     }
     dependencies {
-        // snapshot to removed upon release
-        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.1-SNAPSHOT"
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
     }
 }
 

@@ -1,6 +1,7 @@
 apply plugin: 'war'
 apply plugin: 'liberty'
 
+version = "1.0-SNAPSHOT"
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
@@ -33,14 +34,9 @@ dependencies {
 buildscript {
     repositories {
         mavenCentral()
-        // to be removed
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
-        }
     }
     dependencies {
-        // snapshot to removed upon release
-        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.0.1-SNAPSHOT"
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
     }
 }
 
@@ -48,14 +44,13 @@ ext {
     warfileName = "microservice-occasion" + version
     wlpServerName = "OccasionsServer"
     appName = "OccasionsMicroservice"
-    // testPath?
 }
 
 liberty {
     server {
         name = wlpServerName
         bootstrapProperties =
-            ['app.name':"${warfileName}.war'", 'http.port':occasionHttpPort, 'https.port':occasionHttpsPort,
+            ['app.name':"${warfileName}.war", 'http.port':occasionHttpPort, 'https.port':occasionHttpsPort,
             'mongo.hostname':occasionMongoHostname, 'mongo.port':occasionMongoPort,
             'user.service.hostname': userHostname, 'user.service.port': userHttpsPort,
             'group.service.hostname': groupHostname, 'group.service.port': groupHttpsPort,
@@ -63,6 +58,7 @@ liberty {
             'notification_1_1.service.hostname': notification_v1_1_Hostname,
             'notification_1_1.service.port': notification_v1_1_HttpPort,
             'jwt.issuer': jwtIssuer]
+        looseApplication = false
     }
 }
 
@@ -74,7 +70,7 @@ test {
     group 'Verification'
     reports.html.destination = file("$buildDir/reports/unit")
     reports.junitXml.destination = file("$buildDir/test-reports/unit")
-    exclude '**/test/**'
+    exclude '**/unit_test/**'
 }
 
 task integrationTest(type: Test) {
@@ -82,13 +78,20 @@ task integrationTest(type: Test) {
     description 'Runs the integration tests.'
     reports.html.destination = file("$buildDir/reports/it")
     reports.junitXml.destination = file("$buildDir/test-reports/it")
-    include '**/test/**'
+    include '**/test/java/**'
 
-    systemProperties = ['java.util.logging.config.file': "${buildDir}/test-classes/loggin.properties", //FIXME
+    systemProperties = ['java.util.logging.config.file': "${buildDir}/resources/logging.properties",
                         'liberty.test.occasion.service.url': occasionServiceURL,
                         'mongo.test.hostname': occasionMongoHostname,
                         'mongo.test.port': occasionMongoPort,
                         'jwt.issuer': jwtIssuer]
+}
+
+// I don't know how important this task is
+task testLoggingProperties(type: Copy) {
+    from "${projectDir}/src/test/resources"
+    into "${buildDir}/resources"
+    outputs.file("${buildDir}/resources/logging.properties")
 }
 
 task copyKeystore (type: Copy) {
@@ -120,7 +123,6 @@ task copyDependency (type: Copy) {
     outputs.file("${buildDir}/wlp/usr/shared/resources/mongo-java-driver-2.14.3.jar")
 }
 
-
 task startDatabase (type: Exec) {
     group 'database'
     description 'Execute the script to start the database.'
@@ -145,7 +147,7 @@ task stopDatabase (type: Exec) {
     }
 }
 
-integrationTest.dependsOn 'libertyStart', 'startDatabase', 'testKeystore'
+integrationTest.dependsOn 'libertyStart', 'startDatabase', 'testKeystore', 'testLoggingProperties'
 integrationTest.finalizedBy 'libertyStop', 'stopDatabase'
 check.dependsOn 'copyDependency'
 libertyStart.dependsOn 'copyKeystore'
