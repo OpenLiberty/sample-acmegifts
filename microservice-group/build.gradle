@@ -98,8 +98,9 @@ task testKeystore(type: Copy) {
 task copyDependency (type: Copy) {
     dependsOn 'libertyCreate'
     from configurations.mongo
+    rename { "mongo-java-driver.jar" }
     into "${buildDir}/wlp/usr/shared/resources/"
-    outputs.file("${buildDir}/wlp/usr/shared/resources/mongo-java-driver-2.14.3.jar")
+    outputs.file("${buildDir}/wlp/usr/shared/resources/mongo-java-driver.jar")
 }
 
 task startDatabase (type: Exec) {

@@ -41,17 +41,18 @@ buildscript {
 }
 
 ext {
-    warfileName = "microservice-occasion" + version
+    warfileName = "microservice-occasion-" + version
     wlpServerName = "OccasionsServer"
-    appName = "OccasionsMicroservice"
+    appName = "${warfileName}.war"
 }
 
 liberty {
     server {
         name = wlpServerName
+        configFile = new File("${projectDir}/src/main/resources/liberty/config/server.xml")
         bootstrapProperties =
-            ['app.name':"${warfileName}.war", 'http.port':occasionHttpPort, 'https.port':occasionHttpsPort,
-            'mongo.hostname':occasionMongoHostname, 'mongo.port':occasionMongoPort,
+            ['app.name': appName, 'http.port': occasionHttpPort, 'https.port': occasionHttpsPort,
+            'mongo.hostname': occasionMongoHostname, 'mongo.port': occasionMongoPort,
             'user.service.hostname': userHostname, 'user.service.port': userHttpsPort,
             'group.service.hostname': groupHostname, 'group.service.port': groupHttpsPort,
             'notification.service.hostname': notificationHostname, 'notification.service.port': notificationHttpPort,
@@ -70,7 +71,11 @@ test {
     group 'Verification'
     reports.html.destination = file("$buildDir/reports/unit")
     reports.junitXml.destination = file("$buildDir/test-reports/unit")
-    exclude '**/occasions_test/**'
+    outputs.upToDateWhen { false }
+    include '**/unit_test/**'
+
+
+    systemProperties = ['mongo.test.port': occasionMongoPort]
 }
 
 task integrationTest(type: Test) {
@@ -78,16 +83,17 @@ task integrationTest(type: Test) {
     description 'Runs the integration tests.'
     reports.html.destination = file("$buildDir/reports/it")
     reports.junitXml.destination = file("$buildDir/test-reports/it")
-    include '**/test/**'
+    outputs.upToDateWhen { false }
+    include '**/occasions_test/**'
 
     systemProperties = ['java.util.logging.config.file': "${buildDir}/resources/logging.properties",
                         'liberty.test.occasion.service.url': occasionServiceURL,
                         'mongo.test.hostname': occasionMongoHostname,
                         'mongo.test.port': occasionMongoPort,
-                        'jwt.issuer': jwtIssuer]
+                        'jwt.issuer': jwtIssuer,
+                        'javax.net.ssl.keyStorePassword': "secret"]
 }
 
-// I don't know how important this task is
 task testLoggingProperties(type: Copy) {
     from "${projectDir}/src/test/resources"
     into "${buildDir}/resources"
@@ -119,8 +125,9 @@ task copyServerSnippetDependency(type: Copy) {
 task copyDependency (type: Copy) {
     dependsOn 'libertyCreate'
     from configurations.mongo
+    rename { "mongo-java-driver.jar" }
     into "${buildDir}/wlp/usr/shared/resources/"
-    outputs.file("${buildDir}/wlp/usr/shared/resources/mongo-java-driver-2.14.3.jar")
+    outputs.file("${buildDir}/wlp/usr/shared/resources/mongo-java-driver.jar")
 }
 
 task startDatabase (type: Exec) {
@@ -150,5 +157,5 @@ task stopDatabase (type: Exec) {
 integrationTest.dependsOn 'libertyStart', 'startDatabase', 'testKeystore', 'testLoggingProperties'
 integrationTest.finalizedBy 'libertyStop', 'stopDatabase'
 check.dependsOn 'copyDependency'
-libertyStart.dependsOn 'copyKeystore'
+libertyStart.dependsOn 'copyKeystore', 'copyDependency'
 copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'
