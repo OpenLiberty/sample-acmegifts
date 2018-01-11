@@ -5,5 +5,5 @@ env:
     - TEST_COMMAND="./gradlew clean build"
     - TEST_COMMAND="mvn clean install"
 install: true
-script
+script:
     - (eval "$TEST_COMMAND")
