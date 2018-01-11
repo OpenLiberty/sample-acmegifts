@@ -6,6 +6,10 @@ targetCompatibility = 1.8
 
 description = 'Microservice :: Authentication'
 
+configurations{
+    keystore {}
+}
+
 dependencies {
     testCompile group: 'org.glassfish', name: 'javax.json', version:'1.0.4'
     testCompile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
@@ -14,6 +18,7 @@ dependencies {
     providedCompile group: 'com.ibm.websphere.appserver.api', name: 'com.ibm.websphere.appserver.api.jwt', version:'1.0.16'
     libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.3'
     testCompile project(':shared-keystore')
+    keystore project(':shared-keystore')
 }
 
 buildscript {
@@ -31,7 +36,7 @@ ext {
 }
 
 war {
-    archiveName = "${warfileName}.${extension}"
+    archiveName = "${warfileName}.war"
 }
 
 liberty {
@@ -53,6 +58,9 @@ test {
     reports.html.destination = file("$buildDir/reports/unit")
     reports.junitXml.destination = file("$buildDir/test-reports/unit")
     exclude '**/test/**'
+
+    // run every time when called
+    outputs.upToDateWhen { false }
 }
 
 task integrationTest(type: Test) {
@@ -64,24 +72,29 @@ task integrationTest(type: Test) {
 
     systemProperties = ['liberty.test.auth.service.url': authServiceURL,
                         'javax.net.ssl.keyStorePassword': "secret"]
+
+    // run every time when called
+    outputs.upToDateWhen { false }
 }
 
 task copyKeystore(type: Copy) {
-    configurations.testCompile.each {
+    configurations.keystore.each {
         from(zipTree(it)) {
             include "keystore.jceks"
         }
     }
-    into "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
-    outputs.file("${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
+    into "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    outputs.file("$buildDir/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
 }
 
 task testKeystore(type: Copy) {
-    from "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
-    into "${buildDir}/resources/test/truststore/"
-    outputs.file("${buildDir}/resources/test/truststore/keystore.jceks")
+    dependsOn 'copyKeystore'
+    from "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    into "$buildDir/resources/test/truststore/"
+    outputs.file("$buildDir/resources/test/truststore/keystore.jceks")
 }
 
+check.dependsOn 'integrationTest'
 integrationTest.dependsOn 'libertyStart', 'testKeystore'
 integrationTest.finalizedBy 'libertyStop'
 libertyStart.dependsOn 'copyKeystore'

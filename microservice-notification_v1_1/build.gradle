@@ -37,12 +37,12 @@ ext {
     wlpServerName = 'notificationServer'
 
     // Optional Microservice Configuration
-    notification_v1_1_logfile = new File("${buildDir}/logs/notifications_1_1.log")
-    notification_v1_1_fallback_logfile = new File("${buildDir}/logs/notifications_1_1_fallback.log")
+    notification_v1_1_logfile = new File("$buildDir/logs/notifications_1_1.log")
+    notification_v1_1_fallback_logfile = new File("$buildDir/logs/notifications_1_1_fallback.log")
 }
 
 war {
-    archiveName = "${warfileName}.${extension}"
+    archiveName = "${warfileName}.war"
 }
 
 liberty {
@@ -61,6 +61,9 @@ test {
     reports.html.destination = file("$buildDir/reports/unit")
     reports.junitXml.destination = file("$buildDir/test-reports/unit")
     exclude '**/test/**'
+
+    // run every time when called
+    outputs.upToDateWhen { false }
 }
 
 task integrationTest(type: Test) {
@@ -80,6 +83,9 @@ task integrationTest(type: Test) {
                         'liberty.test.port': notification_v1_1_HttpPort,
                         'jwt.issuer': jwtIssuer,
                         'javax.net.ssl.keyStorePassword': "secret"]
+
+    // run every time when called
+    outputs.upToDateWhen { false }
 }
 
 task copyKeystore (type: Copy) {
@@ -88,16 +94,18 @@ task copyKeystore (type: Copy) {
             include "keystore.jceks"
         }
     }
-    into "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
-    outputs.file("${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
+    into "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    outputs.file("$buildDir/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
 }
 
 task testKeystore(type: Copy) {
-    from "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
-    into "${buildDir}/resources/test/truststore/"
-    outputs.file("${buildDir}/resources/test/truststore/keystore.jceks")
+    dependsOn 'copyKeystore'
+    from "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    into "$buildDir/resources/test/truststore/"
+    outputs.file("$buildDir/resources/test/truststore/keystore.jceks")
 }
 
+check.dependsOn 'integrationTest'
 integrationTest.dependsOn 'libertyStart', 'testKeystore'
 integrationTest.finalizedBy 'libertyStop'
 libertyStart.dependsOn 'copyKeystore'

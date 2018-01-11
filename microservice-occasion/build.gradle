@@ -43,15 +43,18 @@ buildscript {
 ext {
     warfileName = "microservice-occasion-" + version
     wlpServerName = "OccasionsServer"
-    appName = "${warfileName}.war"
+}
+
+war {
+    archiveName = "${warfileName}.war"
 }
 
 liberty {
     server {
         name = wlpServerName
-        configFile = new File("${projectDir}/src/main/resources/liberty/config/server.xml")
+        configFile = new File("$projectDir/src/main/resources/liberty/config/server.xml")
         bootstrapProperties =
-            ['app.name': appName, 'http.port': occasionHttpPort, 'https.port': occasionHttpsPort,
+            ['app.name': war.archiveName, 'http.port': occasionHttpPort, 'https.port': occasionHttpsPort,
             'mongo.hostname': occasionMongoHostname, 'mongo.port': occasionMongoPort,
             'user.service.hostname': userHostname, 'user.service.port': userHttpsPort,
             'group.service.hostname': groupHostname, 'group.service.port': groupHttpsPort,
@@ -71,11 +74,12 @@ test {
     group 'Verification'
     reports.html.destination = file("$buildDir/reports/unit")
     reports.junitXml.destination = file("$buildDir/test-reports/unit")
-    outputs.upToDateWhen { false }
     include '**/unit_test/**'
 
-
     systemProperties = ['mongo.test.port': occasionMongoPort]
+
+    // run every time when called
+    outputs.upToDateWhen { false }
 }
 
 task integrationTest(type: Test) {
@@ -83,21 +87,23 @@ task integrationTest(type: Test) {
     description 'Runs the integration tests.'
     reports.html.destination = file("$buildDir/reports/it")
     reports.junitXml.destination = file("$buildDir/test-reports/it")
-    outputs.upToDateWhen { false }
     include '**/occasions_test/**'
 
-    systemProperties = ['java.util.logging.config.file': "${buildDir}/resources/logging.properties",
+    systemProperties = ['java.util.logging.config.file': "$buildDir/resources/logging.properties",
                         'liberty.test.occasion.service.url': occasionServiceURL,
                         'mongo.test.hostname': occasionMongoHostname,
                         'mongo.test.port': occasionMongoPort,
                         'jwt.issuer': jwtIssuer,
                         'javax.net.ssl.keyStorePassword': "secret"]
+
+    // run every time when called
+    outputs.upToDateWhen { false }
 }
 
 task testLoggingProperties(type: Copy) {
-    from "${projectDir}/src/test/resources"
-    into "${buildDir}/resources"
-    outputs.file("${buildDir}/resources/logging.properties")
+    from "$projectDir/src/test/resources"
+    into "$buildDir/resources"
+    outputs.file("$buildDir/resources/logging.properties")
 }
 
 task copyKeystore (type: Copy) {
@@ -106,20 +112,15 @@ task copyKeystore (type: Copy) {
             include "keystore.jceks"
         }
     }
-    into "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
-    outputs.file("${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
+    into "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    outputs.file("$buildDir/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
 }
 
 task testKeystore(type: Copy) {
-    from "${buildDir}/wlp/usr/servers/${wlpServerName}/resources/security"
-    into "${buildDir}/resources/test/truststore/"
-    outputs.file("${buildDir}/resources/test/truststore/keystore.jceks")
-}
-
-task copyServerSnippetDependency(type: Copy) {
-    doLast {
-        println ("Doesn't seem to do anything for now.")
-    }
+    dependsOn 'copyKeystore'
+    from "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    into "$buildDir/resources/test/truststore/"
+    outputs.file("$buildDir/resources/test/truststore/keystore.jceks")
 }
 
 task copyDependency (type: Copy) {
@@ -154,8 +155,8 @@ task stopDatabase (type: Exec) {
     }
 }
 
+check.dependsOn 'integrationTest'
 integrationTest.dependsOn 'libertyStart', 'startDatabase', 'testKeystore', 'testLoggingProperties'
 integrationTest.finalizedBy 'libertyStop', 'stopDatabase'
-check.dependsOn 'copyDependency'
 libertyStart.dependsOn 'copyKeystore', 'copyDependency'
 copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'

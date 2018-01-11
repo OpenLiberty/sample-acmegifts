@@ -29,7 +29,7 @@ ext {
 }
 
 war {
-    archiveName = warfileName + '.' + extension
+    archiveName = "${warfileName}.war"
 }
 
 nodejs {
@@ -38,13 +38,13 @@ nodejs {
 }
 
 npm {
-    homeDirectory "${projectDir}/npm_build"
+    homeDirectory "$projectDir/npm_build"
 }
 
 task npmInstall (type: NpmTask) {
     description = 'Run npm install from Gradle.'
     command 'install'
-    outputs.dir("{projectDir}/npm_build/node_modules")
+    outputs.dir("$projectDir/npm_build/node_modules")
 }
 
 task cpySrc (type: Copy) {
@@ -56,9 +56,9 @@ task cpySrc (type: Copy) {
 task npmBuild(type: NpmTask) {
     description = 'Run npm run build from Gradle.'
     command 'run'
-    cmdArgs 'build', '${projectDir}/npm_build'
+    cmdArgs 'build', "$projectDir/npm_build"
     dependsOn 'cpySrc', 'npmInstall'
-    outputs.dir("${projectDir}/src/main/webapp")
+    outputs.dir("$projectDir/src/main/webapp")
 }
 
 task npmLint (type: NpmTask) {
@@ -67,14 +67,14 @@ task npmLint (type: NpmTask) {
     cmdArgs 'lint'
     dependsOn 'npmBuild'
     // run onlyIf npmBuild is not UP-TO-DATE
-    outputs.dir("${projectDir}/src/main/webapp")
+    outputs.dir("$projectDir/src/main/webapp")
 }
 
 liberty {
     server {
         name = wlpServerName
         apps = [war]
-        configFile = new File("${projectDir}/liberty/config/server.xml")
+        configFile = new File("$projectDir/liberty/config/server.xml")
         bootstrapProperties =
             ['server.http.port':frontendHttpPort, 'server.https.port':frontendHttpsPort, 'application.name':war.archiveName]
         looseApplication = false
@@ -95,6 +95,9 @@ gradle.taskGraph.whenReady { graph ->
 
 // tie node into build
 build.dependsOn 'npmLint'
+
+// create servers during build
+build.finalizedBy 'libertyCreate'
 
 // make sure webapp is built
 libertyStart.dependsOn 'npmLint'
