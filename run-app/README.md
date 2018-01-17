@@ -10,23 +10,44 @@
 1. **stop-databases:** Stops all mongoDBs
 1. **demo:** Preloads Acme Gifts with pertinent data. Use it only after all databases and servers have been started.
    
-    Example Usage:
-    
-     - From the sample-acmegifts/run-app project:
-        - mvn package -P start-databases
-        - mvn package -P start-servers
-        - mvn package -P demo
-        - mvn package -P start-databases,start-servers,demo
-        - mvn package -P stop-servers,stop-databases
+### Example Usage:
+
+From the sample-acmegifts/run-app project:
+```
+mvn package -P start-databases
+mvn package -P start-servers
+mvn package -P demo
+mvn package -P start-databases,start-servers,demo
+mvn package -P stop-servers,stop-databases
+```
+
+From the sample-acmegifts root project:
+```
+mvn package -P start-databases -pl run-app
+mvn package -P start-servers -pl run-app
+mvn package -P demo -pl run-app
+mvn package -P start-databases,start-servers,demo -pl run-app
+mvn package -P stop-servers,stop-databases -pl run-app
+```
+
+## Gradle tasks
+
+1. **libertyStart:** Starts all liberty servers.
+1. **startDatabases:** Starts all mongoDBs
+1. **libertyStop:** Stops all liberty servers.
+1. **stopDatabases:** Stops all mongoDBs
+1. **demo:** Preloads Acme Gifts with pertinent data. Calling this directly will automatically start all databases and servers.
+
+### Example Usage:
+**Note**: The following Gradle commands should behave the same when calling from the `run-app` project or from the root project.
+
+```
+gradle libertyStart
+gradle startDatabase
+gradle libertyStop stopDatabase
+gradle demo
+```
         
-     - From the sample-acmegifts root project:
-        - mvn package -P start-databases -pl run-app
-        - mvn package -P start-servers -pl run-app
-        - mvn package -P demo -pl run-app
-        - mvn package -P start-databases,start-servers,demo -pl run-app
-        - mvn package -P stop-servers,stop-databases -pl run-app
-
-
 ## Bootstrap Data
 
 > This project allows an initial set of data to be bootstrapped into Acme Gifts. The data is contained in
