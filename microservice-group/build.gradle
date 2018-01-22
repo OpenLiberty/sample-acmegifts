@@ -114,12 +114,13 @@ task startDatabase (type: Exec) {
     group 'database'
     description 'Execute the script to start the database.'
 
-    // NOTE: these params are likely to change, especially 'build'
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
         commandLine 'cmd', '/C', '../run-app/startMongo.bat', 'groupDB', groupMongoPort, 'build', mongoPath
     } else {
         commandLine 'sh', '../run-app/startMongo.sh', 'groupDB', groupMongoPort, 'build', mongoPath
     }
+
+    outputs.upToDateWhen { false }
 }
 
 task stopDatabase (type: Exec) {
@@ -132,10 +133,15 @@ task stopDatabase (type: Exec) {
     } else {
         commandLine 'sh', '../run-app/stopMongo.sh', 'groupDB', 'build', mongoPath
     }
+
+    outputs.upToDateWhen { false }
 }
 
 check.dependsOn 'integrationTest'
 integrationTest.dependsOn 'libertyStart', 'startDatabase', 'testKeystore'
 integrationTest.finalizedBy 'libertyStop', 'stopDatabase'
 libertyStart.dependsOn 'copyKeystore', 'copyDependency'
+libertyStart.finalizedBy 'startDatabase'
+libertyStop.finalizedBy 'stopDatabase'
+clean.dependsOn 'libertyStop'
 copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'

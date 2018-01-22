@@ -1,9 +1,33 @@
 
-description = ''
+description = "Dedicated sub-project for running the application."
 dependencies {
     compile group: 'javax', name: 'javaee-api', version:'7.0'
     compile project(':shared-keystore')
     compile group: 'org.glassfish', name: 'javax.json', version:'1.0.4'
     compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
     compile group: 'org.springframework', name: 'spring-context', version:'4.3.9.RELEASE'
+}
+
+jar {
+    archiveName = "demoData.jar"
+}
+
+task startDatabases {
+    dependsOn ':microservice-group:startDatabase', ':microservice-occasion:startDatabase', ':microservice-user:startDatabase'
+
+}
+
+task stopDatabases {
+    dependsOn ':microservice-group:stopDatabase', ':microservice-occasion:stopDatabase',':microservice-user:stopDatabase'
+}
+
+task demo (type: Exec) {
+    dependsOn 'assemble'
+
+    commandLine =
+            ['java', '-jar', "$buildDir/libs/demoData.jar",
+            userHostname, userHttpsPort,
+            groupHostname, groupHttpsPort,
+            occasionHostname, occasionHttpsPort,
+            authHostname, authHttpsPort]
 }
