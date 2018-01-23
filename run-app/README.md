@@ -4,9 +4,9 @@
 
 ## Maven profiles
 
-1. **start-servers:** Starts all liberty servers. 
+1. **start-servers:** Starts all liberty servers
 1. **start-databases:** Starts all mongoDBs
-1. **stop-servers:** Stops all liberty servers. 
+1. **stop-servers:** Stops all liberty servers
 1. **stop-databases:** Stops all mongoDBs
 1. **demo:** Preloads Acme Gifts with pertinent data. Use it only after all databases and servers have been started.
    
@@ -14,39 +14,54 @@
 
 From the sample-acmegifts/run-app project:
 ```
-mvn package -P start-databases
-mvn package -P start-servers
-mvn package -P demo
-mvn package -P start-databases,start-servers,demo
-mvn package -P stop-servers,stop-databases
+mvn package -P start-databases  
+mvn package -P start-servers  
+mvn package -P demo  
+mvn package -P start-databases,start-servers,demo  
+mvn package -P stop-servers,stop-databases  
 ```
 
 From the sample-acmegifts root project:
 ```
-mvn package -P start-databases -pl run-app
-mvn package -P start-servers -pl run-app
-mvn package -P demo -pl run-app
-mvn package -P start-databases,start-servers,demo -pl run-app
-mvn package -P stop-servers,stop-databases -pl run-app
+mvn package -P start-databases -pl run-app  
+mvn package -P start-servers -pl run-app  
+mvn package -P demo -pl run-app  
+mvn package -P start-databases,start-servers,demo -pl run-app  
+mvn package -P stop-servers,stop-databases -pl run-app  
 ```
 
 ## Gradle tasks
 
-1. **libertyStart:** Starts all liberty servers.
+1. **startServers:** Start all liberty servers
 1. **startDatabases:** Starts all mongoDBs
-1. **libertyStop:** Stops all liberty servers.
+1. **start**: Starts all liberty servers and databases
+1. **stopServers:** Stops all liberty servers
 1. **stopDatabases:** Stops all mongoDBs
+1. **stop**: Stops all liberty servers and databases
 1. **demo:** Preloads Acme Gifts with pertinent data. Calling this directly will automatically start all databases and servers.
 
 ### Example Usage:
-**Note**: The following Gradle commands should behave the same when calling from the `run-app` project or from the root project.
+From the sample-acmegifts/run-app project:
 
 ```
-gradle libertyStart
-gradle startDatabase
-gradle libertyStop stopDatabase
+gradle startServers, startDatabases
+gradle start
+gradle stopServers, stopDatabases
+gradle stop
 gradle demo
 ```
+
+From the sample-acmegifts root project:
+```
+gradle libertyStart, startDatabase
+gradle startServers, startDatabases
+gradle start
+gradle libertyStop, stopDatabase
+gradle stopServers, stopDatabases
+gradle stop
+gradle demo
+```
+
         
 ## Bootstrap Data
 

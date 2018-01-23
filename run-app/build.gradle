@@ -1,5 +1,5 @@
 
-description = "Dedicated sub-project for running the application."
+description = "Sub-project wrapper for running the application."
 dependencies {
     compile group: 'javax', name: 'javaee-api', version:'7.0'
     compile project(':shared-keystore')
@@ -10,19 +10,54 @@ dependencies {
 
 jar {
     archiveName = "demoData.jar"
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { "$buildDir/dependency-jars/" + it.getName() }.join(' '),
+                'Main-Class': 'demo.DemoData')
+    }
+}
+
+task copyDependencies (type: Copy) {
+    dependsOn ':shared-keystore:assemble'
+    from configurations.compile
+    into "$buildDir/dependency-jars"
+}
+
+task startServers {
+    dependsOn ':front-end-ui:libertyStart',
+            ':microservice-auth:libertyStart',
+            ':microservice-group:libertyStart',
+            ':microservice-notification:libertyStart',
+            ':microservice-notification_v1_1:libertyStart',
+            ':microservice-occasion:libertyStart',
+            ':microservice-user:libertyStart'
 }
 
 task startDatabases {
-    dependsOn ':microservice-group:startDatabase', ':microservice-occasion:startDatabase', ':microservice-user:startDatabase'
+    dependsOn ':microservice-group:startDatabase',
+            ':microservice-occasion:startDatabase',
+            ':microservice-user:startDatabase'
 
+}
+
+task stopServers {
+    dependsOn ':front-end-ui:libertyStop',
+            ':microservice-auth:libertyStop',
+            ':microservice-group:libertyStop',
+            ':microservice-notification:libertyStop',
+            ':microservice-notification_v1_1:libertyStop',
+            ':microservice-occasion:libertyStop',
+            ':microservice-user:libertyStop'
 }
 
 task stopDatabases {
-    dependsOn ':microservice-group:stopDatabase', ':microservice-occasion:stopDatabase',':microservice-user:stopDatabase'
+    dependsOn ':microservice-group:stopDatabase',
+            ':microservice-occasion:stopDatabase',
+            ':microservice-user:stopDatabase'
 }
 
 task demo (type: Exec) {
-    dependsOn 'assemble'
+    dependsOn 'assemble', 'start'
 
     commandLine =
             ['java', '-jar', "$buildDir/libs/demoData.jar",
@@ -31,3 +66,15 @@ task demo (type: Exec) {
             occasionHostname, occasionHttpsPort,
             authHostname, authHttpsPort]
 }
+
+task start {
+    dependsOn 'startServers', 'startDatabases'
+    System.setProperty('javax.net.ssl.keyStorePassword', 'secret')
+}
+
+task stop {
+    dependsOn 'stopServers', 'stopDatabases'
+}
+
+assemble.dependsOn 'copyDependencies'
+clean.dependsOn 'stop'
