@@ -61,6 +61,7 @@ liberty {
             'mongo.hostname':userMongoHostname, 'mongo.port':userMongoPort, 'twitter.consumer.key':twitterAppConsumerKey,
             'twitter.consumer.secret':twitterAppConsumerKey, 'acme.gifts.frontend.url':frontendURL,
             'jwt.issuer':jwtIssuer]
+        looseApplication = false
     }
 }
 
@@ -153,8 +154,7 @@ task stopDatabase (type: Exec) {
 check.dependsOn 'integrationTest'
 integrationTest.dependsOn 'libertyStart', 'startDatabase', 'testKeystore'
 integrationTest.finalizedBy 'libertyStop', 'stopDatabase'
-libertyStart.dependsOn 'copyKeystore', 'copyDependency'
-libertyStart.finalizedBy 'startDatabase'
+libertyStart.dependsOn 'copyKeystore', 'copyDependency', 'startDatabase'
 libertyStop.finalizedBy 'stopDatabase'
 clean.dependsOn 'libertyStop'
 copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'

@@ -60,7 +60,8 @@ task demo (type: Exec) {
     dependsOn 'assemble', 'start'
 
     commandLine =
-            ['java', '-jar', "$buildDir/libs/demoData.jar",
+            ['java', '-Djavax.net.ssl.keyStorePassword=secret',
+             '-jar', "$buildDir/libs/demoData.jar",
             userHostname, userHttpsPort,
             groupHostname, groupHttpsPort,
             occasionHostname, occasionHttpsPort,
@@ -69,7 +70,6 @@ task demo (type: Exec) {
 
 task start {
     dependsOn 'startServers', 'startDatabases'
-    System.setProperty('javax.net.ssl.keyStorePassword', 'secret')
 }
 
 task stop {
