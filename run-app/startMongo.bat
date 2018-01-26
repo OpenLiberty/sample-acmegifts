@@ -23,13 +23,13 @@ IF defined mongoPath SET PATH=%PATH%;%mongoPath%
 
 @REM Create the needed directories.
 if defined dbName (
-  IF NOT exist %buildDir%\%dbName% (
+  IF NOT exist .\%buildDir%\%dbName% (
       md .\%buildDir%\%dbName%
   )
-  IF NOT exist %buildDir%\%dbName%\logs (
+  IF NOT exist .\%buildDir%\%dbName%\logs (
       md .\%buildDir%\%dbName%\logs
   )
-  IF NOT exist %buildDir%\%dbName%\mongoDB (
+  IF NOT exist .\%buildDir%\%dbName%\mongoDB (
       md .\%buildDir%\%dbName%\mongoDB
   )
 )
