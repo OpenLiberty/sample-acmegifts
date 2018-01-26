@@ -152,8 +152,8 @@ task stopDatabase (type: Exec) {
 }
 
 check.dependsOn 'integrationTest'
-integrationTest.dependsOn 'libertyStart', 'startDatabase', 'testKeystore'
-integrationTest.finalizedBy 'libertyStop', 'stopDatabase'
+integrationTest.dependsOn 'libertyStart', 'testKeystore'
+integrationTest.finalizedBy 'libertyStop'
 libertyStart.dependsOn 'copyKeystore', 'copyDependency', 'startDatabase'
 libertyStop.finalizedBy 'stopDatabase'
 clean.dependsOn 'libertyStop'
