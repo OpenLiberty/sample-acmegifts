@@ -173,15 +173,15 @@ Calling `libertyStart` should automatically trigger `startDatabase`.
 The notification microservice is a basic admin notification service that logs to a file when 
 scheduled occasions take place.
 
-#### Configuration:
-
-* Optionally, update the location/name of the administrative log. For Maven, update the entry located under the
-   "Optional Microservice Configuration" label in the "properties" section of the
-   sample-acmegifts/microservice-notification pom.xml. The default value is: 
+#### Configuration (optional):
+Update the location/name of the administrative log and fallback log.
+##### Maven
+Update the entry located under the "Optional Microservice Configuration" label in the "properties" section of the sample-acmegifts/microservice-notification pom.xml. The default value is: 
    
    `notification.log.file = ${project.build.directory}/logs/notifications.log`
    
-   For Gradle, update the entry defined in the ExtraPropertiesExtension (`ext`). The default value is:
+##### Gradle
+For Gradle, update the entry defined in the ExtraPropertiesExtension (`ext`). The default value is:
    
    `notificationLogFile = new File("$buildDir/logs/notifications.log")`
    
@@ -200,21 +200,21 @@ Issue the following comamnds from within sample-acmegifts/microservice-notificat
 	gradle libertyStart
 
 ### Notification Microservice v1_1:
-
 The notification microservice v1_1 is a notification service that logs to a file for administrative purposes and sends twitter notifications to those users associated to the occasion. To receive twitter notifications, users must have a valid twitter handle in their user profile.
 
-#### Configuration:
-
+#### Configuration (optional):
 * To allow users to receive tweets, complete the [Twitter Configuration](#twitter-configuration) (This may have already been done when configuring the user microservice)
 
-* Optionally, update the location/name of the administrative log and fallback log. For Maven, update the entry located under the "Optional Microservice Configuration" label in the "properties" section of the
-   sample-acmegifts/microservice-notification_v1_1 pom.xml. The default values are: 
+Update the location/name of the administrative log and fallback log.
+##### Maven
+Update the entry located under the "Optional Microservice Configuration" label in the "properties" section of the sample-acmegifts/microservice-notification_v1_1 pom.xml. The default values are: 
    
    `notification_1_1.log.file = ${project.build.directory}/logs/${project.build.directory}/logs/notifications_1_1.log`
    
    `notification_1_1.fallback.log.file = ${project.build.directory}/logs/notifications_1_1_fallback.log`   
    
-   For Gradle, update the entries defined in the ExtraPropertiesExtension (`ext`). The default values are:
+##### Gradle
+Update the entries defined in the ExtraPropertiesExtension (`ext`). The default values are:
    
    `notification_v1_1_logfile = new File("$buildDir/logs/notifications_1_1.log")`
    
