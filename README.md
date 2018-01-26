@@ -274,9 +274,9 @@ Acme Gifts provides the ability for users to login using Twitter credentials as 
 
 Follow the steps below to configure an existing twitter account for Acme Gifts.
 
-1. Specify valid twitter generated keys/secrets/tokens. 
-   These properties to update for Maven are located under the "Optional Microservice Configuration" label in the "properties" section of sample-acmegifts/pom.xml and, for Gradle, in the ExtraPropertiesExtension (ext) of sample-acmegifts/build.gradle. Update the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
-   These values can be obtained from a valid twitter account application to be used on behalf of the Acme Gifts application. Steps for setting up and obtaining the needed values:
+Specify valid twitter generated keys/secrets/tokens. 
+* For Maven, the properties to update are located under the "Optional Microservice Configuration" label in the "properties" section of sample-acmegifts/pom.xml. For Gradle, the properties are located in the ExtraPropertiesExtension (ext) of sample-acmegifts/build.gradle. Update the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
+* These values can be obtained from a valid twitter account application to be used on behalf of the Acme Gifts application. Steps for setting up and obtaining the needed values:
    
    a. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a 
     valid twitter account. This account will be used on behalf of the Gifts application.
