@@ -16,12 +16,9 @@ subprojects {
     }
 
     repositories {
-        mavenLocal()
-
-        maven { url "https://oss.sonatype.org/content/repositories/netwasdev-1087" }
+        mavenCentral()
         maven { url "http://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/wasliberty-open-liberty/" }
         maven { url "https://repo.eclipse.org/content/groups/releases/" }
-        maven { url "http://repo.maven.apache.org/maven2" }
     }
 
     dependencies {

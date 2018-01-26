@@ -26,7 +26,7 @@ dependencies {
     providedCompile group: 'org.eclipse.microprofile.fault.tolerance', name: 'microprofile-fault-tolerance-api', version:'1.0-RC1'
     providedCompile group: 'org.eclipse.microprofile.config', name: 'microprofile-config-api', version:'1.0'
     providedCompile group: 'org.eclipse.microprofile.jwt', name: 'microprofile-jwt-auth-api', version:'1.0-RC10'
-    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.3'
+    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.4'
     mongo group: 'org.mongodb', name: 'mongo-java-driver', version: '2.14.3'
     keystore project(':shared-keystore')
 }

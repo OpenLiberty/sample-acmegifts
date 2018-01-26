@@ -126,7 +126,7 @@ Issue the following commands from within sample-acmegifts/microservice-user dire
 	gradle clean build
 	gradle libertyStart
 
-Calling `libertyStart` should automatically trigger `startDatabase`.
+Calling `libertyStart` automatically triggers `startDatabase`.
 	
 ### Group Microservice:
 
@@ -146,7 +146,7 @@ Issue the following commands from within sample-acmegifts/microservice-group dir
 	gradle clean build
 	gradle libertyStart
 
-Calling `libertyStart` should automatically trigger `startDatabase`.
+Calling `libertyStart` automatically triggers `startDatabase`.
     
 ### Occasion Microservice:
 
@@ -166,7 +166,7 @@ Issue the following commands from within sample-acmegifts/microservice-occasion 
 	gradle clean build
 	gradle libertyStart
 
-Calling `libertyStart` should automatically trigger `startDatabase`.
+Calling `libertyStart` automatically triggers `startDatabase`.
     
 ### Notification Microservice:
 

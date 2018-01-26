@@ -7,7 +7,7 @@ apply plugin: 'org.ysb33r.nodejs.npm'
 description = 'Microservice :: Frontend UI'
 dependencies {
     providedCompile project(':shared-keystore')
-    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.3'
+    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.4'
 }
 
 buildscript {
