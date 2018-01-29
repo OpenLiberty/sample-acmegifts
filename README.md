@@ -1,4 +1,4 @@
-# Acme Gifts [![Build Status](https://travis-ci.org/dshimo/sample-acmegifts.svg?branch=addGradle)](https://travis-ci.org/dshimo/sample-acmegifts)
+# Acme Gifts [![Build Status](https://travis-ci.org/OpenLiberty/sample-acmegifts.svg?branch=master)](https://travis-ci.org/OpenLiberty/sample-acmegifts)
 A social gift giving application built on the [MicroProfile](http://microprofile.io/) platform
 
 ## Table of Contents
