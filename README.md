@@ -235,7 +235,7 @@ Issue the following commands from within sample-acemgifts/microservice-notificat
 
 ### Frontend UI:
 
-The Acme Gifts UI is written in Angular 2 and built in Maven using the frontend-maven-plugin. This plugin downloads and installs local versions of Node and NPM which makes calls to Angular CLI to install and build the source code. Gradle uses [ysb33r's Gradle nodejs plugin](https://gitlab.com/ysb33rOrg/nodejs-gradle-plugin) to similarly install local versions of Node and NPM to build the source code. Compiled files are placed in src/main/webapp which Maven builds into a war to deploy in Liberty.
+The Acme Gifts UI is written in Angular 2 and built in Maven using the frontend-maven-plugin. This plugin downloads and installs local versions of Node and NPM which makes calls to Angular CLI to install and build the source code. Gradle uses [ysb33r's Gradle nodejs plugin](https://gitlab.com/ysb33rOrg/nodejs-gradle-plugin) to similarly install local versions of Node and NPM to build the source code. Compiled files are placed in src/main/webapp which builds into a war to deploy in Liberty.
 
 #### Build and Start
 ##### Maven
