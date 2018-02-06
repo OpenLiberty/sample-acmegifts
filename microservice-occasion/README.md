@@ -57,7 +57,7 @@ Before causing a fallback, ensure that you followed the [Getting Started](../REA
 
 * Stop the base notification microservice version 1 by issuing the following command from within the sample-acmegifts/microservice-notification directory. 
   
-      mvn liberty:stop-server
+     `mvn liberty:stop-server` or `gradle libertyStop`
    
 * On the group page, click the occasion's overflow menu icon which will bring you to the following page:
 
