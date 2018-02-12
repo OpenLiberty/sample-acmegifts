@@ -5,9 +5,15 @@ apply plugin: 'liberty'
 apply plugin: 'org.ysb33r.nodejs.npm'
 
 description = 'Microservice :: Frontend UI'
+
+configurations{
+  keystore {}
+}
+
 dependencies {
     providedCompile project(':shared-keystore')
     libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.4'
+    keystore project(':shared-keystore')
 }
 
 buildscript {
@@ -81,6 +87,16 @@ liberty {
     }
 }
 
+task copyKeystore (type: Copy) {
+  configurations.keystore.each {
+    from(zipTree(it)) {
+      include "keystore.jceks"
+    }
+  }
+  into "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+  outputs.file("$buildDir/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
+}
+
 task url {
     doLast { println frontendURL }
 }
@@ -101,3 +117,6 @@ build.finalizedBy 'libertyCreate'
 
 // make sure webapp is built
 libertyStart.dependsOn 'npmLint'
+
+clean.dependsOn 'libertyStop'
+copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'

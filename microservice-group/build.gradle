@@ -112,6 +112,7 @@ task copyDependency (type: Copy) {
 
 task startDatabase (type: Exec) {
     group 'database'
+    workingDir = "${projectDir}"
     description 'Execute the script to start the database.'
 
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
@@ -125,6 +126,8 @@ task startDatabase (type: Exec) {
 
 task stopDatabase (type: Exec) {
     group 'database'
+    workingDir = "${projectDir}"
+    dependsOn 'libertyCreate'
     description 'Execute the script to stop the database.'
     args = ['groupDB', mongoPath]
 
