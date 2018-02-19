@@ -24,7 +24,7 @@ Acme Gifts provides a platform for users to create and join groups and exchange 
 
 ### Prereqs 
 
-* Maven or Gradle - [Maven](https://maven.apache.org/download.cgi) v3.5.0 must be installed and set on the environment path. Users may use their installed [Gradle](https://gradle.org/install/) or use the included Gradle wrapper.
+* Maven or Gradle - [Maven](https://maven.apache.org/download.cgi) v3.5.0 must be installed and set on the environment path. Users may use their installed [Gradle](https://gradle.org/install/) or use the included Gradle wrapper (Example usage: `./gradlew libertyStop`).
 
 * Java 8 - Java 8 must be used to compile and run this project.
 
@@ -274,21 +274,31 @@ Acme Gifts provides the ability for users to login using Twitter credentials as 
 
 Follow the steps below to configure an existing twitter account for Acme Gifts.
 
-Specify valid twitter generated keys/secrets/tokens. 
-* For Maven, the properties to update are located under the "Optional Microservice Configuration" label in the "properties" section of sample-acmegifts/pom.xml. For Gradle, the properties are located in the ExtraPropertiesExtension (ext) of sample-acmegifts/build.gradle. Update the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
-* These values can be obtained from a valid twitter account application to be used on behalf of the Acme Gifts application. Steps for setting up and obtaining the needed values:
-   
-   a. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a 
+#### Find your Twitter generated keys/secrets/tokens.  
+Obtain the app consumer key, consumer secret, user access token and user access secret for the desired account.
+These values can be obtained from a valid twitter account application to be used on behalf of the Acme Gifts application. 
+The steps for setting up and obtaining the needed values:
+
+  1. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a 
     valid twitter account. This account will be used on behalf of the Gifts application.
     NOTE: Be sure to fill in the 'Callback URL' section when creating the application. 
     The entry can be a dummy URL. If the application exists already, go to the 'Settings' tab 
     and make sure something was specified in the 'Callback URL' section.
 
-   b. Under the Details tab, modify the access level to 'Read, write, and direct messages'.
+  2. Under the Details tab, modify the access level to 'Read, write, and direct messages'.
 
-   c. Under the 'Key and Access Tokens' tab, generate access token/secret.
+  3. Under the 'Key and Access Tokens' tab, generate access token/secret.
 
-   d. Replace CHANGE_ME with the consumer key/secret and the access token/secret generated values.
+  4. Replace CHANGE_ME with the consumer key/secret and the access token/secret generated values (see below).
+
+#### Specify your Twitter credentials to your build tool   
+##### Maven
+The properties to update are located under the "Optional Microservice Configuration" label in the "properties" section of sample-acmegifts/pom.xml. 
+
+##### Gradle 
+The properties are located in the ExtraPropertiesExtension (ext) of sample-acmegifts/build.gradle. Update the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
+
+
 
    
 ### Host and Port Configuration
