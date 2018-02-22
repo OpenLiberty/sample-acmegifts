@@ -1,19 +1,11 @@
 import org.ysb33r.gradle.nodejs.tasks.NpmTask
 
-apply plugin: 'war'
-apply plugin: 'liberty'
 apply plugin: 'org.ysb33r.nodejs.npm'
 
 description = 'Microservice :: Frontend UI'
 
-configurations{
-  keystore {}
-}
-
 dependencies {
     providedCompile project(':shared-keystore')
-    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.4'
-    keystore project(':shared-keystore')
 }
 
 buildscript {

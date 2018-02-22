@@ -1,24 +1,9 @@
-apply plugin: 'war'
-apply plugin: 'liberty'
-
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
 
 description = 'Microservice :: Authentication'
 
-configurations{
-    keystore {}
-}
-
 dependencies {
-    testCompile group: 'org.glassfish', name: 'javax.json', version:'1.0.4'
-    testCompile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
-    testCompile group: 'org.springframework', name: 'spring-context', version:'4.3.9.RELEASE'
     compile group: 'javax', name: 'javaee-api', version:'7.0'
     compile group: 'com.ibm.websphere.appserver.api', name: 'com.ibm.websphere.appserver.api.jwt', version:'1.0.16'
-    libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.4'
-    testCompile project(':shared-keystore')
-    keystore project(':shared-keystore')
 }
 
 buildscript {
