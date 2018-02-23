@@ -24,7 +24,7 @@ Acme Gifts provides a platform for users to create and join groups and exchange 
 
 ### Prereqs 
 
-* Maven or Gradle - [Maven](https://maven.apache.org/download.cgi) v3.5.0 must be installed and set on the environment path. Users may use their installed [Gradle](https://gradle.org/install/) or use the included Gradle wrapper (Example usage: `./gradlew libertyStop`).
+* Maven or Gradle - [Maven](https://maven.apache.org/download.cgi) v3.5.0 must be installed and set on the environment path. Users may use their installed [Gradle](https://gradle.org/install/) or use the included Gradle wrapper (Example usage: `./gradlew libertyStart` or `gradlew.bat libertyStart` for Windows).
 
 * Java 8 - Java 8 must be used to compile and run this project.
 
