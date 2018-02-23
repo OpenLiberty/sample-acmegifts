@@ -9,13 +9,25 @@ allprojects  {
 buildscript {
     repositories {
         mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
     }
     dependencies {
         classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
+
+        classpath "gradle.plugin.com.github.sherter.google-java-format:google-java-format-gradle-plugin:0.6"
+        /* To use googleJavaFormat, execute: gradle goJF
+         * To use verifyGoogleJavaFormat, execute: gradle verGJF
+         *
+         * To configure the formatter, use the googleJavaFormat {} extension in the appropriate build.gradle file
+         * For more information, consult the GitHub documentation:
+         *
+         * https://github.com/sherter/google-java-format-gradle-plugin
+         */
     }
 }
 
 subprojects {
+    apply plugin: "com.github.sherter.google-java-format"
     apply plugin: 'war'
     apply plugin: 'liberty'
     sourceCompatibility = 1.8
