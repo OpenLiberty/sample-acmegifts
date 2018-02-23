@@ -65,6 +65,9 @@ task addTwitter2 (type: KeytoolTask) {
     doLast { println ("Ignore duplicate certification keytool error.") }
 }
 
+// reinforcement to produce the shared-keystore jar
+assemble.dependsOn 'jar'
+
 processResources.dependsOn 'generateKeyPair'
 generateKeyPair.finalizedBy 'addTwitter1', 'addTwitter2'
 clean.finalizedBy 'cleanGenerateKeyPair'
