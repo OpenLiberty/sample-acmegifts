@@ -1,4 +1,3 @@
-apply plugin: 'com.github.psxpaul.execfork'
 
 description = 'Microservice :: Group'
 
@@ -21,7 +20,6 @@ buildscript {
     }
     dependencies {
         classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
-        classpath "gradle.plugin.com.github.psxpaul:gradle-execfork-plugin:0.1.7"
     }
 }
 
@@ -99,14 +97,6 @@ task copyDependency (type: Copy) {
     outputs.file("$buildDir/wlp/usr/shared/resources/mongo-java-driver.jar")
 }
 
-task startDatabaseTest (type: com.github.psxpaul.task.ExecFork) {
-    group 'database'
-    workingDir = "${projectDir}"
-    description 'Test workaround'
-    commandLine = "../run-app/startMongo.sh"
-    args = [ 'groupDB', groupMongoPort, 'build', mongoPath]
-}
-
 task startDatabase (type: Exec) {
     group 'database'
     workingDir = "${projectDir}"
@@ -117,8 +107,8 @@ task startDatabase (type: Exec) {
     } else {
         commandLine 'sh', '../run-app/startMongo.sh', 'groupDB', groupMongoPort, 'build', mongoPath
     }
-
-    outputs.upToDateWhen { false }
+    outputs.file("${buildDir}/groupDB/groupDB.pid")
+    ignoreExitValue = true
 }
 
 task stopDatabase (type: Exec) {
@@ -126,15 +116,13 @@ task stopDatabase (type: Exec) {
     workingDir = "${projectDir}"
     dependsOn 'libertyCreate'
     description 'Execute the script to stop the database.'
-    args = ['groupDB', mongoPath]
 
     if (System.properties['os.name'].toLowerCase().contains('windows')) {
         commandLine 'cmd', '/C', '../run-app/stopMongo.bat', 'groupDB', 'build', mongoPath
     } else {
         commandLine 'sh', '../run-app/stopMongo.sh', 'groupDB', 'build', mongoPath
     }
-
-    outputs.upToDateWhen { false }
+    ignoreExitValue = true
 }
 
 check.dependsOn 'integrationTest'

@@ -26,10 +26,20 @@ buildscript {
     }
 }
 
+// Apply the Liberty Plugin to specific projects
+configure( subprojects.findAll {it.name != 'run-app' & it.name != 'shared-keystore'} ) {
+    apply plugin: 'liberty'
+
+    dependencies {
+        libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.4'
+    }
+}
+
+// Configuration for all subprojects
 subprojects {
     apply plugin: "com.github.sherter.google-java-format"
     apply plugin: 'war'
-    apply plugin: 'liberty'
+
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
     tasks.withType(JavaCompile) {
@@ -37,7 +47,7 @@ subprojects {
     }
 
     configurations {
-        keystore {}
+        keystore
     }
 
     repositories {
@@ -59,8 +69,6 @@ subprojects {
         providedCompile group: 'com.ibm.websphere.appserver.api', name: 'com.ibm.websphere.appserver.api.jwt', version:'1.0.16'
 
         keystore project(':shared-keystore')
-
-        libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.4'
     }
 
     // Extra Properties

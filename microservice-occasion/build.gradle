@@ -126,8 +126,8 @@ task startDatabase (type: Exec) {
     } else {
         commandLine 'sh', '../run-app/startMongo.sh', 'occasionDB', occasionMongoPort, 'build', mongoPath
     }
-
-    outputs.upToDateWhen { false }
+    outputs.file("${buildDir}/occasionDB/occasionDB.pid")
+    ignoreExitValue = true
 }
 
 task stopDatabase (type: Exec) {
@@ -142,8 +142,7 @@ task stopDatabase (type: Exec) {
     } else {
         commandLine 'sh', '../run-app/stopMongo.sh', 'occasionDB', 'build', mongoPath
     }
-
-    outputs.upToDateWhen { false }
+    ignoreExitValue = true
 }
 
 check.dependsOn 'integrationTest'

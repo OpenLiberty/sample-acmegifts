@@ -19,8 +19,7 @@ if [ -z mongoPath ]; then
 fi
 
 # Kill any existing mongo server
-if [ -e ./${buildDir}/${dbName}.pid ]; then
-
-	kill `cat ./${buildDir}/${dbName}.pid`
-	rm ./${buildDir}/${dbName}.pid
+if [ -e ./${buildDir}/${dbName}/${dbName}.pid ]; then
+	kill `cat ./${buildDir}/${dbName}/${dbName}.pid`
+	rm ./${buildDir}/${dbName}/${dbName}.pid
 fi

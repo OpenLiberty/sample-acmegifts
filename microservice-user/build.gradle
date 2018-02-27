@@ -119,8 +119,8 @@ task startDatabase (type: Exec) {
     } else {
         commandLine 'sh', '../run-app/startMongo.sh', 'userDB', userMongoPort, 'build', mongoPath
     }
-
-    outputs.upToDateWhen { false }
+    outputs.file("${buildDir}/userDB/userDB.pid")
+    ignoreExitValue = true
 }
 
 task stopDatabase (type: Exec) {
@@ -135,8 +135,7 @@ task stopDatabase (type: Exec) {
     } else {
         commandLine 'sh', '../run-app/stopMongo.sh', 'userDB', 'build', mongoPath
     }
-
-    outputs.upToDateWhen { false }
+    ignoreExitValue = true
 }
 
 check.dependsOn 'integrationTest'
