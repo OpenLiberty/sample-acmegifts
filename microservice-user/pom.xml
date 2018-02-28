@@ -286,6 +286,7 @@
                             <arguments>
                                 <argument>userDB</argument>
                                 <argument>${user.mongo.port}</argument>
+                                <argument>target</argument>
                                 <argument>${mongo.path}</argument>
                             </arguments>
                         </configuration>
@@ -300,6 +301,7 @@
                             <executable>../run-app/stopMongo${script.extension}</executable>
                             <arguments>
                                 <argument>userDB</argument>
+                                <argument>target</argument>
                                 <argument>${mongo.path}</argument>
                             </arguments>
                         </configuration>

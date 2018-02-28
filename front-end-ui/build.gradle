@@ -1,0 +1,114 @@
+import org.ysb33r.gradle.nodejs.tasks.NpmTask
+
+apply plugin: 'org.ysb33r.nodejs.npm'
+
+description = 'Microservice :: Frontend UI'
+
+dependencies {
+    providedCompile project(':shared-keystore')
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "gradle.plugin.org.ysb33r.gradle:nodejs-gradle-plugin:0.1"
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
+    }
+}
+
+ext {
+    warfileName = 'UIService'
+    wlpServerName = 'UIServer'
+}
+
+war {
+    archiveName = "${warfileName}.war"
+}
+
+nodejs {
+    // comes with npm version '5.3.0'
+    executable version : '8.3.0'
+}
+
+npm {
+    homeDirectory "$projectDir/npm_build"
+}
+
+task npmInstall (type: NpmTask) {
+    description = 'Run npm install from Gradle.'
+    command 'install'
+    outputs.dir("$projectDir/npm_build/node_modules")
+}
+
+task cpySrc (type: Copy) {
+    from 'src'
+    into 'npm_build/src'
+    outputs.dir("npm_build/src")
+}
+
+task npmBuild(type: NpmTask) {
+    description = 'Run npm run build from Gradle.'
+    command 'run'
+    cmdArgs 'build', "$projectDir/npm_build"
+    dependsOn 'cpySrc', 'npmInstall'
+    outputs.dir("$projectDir/src/main/webapp")
+}
+
+task npmLint (type: NpmTask) {
+    description = 'Run npm run lint from Gradle.'
+    command 'run'
+    cmdArgs 'lint'
+    dependsOn 'npmBuild'
+    // run onlyIf npmBuild is not UP-TO-DATE
+    outputs.dir("$projectDir/src/main/webapp")
+}
+
+liberty {
+    server {
+        name = wlpServerName
+        apps = [war]
+        configFile = new File("$projectDir/liberty/config/server.xml")
+        bootstrapProperties =
+            ['server.http.port':frontendHttpPort, 'server.https.port':frontendHttpsPort, 'application.name':war.archiveName]
+        looseApplication = false
+    }
+}
+
+task copyKeystore (type: Copy) {
+  configurations.keystore.each {
+    from(zipTree(it)) {
+      include "keystore.jceks"
+    }
+  }
+  into "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+  outputs.file("$buildDir/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
+}
+
+task url {
+    doLast { println frontendURL + '/login'}
+}
+
+gradle.taskGraph.whenReady { graph ->
+    if (graph.hasTask(":front-end-ui:libertyStart")) {
+        libertyStart.doLast {
+            println ("Application should be running on ${frontendURL}")
+        }
+    }
+}
+
+// tie node into build
+build.dependsOn 'npmLint'
+
+// create servers during build
+build.finalizedBy 'libertyCreate'
+
+// make sure webapp is built
+libertyStart.dependsOn 'npmLint'
+
+clean.dependsOn 'libertyStop'
+copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'

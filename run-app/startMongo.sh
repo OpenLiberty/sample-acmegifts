@@ -6,12 +6,21 @@
 #
 # <databaseName> : The name of the directory to create and use to hold the Mongo DB
 # <databasePort> : The port with which to start the Mongo DB server
+# <buildDir>     : Name of the build directory (Gradle = build, Maven = target)
 # [mongoPath] : Optional, absolute path to the Mongo install bin directory
 #
 
 dbName=$1
 dbPort=$2
-mongoPath=$3
+buildDir=$3
+mongoPath=$4
+
+if [ ! $# -ge 3 ]; then
+    echo 'Please provide at least a dbName, dbPort, and buildDir'
+    echo 'Example usage:'
+    echo ''
+    echo '    startMongo.sh <databaseName> <databasePort> <buildDir> [mongoPath] '
+fi
 
 # Set mongo path if defined
 if [ -z mongoPath ]; then
@@ -19,20 +28,20 @@ if [ -z mongoPath ]; then
 fi
 
 # Create the mongo db directory
-if [ ! -d ./target/${dbName} ]; then
-    mkdir ./target/${dbName}
+if [ ! -d ./${buildDir}/${dbName} ]; then
+    mkdir ./${buildDir}/${dbName}
 fi
-if [ ! -d ./target/${dbName}/logs ]; then
-    mkdir ./target/${dbName}/logs
+if [ ! -d ./${buildDir}/${dbName}/logs ]; then
+    mkdir ./${buildDir}/${dbName}/logs
 fi
-if [ ! -d ./target/${dbName}/mongoDB ]; then
-    mkdir ./target/${dbName}/mongoDB
+if [ ! -d ./${buildDir}/${dbName}/mongoDB ]; then
+    mkdir ./${buildDir}/${dbName}/mongoDB
 fi
 
 # Start the mongo db server
-mongod --fork --logpath ./target/${dbName}/logs/${dbName}.log --port ${dbPort} --dbpath ./target/${dbName}/mongoDB | 
+mongod --fork --logpath ./${buildDir}/${dbName}/logs/${dbName}.log --port ${dbPort} --dbpath ./${buildDir}/${dbName}/mongoDB | 
 grep "forked process:" | 
-awk '{split($0,a,":"); print a[2]}' > ./target/${dbName}/${dbName}.pid
+awk '{split($0,a,":"); print a[2]}' > ./${buildDir}/${dbName}/${dbName}.pid
 
 echo "Starting user database with pid: "
-cat ./target/${dbName}/${dbName}.pid
+cat ./${buildDir}/${dbName}/${dbName}.pid

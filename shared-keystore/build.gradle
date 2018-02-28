@@ -1,0 +1,73 @@
+import org.figurate.gradle.plugin.keytool.KeytoolTask
+
+apply plugin: 'keytool'
+
+description = 'Shared Keystore'
+dependencies {
+    compile group: 'junit', name: 'junit', version:'4.12'
+    compileOnly group: 'javax', name: 'javaee-api', version:'7.0'
+    compileOnly group: 'org.glassfish', name: 'javax.json', version:'1.0.4'
+    compileOnly group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.figurate:gradle-keytool-plugin:1.0.0"
+    }
+}
+
+task generateKeyPair (type: KeytoolTask) {
+    args '-genkeypair'
+    options {
+        keypass = 'secret'
+        keyalg = 'RSA'
+        keysize = '2048'
+        sigalg = 'SHA256withRSA'
+        alias = 'default'
+        dname = 'CN=localhost,OU=userServer,O=IBM,C=US'
+        validity = '999'
+        keystore = "${projectDir}/src/main/resources/keystore.jceks"
+        storepass = 'secret'
+        storetype = 'jceks'
+    }
+    onlyIf { ! new File("${projectDir}/src/main/resources/keystore.jceks").exists() }
+    outputs.file("${projectDir}/src/main/resources/keystore.jceks")       // for clean
+}
+
+task addTwitter1 (type: KeytoolTask) {
+    args '-importcert', '-noprompt'
+    options {
+        alias = 'Twitter1'
+        file = 'certs/DigiCertSHA2HighAssuranceServerCA.crt'
+        keystore = "${projectDir}/src/main/resources/keystore.jceks"
+        storepass = 'secret'
+        storetype = 'jceks'
+    }
+    ignoreExitValue = true
+
+    doLast { println ("Ignore duplicate certification keytool error.") }
+}
+
+task addTwitter2 (type: KeytoolTask) {
+    args '-importcert', '-noprompt'
+    options {
+        alias = 'Twitter2'
+        file = 'certs/DigiCertSHA2SecureServerCA.crt'
+        keystore = "${projectDir}/src/main/resources/keystore.jceks"
+        storepass = 'secret'
+        storetype = 'jceks'
+    }
+    ignoreExitValue = true
+
+    doLast { println ("Ignore duplicate certification keytool error.") }
+}
+
+// reinforcement to produce the shared-keystore jar
+assemble.dependsOn 'jar'
+
+processResources.dependsOn 'generateKeyPair'
+generateKeyPair.finalizedBy 'addTwitter1', 'addTwitter2'
+clean.finalizedBy 'cleanGenerateKeyPair'

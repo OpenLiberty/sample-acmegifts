@@ -1,4 +1,4 @@
-# Acme Gifts
+# Acme Gifts [![Build Status](https://travis-ci.org/OpenLiberty/sample-acmegifts.svg?branch=master)](https://travis-ci.org/OpenLiberty/sample-acmegifts)
 A social gift giving application built on the [MicroProfile](http://microprofile.io/) platform
 
 ## Table of Contents
@@ -24,21 +24,31 @@ Acme Gifts provides a platform for users to create and join groups and exchange 
 
 ### Prereqs 
 
-* Maven - [Maven](https://maven.apache.org/download.cgi) v3.5.0 must be installed and set on the environment path. 
+* Maven or Gradle - [Maven](https://maven.apache.org/download.cgi) v3.5.0 must be installed and set on the environment path. Users may use their installed [Gradle](https://gradle.org/install/) or use the included Gradle wrapper (Example usage: `./gradlew libertyStart` or `gradlew.bat libertyStart` for Windows).
 
 * Java 8 - Java 8 must be used to compile and run this project.
 
-* MongoDB - [MongoDB](https://www.mongodb.com/) v3.4.6 must be installed and either set on the environment path or set using the <mongo.path> property in sample-acmegifts/pom.xml.
+* MongoDB - [MongoDB](https://www.mongodb.com/) v3.4.6 must be installed and either set on the environment path or set using the <mongo.path> property in sample-acmegifts/pom.xml or sample-acmegifts/build.gradle.
 
 * Running in admin mode (Windows only) - Maven commands must be run in admin mode to ensure that the Mongo databases are successfully auto-started in the background
 
 ### Quick start
-Build and start the full suite of microservices that make up the Acme Gifts application
+Download the repository and navigate into it:
 
-    git clone https://github.com/OpenLiberty/sample-acmegifts.git
-    cd sample-acmegifts
+	git clone https://github.com/OpenLiberty/sample-acmegifts.git
+	cd sample-acmegifts
+	
+Build and start the full suite of microservices that make up the Acme Gifts application with the build tool of choice:
+
+#### Maven
+
     mvn clean install
     mvn package -P start-databases,start-servers -pl run-app
+
+#### Gradle
+	
+	gradle clean build
+	gradle libertyStart
 
 Go to https://localhost:5064 if using the default host and ports. Otherwise, use the custom host and ports defined for the front-end-ui service.
 
@@ -103,33 +113,60 @@ The user microservice manages the lifecycle of users and user login within the A
 * To allow users to login using Twitter, complete the [Twitter Configuration](#twitter-configuration)
 
 #### Build and Start
+##### Maven
 Issue the following commands from within sample-acmegifts/microservice-user directory
 
     mvn clean package install
     mvn exec:exec@start-database
     mvn liberty:start-server
     
+##### Gradle
+Issue the following commands from within sample-acmegifts/microservice-user directory
+
+	gradle clean build
+	gradle libertyStart
+
+Calling `libertyStart` automatically triggers `startDatabase`.
+	
 ### Group Microservice:
 
 The group microservice manages the lifecycle of groups within the Acme Gifts application. 
 
 #### Build and Start
+##### Maven
 Issue the following commands from within sample-acmegifts/microservice-group directory
 
     mvn clean package install
     mvn exec:exec@start-database
     mvn liberty:start-server
     
+##### Gradle
+Issue the following commands from within sample-acmegifts/microservice-group directory
+
+	gradle clean build
+	gradle libertyStart
+
+Calling `libertyStart` automatically triggers `startDatabase`.
+    
 ### Occasion Microservice:
 
 The occasion microservice manages the lifecycle and orchestration of occasions within the Acme Gifts application. 
 
 #### Build and Start
+##### Maven
 Issue the following commands from within sample-acmegifts/microservice-occasion directory
 
     mvn clean package install
     mvn exec:exec@start-database
     mvn liberty:start-server
+    
+##### Gradle
+Issue the following commands from within sample-acmegifts/microservice-occasion directory
+
+	gradle clean build
+	gradle libertyStart
+
+Calling `libertyStart` automatically triggers `startDatabase`.
     
 ### Notification Microservice:
 
@@ -137,61 +174,99 @@ The notification microservice is a basic admin notification service that logs to
 scheduled occasions take place.
 
 #### Configuration:
-
-* Optionally, update the location/name of the administrative log by updating the entry located under the
-   "Optional Microservice Configuration" label in the "properties" section of the
-   sample-acmegifts/microservice-notification pom.xml. The default value is: 
+Update the location/name of the administrative log and fallback log.
+##### Maven
+Update the entry located under the "Optional Microservice Configuration" label in the "properties" section of the sample-acmegifts/microservice-notification pom.xml. The default value is: 
    
    `notification.log.file = ${project.build.directory}/logs/notifications.log`
    
+##### Gradle
+For Gradle, update the entry defined in the ExtraPropertiesExtension (`ext`). The default value is:
+   
+   `notificationLogFile = new File("$buildDir/logs/notifications.log")`
+   
+   
 #### Build and Start
+##### Maven
 Issue the following commands from within sample-acmegifts/microservice-notification directory
 
     mvn clean package install
     mvn liberty:start-server
+	
+##### Gradle
+Issue the following comamnds from within sample-acmegifts/microservice-notification directory
+
+	gradle clean build
+	gradle libertyStart
 
 ### Notification Microservice v1_1:
-
 The notification microservice v1_1 is a notification service that logs to a file for administrative purposes and sends twitter notifications to those users associated to the occasion. To receive twitter notifications, users must have a valid twitter handle in their user profile.
 
 #### Configuration:
-
 * To allow users to receive tweets, complete the [Twitter Configuration](#twitter-configuration) (This may have already been done when configuring the user microservice)
 
-* Optionally, update the location/name of the administrative log and fallback log by updating the entry located under the
-   "Optional Microservice Configuration" label in the "properties" section of the
-   sample-acmegifts/microservice-notification_v1_1 pom.xml. The default values are: 
+* Optionally, Update the location/name of the administrative log and fallback log.
+##### Maven
+Update the entry located under the "Optional Microservice Configuration" label in the "properties" section of the sample-acmegifts/microservice-notification_v1_1 pom.xml. The default values are: 
    
    `notification_1_1.log.file = ${project.build.directory}/logs/${project.build.directory}/logs/notifications_1_1.log`
    
    `notification_1_1.fallback.log.file = ${project.build.directory}/logs/notifications_1_1_fallback.log`   
+   
+##### Gradle
+Update the entries defined in the ExtraPropertiesExtension (`ext`). The default values are:
+   
+   `notification_v1_1_logfile = new File("$buildDir/logs/notifications_1_1.log")`
+   
+   `notification_v1_1_fallback_logfile = new File("$buildDir/logs/notifications_1_1_fallback.log")`
 
 #### Build and Start
+##### Maven
 Issue the following commands from within sample-acmegifts/microservice-notification_v1_1 directory
 
     mvn clean package install
     mvn liberty:start-server
+	
+##### Gradle
+Issue the following commands from within sample-acemgifts/microservice-notification_v1_1 directory
+
+	gradle clean build
+	gradle libertyStart
 
 ### Frontend UI:
 
-The Acme Gifts UI is written in Angular 2 and built using the frontend-maven-plugin. This plugin downloads and installs local versions of Node and NPM which makes calls to Angular CLI to install and build the source code. Compiled files are placed in src/main/webapp which Maven builds into a war to deploy in Liberty.
+The Acme Gifts UI is written in Angular 2 and built in Maven using the frontend-maven-plugin. This plugin downloads and installs local versions of Node and NPM which makes calls to Angular CLI to install and build the source code. Gradle uses [ysb33r's Gradle nodejs plugin](https://gitlab.com/ysb33rOrg/nodejs-gradle-plugin) to similarly install local versions of Node and NPM to build the source code. Compiled files are placed in src/main/webapp which builds into a war to deploy in Liberty.
 
 #### Build and Start
+##### Maven
 Issue the following commands from within sample-acmegifts/front-end-ui directory
 
     mvn clean package install
     mvn liberty:start-server
     
+##### Gradle
+Issue the following commands from within sample-acmegifts/front-end-ui directory
+
+	gradle clean build
+	gradle libertyStart
+
 ### Auth Microservice:
 
 The auth microservice manages the creation and validation of JSON Web Tokens (JWTs) used to secure the Acme  Gifts application.
 
 #### Build and Start
-Issue the following commands from within AcmeGifts/microservice-auth directory
+##### Maven
+Issue the following commands from within sample-acmegifts/microservice-auth directory
 
     mvn clean package install
     mvn liberty:start-server
     
+##### Gradle
+Issue the following commands from within sample-acmegifts/microservice-auth directory
+
+	gradle clean build
+	gradle libertyStart
+	
 ## Configuration and Customization
 
 ### Twitter Configuration
@@ -199,21 +274,31 @@ Acme Gifts provides the ability for users to login using Twitter credentials as 
 
 Follow the steps below to configure an existing twitter account for Acme Gifts.
 
-1. Specify valid twitter generated keys/secrets/tokens. 
-   These properties to update are located under the "Optional Microservice Configuration" label in the "properties" section of sample-acmegifts/pom.xml. Update the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
-   These values can be obtained from a valid twitter account application to be used on behalf of the Acme Gifts application. Steps for setting up and obtaining the needed values:
-   
-   a. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a 
+#### Find your Twitter generated keys/secrets/tokens.  
+Obtain the app consumer key, consumer secret, user access token and user access secret for the desired account.
+These values can be obtained from a valid twitter account application to be used on behalf of the Acme Gifts application. 
+The steps for setting up and obtaining the needed values:
+
+  1. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a 
     valid twitter account. This account will be used on behalf of the Gifts application.
     NOTE: Be sure to fill in the 'Callback URL' section when creating the application. 
     The entry can be a dummy URL. If the application exists already, go to the 'Settings' tab 
     and make sure something was specified in the 'Callback URL' section.
 
-   b. Under the Details tab, modify the access level to 'Read, write, and direct messages'.
+  2. Under the Details tab, modify the access level to 'Read, write, and direct messages'.
 
-   c. Under the 'Key and Access Tokens' tab, generate access token/secret.
+  3. Under the 'Key and Access Tokens' tab, generate access token/secret.
 
-   d. Replace CHANGE_ME with the consumer key/secret and the access token/secret generated values.
+  4. Replace CHANGE_ME with the consumer key/secret and the access token/secret generated values (see below).
+
+#### Specify your Twitter credentials to your build tool   
+##### Maven
+The properties to update are located under the "Optional Microservice Configuration" label in the "properties" section of sample-acmegifts/pom.xml. 
+
+##### Gradle 
+The properties are located in the ExtraPropertiesExtension (ext) of sample-acmegifts/build.gradle. Update the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
+
+
 
    
 ### Host and Port Configuration

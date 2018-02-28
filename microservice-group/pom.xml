@@ -281,6 +281,7 @@
                             <arguments>
                                 <argument>groupDB</argument>
                                 <argument>${group.mongo.port}</argument>
+                                <argument>target</argument>
                                 <argument>${mongo.path}</argument>
                             </arguments>
                         </configuration>
@@ -295,6 +296,7 @@
                             <executable>../run-app/stopMongo${script.extension}</executable>
                             <arguments>
                                 <argument>groupDB</argument>
+                                <argument>target</argument>
                                 <argument>${mongo.path}</argument>
                             </arguments>
                         </configuration>

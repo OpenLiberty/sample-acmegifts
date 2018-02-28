@@ -409,6 +409,7 @@
                             <arguments>
                                 <argument>occasionDB</argument>
                                 <argument>${occasion.mongo.port}</argument>
+                                <argument>target</argument>
                                 <argument>${mongo.path}</argument>
                             </arguments>
                         </configuration>
@@ -423,6 +424,7 @@
                             <executable>../run-app/stopMongo${script.extension}</executable>
                             <arguments>
                                 <argument>occasionDB</argument>
+                                <argument>target</argument>
                                 <argument>${mongo.path}</argument>
                             </arguments>
                         </configuration>

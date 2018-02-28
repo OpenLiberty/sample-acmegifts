@@ -1,0 +1,88 @@
+
+description = 'Microservice :: Authentication'
+
+dependencies {
+    compile group: 'javax', name: 'javaee-api', version:'7.0'
+    compile group: 'com.ibm.websphere.appserver.api', name: 'com.ibm.websphere.appserver.api.jwt', version:'1.0.16'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
+    }
+}
+
+ext {
+    warfileName = 'authMicroservice'
+    wlpServerName = 'authServer'
+}
+
+war {
+    archiveName = "${warfileName}.war"
+}
+
+liberty {
+    server {
+        name = wlpServerName
+        apps = [war]
+        bootstrapProperties =
+            ['app.name':war.archiveName, 'http.port':authHttpPort, 'https.port':authHttpsPort,
+            'jwt.issuer':jwtIssuer]
+        looseApplication = false
+    }
+}
+
+task url {
+    doLast { println authURL + '/auth'}
+}
+
+test {
+    group 'Verification'
+    reports.html.destination = file("$buildDir/reports/unit")
+    reports.junitXml.destination = file("$buildDir/test-reports/unit")
+    exclude '**/test/**'
+
+    // run every time when called
+    outputs.upToDateWhen { false }
+}
+
+task integrationTest(type: Test) {
+    group 'Verification'
+    description 'Runs the integration tests.'
+    reports.html.destination = file("$buildDir/reports/it")
+    reports.junitXml.destination = file("$buildDir/test-reports/it")
+    include '**/test/**'
+
+    systemProperties = ['liberty.test.auth.service.url': authServiceURL,
+                        'javax.net.ssl.keyStorePassword': "secret"]
+
+    // run every time when called
+    outputs.upToDateWhen { false }
+}
+
+task copyKeystore(type: Copy) {
+    configurations.keystore.each {
+        from(zipTree(it)) {
+            include "keystore.jceks"
+        }
+    }
+    into "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    outputs.file("$buildDir/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
+}
+
+task testKeystore(type: Copy) {
+    dependsOn 'copyKeystore'
+    from "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    into "$buildDir/resources/test/truststore/"
+    outputs.file("$buildDir/resources/test/truststore/keystore.jceks")
+}
+
+check.dependsOn 'integrationTest'
+integrationTest.dependsOn 'libertyStart', 'testKeystore'
+integrationTest.finalizedBy 'libertyStop'
+libertyStart.dependsOn 'copyKeystore'
+clean.dependsOn 'libertyStop'
+copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'

@@ -1,0 +1,147 @@
+
+description = 'Microservice :: User'
+
+configurations{
+    // Used for copyDependency
+    mongo {}
+    compile.extendsFrom(mongo)
+}
+
+dependencies {
+    compile group: 'org.twitter4j', name: 'twitter4j-core', version:'4.0.6'
+    mongo group: 'org.mongodb', name: 'mongo-java-driver', version: '2.14.3'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
+    }
+}
+
+ext {
+    warfileName = 'userMicroservice'
+    wlpServerName = 'userServer'
+}
+
+war {
+    archiveName = "${warfileName}.${extension}"
+}
+
+sourceSets {
+    integrationTest {
+        resources.srcDir file('src/test/resources')
+    }
+}
+
+liberty {
+    server {
+        name = wlpServerName
+        apps = [war]
+        bootstrapProperties =
+            ['app.name':war.archiveName, 'http.port':userHttpPort, 'https.port':userHttpsPort,
+            'mongo.hostname':userMongoHostname, 'mongo.port':userMongoPort, 'twitter.consumer.key':twitterAppConsumerKey,
+            'twitter.consumer.secret':twitterAppConsumerKey, 'acme.gifts.frontend.url':frontendURL,
+            'jwt.issuer':jwtIssuer]
+        looseApplication = false
+    }
+}
+
+task url {
+    doLast { println userURL + '/users' }
+}
+
+test {
+    group 'Verification'
+    reports.html.destination = file("$buildDir/reports/unit")
+    reports.junitXml.destination = file("$buildDir/test-reports/unit")
+    exclude '**/test/**'
+
+    // run every time when called
+    outputs.upToDateWhen { false }
+}
+
+task integrationTest (type: Test) {
+    group 'Verification'
+    description 'Runs the integration tests.'
+    reports.html.destination = file("$buildDir/reports/it")
+    reports.junitXml.destination = file("$buildDir/test-reports/it")
+    include '**/test/**'
+
+    systemProperties = ['liberty.test.user.service.hostname': userHostname,
+                        'liberty.test.port': userHttpPort,
+                        'liberty.user.service.ssl.port': userHttpsPort,
+                        'mongo.test.hostname': userMongoHostname,
+                        'mongo.test.port': userMongoPort,
+                        'liberty.test.user.service.url': userServiceURL,
+                        'liberty.test.user.service.login.url': userServiceLoginURL,
+                        'javax.net.ssl.keyStorePassword': "secret"]
+
+    // run every time when called
+    outputs.upToDateWhen { false }
+}
+
+task copyKeystore (type: Copy) {
+    configurations.keystore.each {
+        from(zipTree(it)) {
+            include "keystore.jceks"
+        }
+    }
+    into "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    outputs.file("$buildDir/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
+}
+
+task testKeystore (type: Copy) {
+    dependsOn 'copyKeystore'
+    from "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    into "$buildDir/resources/test/truststore/"
+    outputs.file("$buildDir/resources/test/truststore/keystore.jceks")
+}
+
+task copyDependency (type: Copy) {
+    dependsOn 'libertyCreate'
+    from configurations.mongo
+    rename { "mongo-java-driver.jar" }
+    into "$buildDir/wlp/usr/shared/resources/"
+    outputs.file("$buildDir/wlp/usr/shared/resources/mongo-java-driver.jar")
+}
+
+task startDatabase (type: Exec) {
+    group 'database'
+    workingDir = "${projectDir}"
+    dependsOn 'libertyCreate'
+    description 'Execute the script to start the database.'
+
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/C', '../run-app/startMongo.bat', 'userDB', userMongoPort, 'build', mongoPath
+    } else {
+        commandLine 'sh', '../run-app/startMongo.sh', 'userDB', userMongoPort, 'build', mongoPath
+    }
+    outputs.file("${buildDir}/userDB/userDB.pid")
+    ignoreExitValue = true
+}
+
+task stopDatabase (type: Exec) {
+    group 'database'
+    workingDir = "${projectDir}"
+    dependsOn 'libertyCreate'
+    description 'Execute the script to stop the database.'
+    args = ['userDB', mongoPath]
+
+    if (System.properties['os.name'].toLowerCase().contains('windows')) {
+        commandLine 'cmd', '/C', '../run-app/stopMongo.bat', 'userDB', 'build', mongoPath
+    } else {
+        commandLine 'sh', '../run-app/stopMongo.sh', 'userDB', 'build', mongoPath
+    }
+    ignoreExitValue = true
+}
+
+check.dependsOn 'integrationTest'
+integrationTest.dependsOn 'libertyStart', 'testKeystore'
+integrationTest.finalizedBy 'libertyStop'
+libertyStart.dependsOn 'copyKeystore', 'copyDependency', 'startDatabase'
+libertyStop.finalizedBy 'stopDatabase'
+clean.dependsOn 'libertyStop'
+copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'

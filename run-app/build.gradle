@@ -1,0 +1,80 @@
+
+description = "Sub-project wrapper for running the application."
+dependencies {
+    compile group: 'javax', name: 'javaee-api', version:'7.0'
+    compile project(':shared-keystore')
+    compile group: 'org.glassfish', name: 'javax.json', version:'1.0.4'
+    compile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
+    compile group: 'org.springframework', name: 'spring-context', version:'4.3.9.RELEASE'
+}
+
+jar {
+    archiveName = "demoData.jar"
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { "$buildDir/dependency-jars/" + it.getName() }.join(' '),
+                'Main-Class': 'demo.DemoData')
+    }
+}
+
+task copyDependencies (type: Copy) {
+    dependsOn ':shared-keystore:assemble'
+    from configurations.compile
+    into "$buildDir/dependency-jars"
+}
+
+task startServers {
+    dependsOn ':microservice-auth:libertyStart',
+            ':microservice-user:libertyStart',
+            ':microservice-group:libertyStart',
+            ':microservice-notification:libertyStart',
+            ':microservice-notification_v1_1:libertyStart',
+            ':front-end-ui:libertyStart',
+            ':microservice-occasion:libertyStart'
+}
+
+task startDatabases {
+    dependsOn ':microservice-user:startDatabase',
+            ':microservice-group:startDatabase',
+            ':microservice-occasion:startDatabase'
+
+}
+
+task stopServers {
+    dependsOn ':microservice-auth:libertyStop',
+            ':microservice-user:libertyStop',
+            ':microservice-group:libertyStop',
+            ':microservice-notification:libertyStop',
+            ':microservice-notification_v1_1:libertyStop',
+            ':front-end-ui:libertyStop',
+            ':microservice-occasion:libertyStop'
+}
+
+task stopDatabases {
+    dependsOn ':microservice-user:stopDatabase',
+            ':microservice-group:stopDatabase',
+            ':microservice-occasion:stopDatabase'
+}
+
+task demo (type: Exec) {
+    dependsOn 'assemble', 'start'
+
+    commandLine =
+            ['java', '-Djavax.net.ssl.keyStorePassword=secret',
+             '-jar', "$buildDir/libs/demoData.jar",
+            userHostname, userHttpsPort,
+            groupHostname, groupHttpsPort,
+            occasionHostname, occasionHttpsPort,
+            authHostname, authHttpsPort]
+}
+
+task start {
+    dependsOn 'startServers', 'startDatabases'
+}
+
+task stop {
+    dependsOn 'stopServers', 'stopDatabases'
+}
+
+assemble.dependsOn 'copyDependencies'
+clean.dependsOn 'stop'

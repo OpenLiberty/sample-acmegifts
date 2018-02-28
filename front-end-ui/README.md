@@ -47,7 +47,7 @@ Enter your newly created username and password.
 
 ### Create a group
 
-Now you are in the groups page. This page shows all groups that you belong to.
+Now you are in the groups page. This page shows all the groups that you belong to.
 
 ![alt text](collateral/groupsNoEntries.bmp)
    
@@ -89,7 +89,7 @@ In this example, Linda, a member of the Co-workers group, created an occasion fo
 ![alt text](collateral/group.bmp)  
 
 We are done!  
-Now the system will automatically track of the occasion date and will automatically send a notification on the day of the event. Note that this application only does occasion notifications for now.
+Now the system will automatically track the occasion date and will automatically send a notification on the day of the event. Note that this application only does occasion notifications for now.
 
 
 ### Occasion execution

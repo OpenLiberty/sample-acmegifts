@@ -1,0 +1,96 @@
+
+description = 'Microservice :: Notification v1_1'
+
+dependencies {
+    compile group: 'org.twitter4j', name: 'twitter4j-core', version:'4.0.6'
+    providedCompile group: 'org.eclipse.microprofile.fault.tolerance', name: 'microprofile-fault-tolerance-api', version:'1.0-RC1'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
+    }
+}
+
+ext {
+    warfileName = 'notificiationMicroservice'
+    wlpServerName = 'notificationServer'
+
+    // Optional Microservice Configuration
+    notification_v1_1_logfile = new File("$buildDir/logs/notifications_1_1.log")
+    notification_v1_1_fallback_logfile = new File("$buildDir/logs/notifications_1_1_fallback.log")
+}
+
+war {
+    archiveName = "${warfileName}.war"
+}
+
+liberty {
+    server {
+        name = wlpServerName
+        bootstrapProperties =
+            ['log.file':notification_v1_1_logfile, 'fallback.log.file':notification_v1_1_fallback_logfile,
+            'twitter.consumer.key':twitterAppConsumerKey, 'twitter.consumer.secret':twitterAppConsumerSecret,
+            'twitter.access.token':twitterUserAccessToken, 'twitter.access.secret':twitterUserAccessSecret,
+            'http.port':notification_v1_1_HttpPort, 'https.port':notification_v1_1_HttpsPort, 'app.name':war.archiveName, 'jwt.issuer':jwtIssuer]
+    }
+}
+
+test {
+    group 'Verification'
+    reports.html.destination = file("$buildDir/reports/unit")
+    reports.junitXml.destination = file("$buildDir/test-reports/unit")
+    exclude '**/test/**'
+
+    // run every time when called
+    outputs.upToDateWhen { false }
+}
+
+task integrationTest(type: Test) {
+    group 'Verification'
+    description 'Runs the integration tests.'
+    reports.html.destination = file("$buildDir/reports/it")
+    reports.junitXml.destination = file("$buildDir/test-reports/it")
+    include '**/test/**'
+    
+    systemProperties = ['log.file': notification_v1_1_logfile,
+                        'fallback.log.file': notification_v1_1_fallback_logfile,
+                        'twitter.consumer.key': twitterAppConsumerKey,
+                        'twitter.consumer.secret': twitterAppConsumerSecret,
+                        'twitter.access.token': twitterUserAccessToken,
+                        'twitter.access.secret': twitterUserAccessSecret,
+                        'liberty.test.hostname': notification_v1_1_Hostname,
+                        'liberty.test.port': notification_v1_1_HttpPort,
+                        'jwt.issuer': jwtIssuer,
+                        'javax.net.ssl.keyStorePassword': "secret"]
+
+    // run every time when called
+    outputs.upToDateWhen { false }
+}
+
+task copyKeystore (type: Copy) {
+    configurations.keystore.each {
+        from(zipTree(it)) {
+            include "keystore.jceks"
+        }
+    }
+    into "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    outputs.file("$buildDir/wlp/usr/servers/${wlpServerName}/resources/security/keystore.jceks")
+}
+
+task testKeystore(type: Copy) {
+    dependsOn 'copyKeystore'
+    from "$buildDir/wlp/usr/servers/${wlpServerName}/resources/security"
+    into "$buildDir/resources/test/truststore/"
+    outputs.file("$buildDir/resources/test/truststore/keystore.jceks")
+}
+
+check.dependsOn 'integrationTest'
+integrationTest.dependsOn 'libertyStart', 'testKeystore'
+integrationTest.finalizedBy 'libertyStop'
+libertyStart.dependsOn 'copyKeystore'
+clean.dependsOn 'libertyStop'
+copyKeystore.dependsOn ':shared-keystore:assemble', 'libertyCreate'

@@ -1,0 +1,20 @@
+rootProject.name = 'acmeGifts'
+include ':shared-keystore'
+include ':microservice-auth'
+include ':microservice-user'
+include ':microservice-group'
+include ':microservice-notification'
+include ':microservice-occasion'
+include ':front-end-ui'
+include ':microservice-notification_v1_1'
+include ':run-app'
+
+project(':shared-keystore').projectDir = "$rootDir/shared-keystore" as File
+project(':microservice-auth').projectDir = "$rootDir/microservice-auth" as File
+project(':microservice-user').projectDir = "$rootDir/microservice-user" as File
+project(':microservice-group').projectDir = "$rootDir/microservice-group" as File
+project(':microservice-notification').projectDir = "$rootDir/microservice-notification" as File
+project(':microservice-occasion').projectDir = "$rootDir/microservice-occasion" as File
+project(':front-end-ui').projectDir = "$rootDir/front-end-ui" as File
+project(':microservice-notification_v1_1').projectDir = "$rootDir/microservice-notification_v1_1" as File
+project(':run-app').projectDir = "$rootDir/run-app" as File

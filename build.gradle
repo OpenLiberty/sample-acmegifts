@@ -1,0 +1,153 @@
+description = 'Acme gift giving using microservices'
+
+allprojects  {
+    apply plugin: 'maven'
+    group = 'microprofile.gift.demo'
+    version = '0.0.1-SNAPSHOT'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        maven { url "https://plugins.gradle.org/m2/" }
+    }
+    dependencies {
+        classpath "net.wasdev.wlp.gradle.plugins:liberty-gradle-plugin:2.1"
+
+        classpath "gradle.plugin.com.github.sherter.google-java-format:google-java-format-gradle-plugin:0.6"
+        /* To use googleJavaFormat, execute: gradle goJF
+         * To use verifyGoogleJavaFormat, execute: gradle verGJF
+         *
+         * To configure the formatter, use the googleJavaFormat {} extension in the appropriate build.gradle file
+         * For more information, consult the GitHub documentation:
+         *
+         * https://github.com/sherter/google-java-format-gradle-plugin
+         */
+    }
+}
+
+// Apply the Liberty Plugin to specific projects
+configure( subprojects.findAll {it.name != 'run-app' & it.name != 'shared-keystore'} ) {
+    apply plugin: 'liberty'
+
+    dependencies {
+        libertyRuntime group: 'io.openliberty', name: 'openliberty-runtime', version:'17.0.0.4'
+    }
+}
+
+// Configuration for all subprojects
+subprojects {
+    apply plugin: "com.github.sherter.google-java-format"
+    apply plugin: 'war'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+    }
+
+    configurations {
+        keystore
+    }
+
+    repositories {
+        mavenCentral()
+        maven { url "http://public.dhe.ibm.com/ibmdl/export/pub/software/openliberty/wasliberty-open-liberty/" }
+        maven { url "https://repo.eclipse.org/content/groups/releases/" }
+    }
+
+    dependencies {
+        testCompile group: 'junit', name: 'junit', version:'4.12'
+        testCompile group: 'org.glassfish', name: 'javax.json', version:'1.0.4'
+        testCompile group: 'org.apache.cxf', name: 'cxf-rt-rs-client', version:'3.1.1'
+        testCompile group: 'org.springframework', name: 'spring-context', version:'4.3.9.RELEASE'
+        testCompile project(':shared-keystore')
+
+        providedCompile group: 'javax', name: 'javaee-api', version:'7.0'
+        providedCompile group: 'org.eclipse.microprofile.config', name: 'microprofile-config-api', version:'1.0'
+        providedCompile group: 'org.eclipse.microprofile.jwt', name: 'microprofile-jwt-auth-api', version:'1.0-RC10'
+        providedCompile group: 'com.ibm.websphere.appserver.api', name: 'com.ibm.websphere.appserver.api.jwt', version:'1.0.16'
+
+        keystore project(':shared-keystore')
+    }
+
+    // Extra Properties
+    ext {
+        // Optional Microservice Configuration
+        hostname = 'localhost'
+
+        userHostname = hostname
+        userHttpPort = 5050
+        userHttpsPort = 5051
+        userURL = "https://${userHostname}:${userHttpsPort}"
+        userServiceLoginURL = userURL + '/logins'
+        userServiceURL = userURL + '/users'
+        userMongoHostname = hostname
+        userMongoPort = 5052
+
+        groupHostname = hostname
+        groupHttpPort = 5053
+        groupHttpsPort = 5054
+        groupURL = "https://${groupHostname}:${groupHttpsPort}"
+        groupServiceURL = groupURL + '/groups'
+        groupMongoHostname = hostname
+        groupMongoPort = 5055
+
+        occasionHostname = hostname
+        occasionHttpPort = 5056
+        occasionHttpsPort = 5057
+        occasionURL = "https://${occasionHostname}:${occasionHttpsPort}"
+        occasionServiceURL = occasionURL + '/occasions'
+        occasionMongoHostname = hostname
+        occasionMongoPort = 5058
+
+        notificationHostname = hostname
+        notificationHttpPort = 5059
+        notificationHttpsPort = 5060
+
+        notification_v1_1_Hostname = hostname
+        notification_v1_1_HttpPort = 5061
+        notification_v1_1_HttpsPort = 5062
+
+        frontendHostname = hostname
+        frontendHttpPort = 5063
+        frontendHttpsPort = 5064
+        frontendURL = "https://${frontendHostname}:${frontendHttpsPort}"
+
+        authHostname = hostname
+        authHttpPort = 5065
+        authHttpsPort = 5066
+        authURL = "https://${authHostname}:${authHttpsPort}"
+        authServiceURL = authURL + '/auth'
+
+        // Optional path to Mongo install bin directory (for use when auto starting and stopping the databases)
+        mongoPath = ''
+
+        // JSON Web Token used for microservice authorization
+        jwtShareKey = 'secret'
+        jwtIssuer = 'http://wasdev.net'
+
+        /*********************************************
+        Optional Twitter configuration
+        IMPORTANT.
+        Replace the CHANGE_ME values with valid twitter generated keys/secrets/tokens.
+        The consumer key/secret are required for Twitter login and for tweeting.
+        The user access key/secret are only required for tweeting.
+        These values can be obtained from a valid twitter account application to be used on behalf of the Gifts application.
+        Steps for setting up and obtaining the needed values:
+        a. Go to: https://apps.twitter.com/ to register the 'Acme Gifts' application under a
+            valid twitter account. This account will be used on behalf of the Acme Gifts application.
+            NOTE: Be sure to fill in the 'Callback URL' section when creating the application. The entry can be a dummy URL.
+            If the application exists already, go to the 'Settings' tab and make sure something was
+            specified in the 'Callback URL' section.
+        b. Under the Details tab, modify the access level to 'Read, write, and direct messages'.
+        c. Under the 'Key and Access Tokens' tab, generate access token/secret.
+        d. Replace CHANGE_ME with the consumer key/secret and the access
+            token/secret generated values.
+        *********************************************/
+        twitterAppConsumerKey = 'CHANGE_ME'
+        twitterAppConsumerSecret = 'CHANGE_ME'
+        twitterUserAccessToken = 'CHANGE_ME'
+        twitterUserAccessSecret = 'CHANGE_ME'
+    }
+}

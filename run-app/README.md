@@ -4,29 +4,71 @@
 
 ## Maven profiles
 
-1. **start-servers:** Starts all liberty servers. 
+1. **start-servers:** Starts all liberty servers
 1. **start-databases:** Starts all mongoDBs
-1. **stop-servers:** Stops all liberty servers. 
+1. **stop-servers:** Stops all liberty servers
 1. **stop-databases:** Stops all mongoDBs
 1. **demo:** Preloads Acme Gifts with pertinent data. Use it only after all databases and servers have been started.
    
-    Example Usage:
-    
-     - From the sample-acmegifts/run-app project:
-        - mvn package -P start-databases
-        - mvn package -P start-servers
-        - mvn package -P demo
-        - mvn package -P start-databases,start-servers,demo
-        - mvn package -P stop-servers,stop-databases
+### Example Usage:
+
+From the sample-acmegifts/run-app project:
+```
+mvn package -P start-databases  
+mvn package -P start-servers  
+mvn package -P demo  
+mvn package -P start-databases,start-servers,demo  
+mvn package -P stop-servers,stop-databases  
+```
+
+From the sample-acmegifts root project:
+```
+mvn package -P start-databases -pl run-app  
+mvn package -P start-servers -pl run-app  
+mvn package -P demo -pl run-app  
+mvn package -P start-databases,start-servers,demo -pl run-app  
+mvn package -P stop-servers,stop-databases -pl run-app  
+```
+
+## Gradle tasks
+
+1. **startServers:** Starts all liberty servers
+1. **startDatabases:** Starts all mongoDBs
+1. **start**: Starts all liberty servers and databases
+1. **stopServers:** Stops all liberty servers
+1. **stopDatabases:** Stops all mongoDBs
+1. **stop**: Stops all liberty servers and databases
+1. **demo:** Preloads Acme Gifts with pertinent data. Calling this directly will automatically start all databases and servers.
+
+These are tasks that are specifically owned by `run-app`.
+`startServers` wraps all `libertyStart` tasks from the other projects and each `libertyStart` has a dependency on their related `startDatabase`. 
+Stopping the servers and their databases have the same structure.  
+
+For your convenience, `start` and `demo` will automatically start all necessary preparations and `stop` will shut them down.
+
+
+### Example Usage:
+From the sample-acmegifts/run-app project:
+```
+gradle startServers startDatabases
+gradle startServers
+gradle start
+gradle stopServers stopDatabases
+gradle stopServers
+gradle stop
+gradle demo
+```
+
+From the sample-acmegifts root project, you can call all run-app tasks above in addition to:
+```
+gradle libertyStart
+gradle libertyStop
+```
+
+These commands work from the root project because each project has an instance of a `libertyStart` or `libertyStop` task that Gradle will recognize and execute.  
+Additionally, the tasks called in `sample-acmegifts/run-app` could also be called from the root project dir and Gradle will understand to execute `run-app`'s tasks.
+
         
-     - From the sample-acmegifts root project:
-        - mvn package -P start-databases -pl run-app
-        - mvn package -P start-servers -pl run-app
-        - mvn package -P demo -pl run-app
-        - mvn package -P start-databases,start-servers,demo -pl run-app
-        - mvn package -P stop-servers,stop-databases -pl run-app
-
-
 ## Bootstrap Data
 
 > This project allows an initial set of data to be bootstrapped into Acme Gifts. The data is contained in

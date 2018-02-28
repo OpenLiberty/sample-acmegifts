@@ -2,10 +2,11 @@
 front-end-ui/node/
 front-end-ui/node_modules/
 
-# Ignore target directories.
+# Ignore target/build directories.
 target/
+build/
 
-# Ignore the settigs directories.
+# Ignore the settings directories.
 .settings/
 
 # Ignore .metadata directories
@@ -34,3 +35,7 @@ hs_err_pid*
 # ignore certificates/keystores
 *.pkcs12
 *.pem
+
+# Ignore Gradle cache
+.gradle/
+

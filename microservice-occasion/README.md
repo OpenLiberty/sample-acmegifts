@@ -25,6 +25,10 @@ The Liberty server's bootstrap.properties file, in turn, is populated by what is
    
 ![alt text](collateral/pomBootstrapProperties.bmp)
 
+In Gradle, a bootstrap.properties file is neither generated nor used. Instead, define your bootstrapProperties in the server section of your Liberty configuration in your `build.gradle` file:
+
+![alt text](collateral/gradleBootstrapProperties.bmp)
+
 
 ## Using Microprofile Fault Tolerance
 
@@ -53,7 +57,7 @@ Before causing a fallback, ensure that you followed the [Getting Started](../REA
 
 * Stop the base notification microservice version 1 by issuing the following command from within the sample-acmegifts/microservice-notification directory. 
   
-      mvn liberty:stop-server
+     `mvn liberty:stop-server` or `gradle libertyStop`
    
 * On the group page, click the occasion's overflow menu icon which will bring you to the following page:
 
@@ -69,8 +73,8 @@ Before causing a fallback, ensure that you followed the [Getting Started](../REA
 
 ### Override occasion microservice fault tolerance maxRetries
 
-The maxRetries value of 2 can be overridden by placing the following in the booststrap.properties file of the server running the occasion microservice.
+The maxRetries value of 2 can be overridden by placing the following in the `bootstrap.properties` file of the server running the occasion microservice.
  
-net.wasdev.samples.microProfile.occasions.NotificationRetryBean/makeNotificationConnection/Retry/maxRetries=6
+`net.wasdev.samples.microProfile.occasions.NotificationRetryBean/makeNotificationConnection/Retry/maxRetries=6`
 
 
