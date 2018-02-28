@@ -50,7 +50,7 @@ liberty {
 }
 
 task url {
-    doLast { println userURL }
+    doLast { println userURL + '/users' }
 }
 
 test {

@@ -90,7 +90,7 @@ task copyKeystore (type: Copy) {
 }
 
 task url {
-    doLast { println frontendURL }
+    doLast { println frontendURL + '/login'}
 }
 
 gradle.taskGraph.whenReady { graph ->

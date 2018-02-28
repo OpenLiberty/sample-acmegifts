@@ -42,7 +42,7 @@ liberty {
 }
 
 task url {
-    doLast { println groupURL }
+    doLast { println groupURL + '/groups'}
 }
 
 test {

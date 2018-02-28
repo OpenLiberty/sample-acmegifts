@@ -36,7 +36,7 @@ liberty {
 }
 
 task url {
-    doLast { println authURL }
+    doLast { println authURL + '/auth'}
 }
 
 test {

@@ -51,7 +51,7 @@ liberty {
 }
 
 task url {
-    doLast { println occasionURL }
+    doLast { println occasionURL + '/occasions'}
 }
 
 test {
