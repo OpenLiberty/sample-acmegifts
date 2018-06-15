@@ -85,14 +85,14 @@
           <td>{{occasion.date}}</td>
           <td>
               <div>
-                  <button md-icon-button [mdMenuTriggerFor]="menu">
+                  <button mat-icon-button [mat-menu-trigger-for]="menu">
                       <img src="assets/images/icon-overflow-menu.svg">
                   </button>
-                  <md-menu #menu="mdMenu">
-                      <button (click)="onDeleteOccasion(occasion)" md-menu-item><span>Delete occasion</span></button>
-                      <button (click)="onEditOccasion(occasion)" md-menu-item><span>Edit occasion</span></button>
-                      <button (click)="onRunOccasion(occasion)" md-menu-item><span>Run occasion</span></button>
-                  </md-menu>
+                  <mat-menu #menu="matMenu">
+                      <button (click)="onDeleteOccasion(occasion)" mat-menu-item><span>Delete occasion</span></button>
+                      <button (click)="onEditOccasion(occasion)" mat-menu-item><span>Edit occasion</span></button>
+                      <button (click)="onRunOccasion(occasion)" mat-menu-item><span>Run occasion</span></button>
+                  </mat-menu>
               </div>
           </td>
         </tr>

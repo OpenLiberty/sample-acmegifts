@@ -31,8 +31,7 @@ war {
 }
 
 nodejs {
-    // comes with npm version '5.3.0'
-    executable version : '8.3.0'
+    executable version : '8.9.0'
 }
 
 npm {
@@ -54,7 +53,7 @@ task cpySrc (type: Copy) {
 task npmBuild(type: NpmTask) {
     description = 'Run npm run build from Gradle.'
     command 'run'
-    cmdArgs 'build', "$projectDir/npm_build"
+    cmdArgs 'build'
     dependsOn 'cpySrc', 'npmInstall'
     outputs.dir("$projectDir/src/main/webapp")
 }
