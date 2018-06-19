@@ -13,7 +13,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Group } from './group';
 import { GroupService } from './services/group.service';
 import { HttpErrorResponse, HttpResponse} from '@angular/common/http';
-import { MdIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material';
 import { Occasion } from '../occasion/Occasion';
 import { OccasionService } from '../occasion/services/occasion.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
@@ -53,7 +53,7 @@ export class GroupComponent implements OnInit {
 
     constructor(private route: ActivatedRoute,
         private groupService: GroupService,
-        private iconRegistry: MdIconRegistry,
+        private iconRegistry: MatIconRegistry,
         private occasionService: OccasionService,
         private userService: UserService,
         private sanitizer: DomSanitizer,

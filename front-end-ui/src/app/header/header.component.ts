@@ -10,7 +10,7 @@
 *******************************************************************************/
 import { Component, OnInit } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { MdIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';
 
 // This component is responsible for putting the header at the top
@@ -25,7 +25,7 @@ export class HeaderComponent implements OnInit {
     userId: string = null;
 
     constructor(private router: Router,
-                iconRegistry: MdIconRegistry,
+                iconRegistry: MatIconRegistry,
                 sanitizer: DomSanitizer) {
         // Need to register the icon that we'll use to display the menu
         // in the header.  This is required by the material code that

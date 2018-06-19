@@ -10,17 +10,17 @@
 <div *ngIf="this.userName != null" class="header">
   <div class="fontDarkSpacing89-16px headerMargingLeft floatLeft">ACME GIFTS</div>
   <div class="headerMargingRightMenu floatRight">
-    <button md-icon-button [mdMenuTriggerFor]="menu">
-      <md-icon svgIcon="hamburger"></md-icon>
+    <button mat-icon-button [mat-menu-trigger-for]="menu">
+      <mat-icon svgIcon="hamburger"></mat-icon>
     </button>
-    <md-menu #menu="mdMenu">
-      <button (click)="onLogout()" md-menu-item>
+    <mat-menu #menu="matMenu">
+      <button (click)="onLogout()" mat-menu-item>
         <span>Logout</span>
       </button>
-      <button (click)="onEditProfile()" md-menu-item>
+      <button (click)="onEditProfile()" mat-menu-item>
         <span>Edit Profile</span>
       </button>
-    </md-menu>
+    </mat-menu>
   </div>
   <div class="fontDark-16Px headerMargingRight floatRight">Hi, {{this.userName}}!</div>
 </div>

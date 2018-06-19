@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { HttpModule } from '@angular/http';
 import { NgModule } from '@angular/core';
-import { MdButtonModule, MdMenuModule, MdIconModule } from '@angular/material';
+import { MatButtonModule, MatMenuModule, MatIconModule } from '@angular/material';
 import { AppComponent } from './app.component';
 import { GroupAddMemberComponent } from './group/group-add-member.component';
 import { GroupComponent } from './group/group.component';
@@ -57,9 +57,9 @@ import { routing } from './app-routing.module';
         FormsModule,
         HttpClientModule,
         HttpModule,
-        MdButtonModule,
-        MdIconModule,
-        MdMenuModule,
+        MatButtonModule,
+        MatIconModule,
+        MatMenuModule,
         routing
     ],
     providers: [
