@@ -120,7 +120,8 @@ subprojects {
         authURL = "https://${authHostname}:${authHttpsPort}"
         authServiceURL = authURL + '/auth'
 
-        // Optional path to Mongo install bin directory (for use when auto starting and stopping the databases)
+        // Optional path to the Mongo installation's bin directory (i.e. /myDatabases/mongodb/bin)
+        // It is used when auto starting and stopping the databases.
         mongoPath = ''
 
         // JSON Web Token used for microservice authorization
