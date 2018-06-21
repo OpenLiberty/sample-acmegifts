@@ -100,7 +100,8 @@
         <auth.https.port>5066</auth.https.port>
         <auth.service.url>https://${auth.hostname}:${auth.https.port}/auth</auth.service.url>
 
-        <!-- Optional path to Mongo install bin directory (for use when auto starting and stopping the databases) -->
+        <!-- Optional path to the Mongo installation's bin directory (i.e. /myDatabases/mongodb/bin) -->
+        <!-- It is used when auto starting and stopping the databases.                               -->
         <mongo.path></mongo.path>
 
         <!-- JSON Web Token used for microservice authorization -->

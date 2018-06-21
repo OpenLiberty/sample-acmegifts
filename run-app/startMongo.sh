@@ -23,8 +23,8 @@ if [ ! $# -ge 3 ]; then
 fi
 
 # Set mongo path if defined
-if [ -z mongoPath ]; then
-    export PATH=$PATH;${mongoPath}
+if [ ! -z mongoPath ]; then
+    export PATH=$PATH:${mongoPath}
 fi
 
 # Create the mongo db directory

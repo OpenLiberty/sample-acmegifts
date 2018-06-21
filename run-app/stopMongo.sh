@@ -14,8 +14,8 @@ buildDir=$2
 mongoPath=$3
 
 # Set mongo path if defined
-if [ -z mongoPath ]; then
-    export PATH=$PATH;${mongoPath}
+if [ ! -z mongoPath ]; then
+    export PATH=$PATH:${mongoPath}
 fi
 
 # Kill any existing mongo server
