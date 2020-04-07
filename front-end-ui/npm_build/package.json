@@ -24,6 +24,7 @@
     "@angular/platform-browser": "^6.1.7",
     "@angular/platform-browser-dynamic": "^6.1.7",
     "@angular/router": "^6.1.7",
+    "acorn": "^6.4.1",
     "core-js": "^2.5.5",
     "rxjs": "^6.2.2",
     "rxjs-compat": "^6.2.2",
@@ -52,6 +53,9 @@
     "typescript": "~3.2.4"
   },
   "resolutions": {
-    "serialize-javascript": "^2.1.1"
+    "serialize-javascript": "^2.1.1",
+    "minimist": "^1.2.3",
+    "kind-of": "^6.0.3",
+    "acorn": "^6.4.1"
   }
 }
