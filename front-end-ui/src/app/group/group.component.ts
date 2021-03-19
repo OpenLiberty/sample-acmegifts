@@ -13,7 +13,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { Group } from './group';
 import { GroupService } from './services/group.service';
 import { HttpErrorResponse, HttpResponse} from '@angular/common/http';
-import { MatIconRegistry } from '@angular/material';
+import { MatIconRegistry } from '@angular/material/icon';
 import { Occasion } from '../occasion/Occasion';
 import { OccasionService } from '../occasion/services/occasion.service';
 import { Router, ActivatedRoute, ParamMap } from '@angular/router';

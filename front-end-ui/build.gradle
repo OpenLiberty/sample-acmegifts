@@ -31,7 +31,7 @@ war {
 }
 
 nodejs {
-    executable version : '8.9.0'
+    executable version : '10.13.0'
 }
 
 npm {

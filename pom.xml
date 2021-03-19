@@ -52,7 +52,7 @@
         <version.microprofile.faulttolerance>1.0-RC1</version.microprofile.faulttolerance>
 
         <!-- Test -->
-        <version.junit>4.12</version.junit>
+        <version.junit>4.13.1</version.junit>
         <version.surefire.plugin>2.19.1</version.surefire.plugin>
         <version.failsafe.plugin>2.19.1</version.failsafe.plugin>
         <version.apache.cxf>3.1.1</version.apache.cxf>
