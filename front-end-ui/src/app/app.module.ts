@@ -12,9 +12,10 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
-import { HttpModule } from '@angular/http';
 import { NgModule } from '@angular/core';
-import { MatButtonModule, MatMenuModule, MatIconModule } from '@angular/material';
+import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatIconModule } from '@angular/material/icon';
 import { AppComponent } from './app.component';
 import { GroupAddMemberComponent } from './group/group-add-member.component';
 import { GroupComponent } from './group/group.component';
@@ -56,7 +57,6 @@ import { routing } from './app-routing.module';
         BrowserAnimationsModule,
         FormsModule,
         HttpClientModule,
-        HttpModule,
         MatButtonModule,
         MatIconModule,
         MatMenuModule,
