@@ -54,6 +54,6 @@
   },
   "resolutions": {
     "dns-packet": "1.3.4",
-    "tar": "6.1.2"
+    "tar": "6.1.9"
   }
 }
