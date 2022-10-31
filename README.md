@@ -1,3 +1,5 @@
+NOTE: The `front-end-ui` microservice is currently undergoing an upgrade of Angular (https://github.com/OpenLiberty/sample-acmegifts/issues/50). In the meantime, please use the GUI as an example only as it may be prone to some issues. 
+
 # Acme Gifts [![Build Status](https://travis-ci.org/OpenLiberty/sample-acmegifts.svg?branch=master)](https://travis-ci.org/OpenLiberty/sample-acmegifts)
 A social gift giving application built on the [MicroProfile](http://microprofile.io/) platform
 
