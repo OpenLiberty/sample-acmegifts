@@ -19,7 +19,7 @@ import { Router } from '@angular/router';
   selector: 'app-signup',
   templateUrl: './profile-create.component.html',
   providers: [AuthService, UserService],
-  styles: ['../../styles.css']
+  styleUrls: ['../../styles.css']
 })
 export class ProfileCreateComponent implements OnInit {
     USER_CREATE_RC_ERR_FIREFOX_SEC_MSG = 'NOTE: You are using Firefox. Special security certificate processing is needed. ' +

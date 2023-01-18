@@ -248,8 +248,8 @@
 
 			  </executions>
 			  <configuration>
-			    <nodeVersion>v10.13.0</nodeVersion>
-			    <npmVersion>6.4.1</npmVersion>
+			    <nodeVersion>v12.22.12</nodeVersion>
+			    <npmVersion>6.14.16	</npmVersion>
           <workingDirectory>npm_build</workingDirectory>
 			  </configuration>
 		  </plugin>
