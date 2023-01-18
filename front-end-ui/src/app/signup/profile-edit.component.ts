@@ -19,7 +19,7 @@ import { ActivatedRoute, Router} from '@angular/router';
   selector: 'app-profile-edit',
   templateUrl: './profile-edit.component.html',
   providers: [UserService],
-  styles: ['../../styles.css']
+  styleUrls: ['../../styles.css']
 })
 export class ProfileEditComponent implements OnInit {
     MSG_USER_ID_INVALID = 'Your session has become invalid. Please login again.';

@@ -28,7 +28,7 @@ import { UserService } from '../user/services/user.service';
     selector: 'app-occasion',
     templateUrl: './occasion-create.component.html',
     providers: [GroupService, UserService],
-    styles: ['../../styles.css', '../../app.css']
+    styleUrls: ['../../styles.css', '../../app.css']
 })
 export class OccasionCreationComponent implements OnInit {
     MSG_USER_NOT_RETRIEVED = 'User information could not be retrieved.';
